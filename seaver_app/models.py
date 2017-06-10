@@ -18,6 +18,7 @@ class Workspace(models.Model):
 
     class Meta:
         unique_together = ('user', 'name')
+        index_together = [['user', 'name']]
 
 
 class File(models.Model):
@@ -36,6 +37,7 @@ class File(models.Model):
 
     class Meta:
         unique_together = ('workspace', 'name')
+        index_together = [['workspace', 'name']]
 
 
 class FileData(models.Model):
@@ -53,6 +55,8 @@ class FileData(models.Model):
 
     class Meta:
         unique_together = ('file', 'field_name', 'field_index')
+        index_together = [['file', 'field_name'],
+                          ['file', 'field_name', 'field_index']]
 
 
 class PunctualAnnotation(models.Model):
@@ -77,6 +81,7 @@ class PunctualAnnotationEvent(models.Model):
 
     class Meta:
         unique_together = ('punctual_annotation', 'index')
+        index_together = [['punctual_annotation', 'index']]
 
 
 class IntervalAnnotation(models.Model):
@@ -102,3 +107,4 @@ class IntervalAnnotationEvent(models.Model):
 
     class Meta:
         unique_together = ('interval_annotation', 'index')
+        index_together = [['interval_annotation', 'index']]
