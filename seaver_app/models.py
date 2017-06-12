@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 
 class Workspace(models.Model):
@@ -14,11 +15,55 @@ class Workspace(models.Model):
         related_name='workspaces',
         on_delete=models.CASCADE
     )
+    
     name = models.CharField(max_length=50)
+    modified_on = models.DateTimeField(auto_now=True)
 
     class Meta:
         unique_together = ('user', 'name')
         index_together = [['user', 'name']]
+
+    def __str__(self):
+        return '{}, {}'.format(self.name, self.user.username)
+
+    def clean(self):
+        """
+        Definisce la validazione custom del modello
+        :return:
+        """
+        # controlla che il nome non sia vuoto a seguito di rstrip
+        self.name = self.name.rstrip()
+        if len(self.name) == 0:
+            raise ValidationError({'name': '{} is not a valid name'.format(self.name)})
+
+    @classmethod
+    def get_or_set(cls, user, name, do_save=True):
+        """
+        Ottiene o crea il modello se non esiste
+        :param user:
+        :param name:
+        :param do_save: se True, salva il modello nel db
+        :return:
+        """
+        try:
+            w = cls.objects.get(user=user, name=name)
+        except cls.DoesNotExist:
+            w = cls()
+            w.user = user
+            w.name = name
+            if do_save:
+                w.save()
+
+        return w
+
+    @classmethod
+    def all_ordered_by_date(cls, user):
+        """
+        Restituisce tutti gli elementi ordinati per data di modifica descrescente
+        :param user:
+        :return:
+        """
+        return cls.objects.filter(user=user).order_by('-modified_on')
 
 
 class File(models.Model):
