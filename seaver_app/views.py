@@ -7,12 +7,6 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from .models import Workspace
 
-from django.http import HttpResponse
-
-
-def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
-
 
 @login_required()
 def show_workspaces(request):
@@ -31,7 +25,7 @@ def show_workspaces(request):
 
     context = {'workspaces': workspaces}
 
-    return render(request, 'seaver_app/workspace_show.html', context)
+    return render(request, 'workspace_show.html', context)
 
 
 @login_required()
@@ -52,7 +46,7 @@ def open_workspace(request, name):
 
     contex = {'wname': workspace.name}
 
-    return render(request, 'seaver_app/workspace.html', contex)
+    return render(request, 'workspace.html', contex)
 
 
 

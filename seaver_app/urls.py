@@ -14,12 +14,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url
-from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
-    url(r'^accounts/login/$', auth_views.LoginView.as_view()),
-    url(r'^workspace/$', views.show_workspaces),
+    url(r'^workspace/$', views.show_workspaces, name='workspace'),
     url(r'workspace/(?P<name>\w+)/$', views.open_workspace),
-    url(r'^$', views.index, name='index')
 ]
