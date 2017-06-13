@@ -15,8 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import url
 from . import views
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     url(r'^workspace/$', views.show_workspaces, name='workspace'),
     url(r'workspace/(?P<name>\w+)/$', views.open_workspace),
+    url(r'^signup/$', views.signup, name='signup'),
+    url(r'^login/$', auth_views.login, {'template_name': 'seaver_app/login.html'}, name='login'),
+    # url(r'^logout/$', core_views.logout, name='logout'),
+    url(r'^logout/$', auth_views.logout, {'template_name': 'seaver_app/logged_out.html'}, name='logout')
 ]

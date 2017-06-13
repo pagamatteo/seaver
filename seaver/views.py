@@ -1,7 +1,7 @@
 from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import render, redirect
 
-from forms import SignUpForm
+from seaver_app.forms import SignUpForm
 
 
 def signup(request):

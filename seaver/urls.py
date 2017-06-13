@@ -23,9 +23,5 @@ admin.autodiscover()
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^', include('seaver_app.urls')),
-    url(r'^login/$', auth_views.login, {'template_name': 'login.html'}, name='login'),
-    #url(r'^logout/$', core_views.logout, name='logout'),
-    url(r'^logout/$', auth_views.logout, {'template_name': 'logged_out.html'}, name='logout'),
-    url(r'^signup/$', core_views.signup, name='signup'),
+    url(r'^', include('seaver_app.urls'))
 ]
