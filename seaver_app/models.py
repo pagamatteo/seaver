@@ -15,7 +15,7 @@ class Workspace(models.Model):
         related_name='workspaces',
         on_delete=models.CASCADE
     )
-    
+
     name = models.CharField(max_length=50)
     modified_on = models.DateTimeField(auto_now=True)
 
