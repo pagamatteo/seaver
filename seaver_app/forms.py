@@ -11,3 +11,9 @@ class SignUpForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', )
+
+
+class FileUploadForm(forms.Form):
+    workspace_name = forms.CharField(max_length=50, label="Workspace name")
+    name = forms.CharField(max_length=50, label='File name')
+    file = forms.FileField()
