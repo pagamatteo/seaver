@@ -71,12 +71,6 @@ def signup(request):
     return render(request, 'seaver_app/signup.html', {'form': form})
 
 
-def logout_view(request):
-    # fixme non va
-    logout(request)
-    # Redirect to a success page.
-    return render(request, 'seaver_app/logged_out.html')
-
 
 
 
