@@ -14,6 +14,6 @@ class SignUpForm(UserCreationForm):
 
 
 class FileUploadForm(forms.Form):
-    workspace_name = forms.CharField(max_length=50, label="Workspace name")
+    # workspace_name = forms.CharField(max_length=50, label="Workspace name")
     name = forms.CharField(max_length=50, label='File name')
-    file = forms.FileField()
+    file = forms.FileField(label='File to be uploaded')
