@@ -5,8 +5,8 @@ from os import path
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Workspace
-from .forms import SignUpForm
+from .models import Workspace, File as FileModel
+from .forms import SignUpForm, FileUploadForm
 from django.contrib.auth import login, authenticate, logout
 
 @login_required()
@@ -45,7 +45,23 @@ def open_workspace(request, name):
     # cambia la data di ultima modifica
     workspace.save()
 
-    contex = {'wname': workspace.name}
+    file_upload_form = FileUploadForm(request.POST, request.FILES)
+
+    if file_upload_form.is_valid():
+        file_model = FileModel()
+        file_model.workspace = workspace
+        file_model.name = file_upload_form.cleaned_data['name']
+        file_uploaded = file_upload_form.cleaned_data['file']
+
+        # todo leggere correttamente il file
+        # file_model.save()
+
+        # restituisco il modello di file vuoto
+        file_upload_form = FileUploadForm()
+
+    contex = {'wname': workspace.name,
+              'form_action': request.path,
+              'file_upload_form': file_upload_form}
 
     return render(request, 'seaver_app/workspace.html', contex)
 
