@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Workspace, File as FileModel
 from .forms import SignUpForm, FileUploadForm
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import login, authenticate
 from . import csvreader
 
 @login_required()
@@ -70,6 +70,12 @@ def open_workspace(request, name):
 
 
 def signup(request):
+    """
+    Registrazione utente.
+
+    :param request:
+    :return:
+    """
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
