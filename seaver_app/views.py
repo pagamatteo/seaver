@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Workspace, File as FileModel
 from .forms import SignUpForm, FileUploadForm
 from django.contrib.auth import login, authenticate, logout
+from . import csvreader
 
 @login_required()
 def show_workspaces(request):
