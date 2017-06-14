@@ -56,6 +56,8 @@ def open_workspace(request, name):
 
         # todo leggere correttamente il file
         # file_model.save()
+        file_to_string = csvreader.FileToString(file_uploaded)
+        string_to_lines = csvreader.StringToLines(iter(file_to_string))
 
         # restituisco il modello di file vuoto
         file_upload_form = FileUploadForm()
