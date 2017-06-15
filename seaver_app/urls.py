@@ -19,6 +19,7 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     url(r'^workspace/$', views.show_workspaces, name='workspace'),
+    url(r'^create_workspace/$', views.create_empty_workspace, name='create_workspace'),
     url(r'workspace/(?P<name>\w+)/$', views.open_workspace),
     url(r'^signup/$', views.signup, name='signup'),
     url(r'^login/$', auth_views.login, {'template_name': 'seaver_app/login.html'}, name='login'),

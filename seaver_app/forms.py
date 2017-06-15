@@ -18,3 +18,8 @@ class FileUploadForm(forms.Form):
     # workspace_name = forms.CharField(max_length=50, label="Workspace name")
     # name = forms.CharField(max_length=50, label='File name')
     file = forms.FileField(label='File to be uploaded')
+
+
+class WorkspaceForm(forms.Form):
+    workspace_name = forms.CharField(max_length=50, required=True)
+

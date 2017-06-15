@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Utilità per leggere i file csv
 """

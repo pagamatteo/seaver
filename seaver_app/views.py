@@ -6,9 +6,11 @@ from os import path
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Workspace, File as FileModel, FileData, BulkWriter
-from .forms import SignUpForm, FileUploadForm
+from .forms import *
 from django.contrib.auth import login, authenticate
 from .csvreader import FileToStrings, StringsToLines, CSVReader, NumberOfFieldsChangedException
+from django.core.exceptions import ValidationError
+from django.http import JsonResponse
 
 @login_required()
 def show_workspaces(request):
@@ -26,6 +28,7 @@ def show_workspaces(request):
         workspaces.append((e.name, path.join(request.path, e.name)))
 
     context = {'workspaces': workspaces}
+    print context
 
     return render(request, 'seaver_app/workspace_show.html', context)
 
@@ -41,8 +44,15 @@ def open_workspace(request, name):
     user = request.user
 
     workspace = Workspace.get_or_set(user, name, do_save=False)
+
     # valida il modello
-    workspace.full_clean()
+    try:
+        workspace.full_clean()
+    except ValidationError as e:
+        # Do something based on the errors contained in e.message_dict.
+        # Display them to a user, or handle them programmatically.
+        pass
+
     # cambia la data di ultima modifica
     workspace.save()
 
@@ -114,6 +124,39 @@ def signup(request):
     else:
         form = SignUpForm()
     return render(request, 'seaver_app/signup.html', {'form': form})
+
+
+def create_empty_workspace(request):
+    """
+    Creazione workspace vuoto.
+
+    :param request:
+    :return:
+    """
+
+    errors = {}
+    user = request.user
+    form = WorkspaceForm(request.GET)
+    if form.is_valid():
+        workspace_name = form.cleaned_data.get('workspace_name')
+        workspace = Workspace.get_or_set(user, workspace_name, do_save=True)
+        print workspace_name
+        print workspace
+
+        # valida il modello
+        try:
+            workspace.full_clean()
+        except ValidationError as e:
+            # Do something based on the errors contained in e.message_dict.
+            # Display them to a user, or handle them programmatically.
+            pass
+
+        # cambia la data di ultima modifica
+        workspace.save()
+        return JsonResponse(errors)
+    else:
+        errors = form.errors
+        return JsonResponse(errors)
 
 
 
