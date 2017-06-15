@@ -5,10 +5,10 @@ from os import path
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Workspace, File as FileModel
+from .models import Workspace, File as FileModel, FileData, BulkWriter
 from .forms import SignUpForm, FileUploadForm
 from django.contrib.auth import login, authenticate, logout
-from . import csvreader
+from .csvreader import FileToStrings, StringsToLines, CSVReader, NumberOfFieldsChangedException
 
 @login_required()
 def show_workspaces(request):
@@ -49,15 +49,35 @@ def open_workspace(request, name):
     file_upload_form = FileUploadForm(request.POST, request.FILES)
 
     if file_upload_form.is_valid():
+        # creo il modello del file
         file_model = FileModel()
         file_model.workspace = workspace
-        file_model.name = file_upload_form.cleaned_data['name']
         file_uploaded = file_upload_form.cleaned_data['file']
+        # ottengo un nome valido per il file (non già usato)
+        file_model.name = FileModel.get_valid_name(file_uploaded.name)
+        file_model.save()
 
-        # todo leggere correttamente il file
-        # file_model.save()
-        file_to_string = csvreader.FileToString(file_uploaded)
-        string_to_lines = csvreader.StringToLines(iter(file_to_string))
+        # creo il lettore csv
+        csv_reader = CSVReader(StringsToLines(FileToStrings(file_uploaded)))
+        # creo il db bulk writer
+        bulk_writer = BulkWriter(FileData)
+
+        try:
+            # leggo numero riga, numero colonna, valore
+            for r, c, value in csv_reader:
+                # costruisco il file data
+                file_data = FileData()
+                file_data.file = file_model
+                file_data.field_index = r
+                file_data.field_name = 'field{}'.format(c)
+                file_data.field_value = value
+
+                bulk_writer.append(file_data)
+
+            bulk_writer.flush()
+        except NumberOfFieldsChangedException:
+            # se c'è stato un errore cancello il file
+            file_model.delete()
 
         # restituisco il modello di file vuoto
         file_upload_form = FileUploadForm()

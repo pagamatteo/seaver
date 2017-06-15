@@ -6,6 +6,35 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
 
+class BulkWriter:
+    """
+    Scrive sul db ogni batch_size records
+    """
+    def __init__(self, model, batch_size=500):
+        self.model = model
+        self.batchSize = batch_size
+        self.entries = []
+
+    def flush(self):
+        """
+        Forza la scrittura su db
+        :return:
+        """
+        self.model.objects.bulk_create(self.entries)
+        self.entries.clear()
+
+    def append(self, entry):
+        """
+        Aggiunge un entry ed eventualmente scrive su db
+        :param entry:
+        :return:
+        """
+        self.entries.append(entry)
+
+        if len(self.entries) >= self.batchSize:
+            self.flush()
+
+
 class Workspace(models.Model):
     """
     Classe che modella un workspace.
@@ -84,6 +113,26 @@ class File(models.Model):
         unique_together = ('workspace', 'name')
         index_together = [['workspace', 'name']]
 
+    def __str__(self):
+        return str(self.name)
+
+    @classmethod
+    def get_valid_name(cls, name, index=-1):
+        """
+        Restituisce un nome di file disponibile
+        :param name:
+        :param index:
+        :return:
+        """
+        if index == -1:
+            name_to_check = name
+        else:
+            name_to_check = '{} ({})'.format(name, index)
+        if cls.objects.filter(name=name_to_check).exists():
+            return cls.get_valid_name(name, index + 1)
+
+        return name_to_check
+
 
 class FileData(models.Model):
     """
@@ -95,13 +144,17 @@ class FileData(models.Model):
         on_delete=models.CASCADE
     )
     field_name = models.CharField(max_length=20)
-    field_index = models.IntegerField()
+    field_index = models.PositiveIntegerField()
     field_value = models.FloatField()
 
     class Meta:
         unique_together = ('file', 'field_name', 'field_index')
         index_together = [['file', 'field_name'],
                           ['file', 'field_name', 'field_index']]
+
+    def __str__(self):
+        return '{}, {}, {}, {}'.format(self.file.name, self.field_name, self.field_index,
+                                       self.field_value)
 
 
 class PunctualAnnotation(models.Model):
@@ -121,7 +174,7 @@ class PunctualAnnotationEvent(models.Model):
         related_name='events',
         on_delete=models.CASCADE
     )
-    index = models.IntegerField()
+    index = models.PositiveIntegerField()
     offset = models.FloatField(default=0)
 
     class Meta:
@@ -146,7 +199,7 @@ class IntervalAnnotationEvent(models.Model):
         related_name='events',
         on_delete=models.CASCADE
     )
-    index = models.IntegerField()
+    index = models.PositiveIntegerField()
     start = models.FloatField()
     stop = models.FloatField()
 
