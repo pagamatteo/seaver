@@ -54,7 +54,7 @@ def open_workspace(request, name):
         file_model.workspace = workspace
         file_uploaded = file_upload_form.cleaned_data['file']
         # ottengo un nome valido per il file (non già usato)
-        file_model.name = FileModel.get_valid_name(file_uploaded.name)
+        file_model.name = FileModel.get_valid_name(workspace, file_uploaded.name)
         file_model.save()
 
         # creo il lettore csv

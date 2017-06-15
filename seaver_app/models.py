@@ -117,7 +117,7 @@ class File(models.Model):
         return str(self.name)
 
     @classmethod
-    def get_valid_name(cls, name, index=-1):
+    def get_valid_name(cls, workspace, name, index=-1):
         """
         Restituisce un nome di file disponibile
         :param name:
@@ -128,7 +128,7 @@ class File(models.Model):
             name_to_check = name
         else:
             name_to_check = '{} ({})'.format(name, index)
-        if cls.objects.filter(name=name_to_check).exists():
+        if cls.objects.filter(workspace=workspace, name=name_to_check).exists():
             return cls.get_valid_name(name, index + 1)
 
         return name_to_check
