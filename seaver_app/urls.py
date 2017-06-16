@@ -26,5 +26,5 @@ urlpatterns = [
     url(r'^login/$', auth_views.login, {'template_name': 'seaver_app/login.html'}, name='login'),
     url(r'^logout/$', auth_views.logout, {'template_name': 'seaver_app/logged_out.html'}, name='logout'),
     url(r'^apis/', include(api_router.urls)),
-    url(r'^apis/file', apis_views.update_file)
+    url(r'^apis/file', apis_views.FileView.as_view())
 ]
