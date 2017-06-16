@@ -28,7 +28,7 @@ def show_workspaces(request):
         workspaces.append((e.name, path.join(request.path, e.name)))
 
     context = {'workspaces': workspaces}
-    print context
+    print(context)
 
     return render(request, 'seaver_app/workspace_show.html', context)
 
@@ -140,8 +140,9 @@ def create_empty_workspace(request):
     if form.is_valid():
         workspace_name = form.cleaned_data.get('workspace_name')
         workspace = Workspace.get_or_set(user, workspace_name, do_save=True)
-        print workspace_name
-        print workspace
+        # in python3 le parentesi sono obbligatorie
+        print(workspace_name)
+        print(workspace)
 
         # valida il modello
         try:
