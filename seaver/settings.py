@@ -130,7 +130,7 @@ STATIC_URL = '/static/'
 
 LOGIN_URL = 'login'
 
-LOGIN_REDIRECT_URL = 'workspace'
+LOGIN_REDIRECT_URL = 'workspaces'
 
 # ADDED
 

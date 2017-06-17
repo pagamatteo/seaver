@@ -7,6 +7,9 @@ function manage_response(response) {
         console.log("Corretto");
         $('#myModal').modal('toggle');
         location.reload();
+        //workspace_box = $(".workspace_box").clone();//.prepend( "#workspace_box" );;
+        //console.log(workspace_box);
+
     }
     else {                                                  // form compilato in maniera errata
         // visualizzo i messaggi di errore
@@ -34,6 +37,7 @@ per creare il nuovo workspace.
 */
 function create_workspace() {
     var form = $("#create_workspace_form");
+    console.log("Create workspace...");
 
     $.ajax({
         url: form.attr("data-validate-url"),
@@ -41,6 +45,22 @@ function create_workspace() {
         dataType: 'json',
         success: function (response) {
           manage_response(response);
+        }
+      });
+}
+
+/*
+Funzione che cancella un workspace.
+*/
+function delete_workspace(event, url_structure) {
+    var worksapce_name = $(event.target).closest( ".box-header " ).find( "h3" ).html();
+    var url = url_structure.replace("workspace_name", worksapce_name);
+
+    $.ajax({
+        url: url,
+        success: function (response) {
+            if (response["message"] == 'Ok')
+                location.reload();
         }
       });
 }

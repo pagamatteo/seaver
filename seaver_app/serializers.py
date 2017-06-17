@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from .models import File as FileModel, Workspace
 from rest_framework import routers, serializers, viewsets
 

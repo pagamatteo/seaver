@@ -27,7 +27,7 @@ def show_workspaces(request):
     for e in q:
         workspaces.append((e.name, path.join(request.path, e.name)))
 
-    context = {'workspaces': workspaces}
+    context = {'workspaces': workspaces, 'username':user.username}
     print(context)
 
     return render(request, 'seaver_app/workspace_show.html', context)
@@ -158,6 +158,23 @@ def create_empty_workspace(request):
     else:
         errors = form.errors
         return JsonResponse(errors)
+
+def delete_workspace(request, name):
+    """
+    Eliminazione di un workspace.
+
+    :param request:
+    :param name:
+    :return:
+    """
+
+    response = {'message': "Ok"}
+    user = request.user
+    # todo controllo parametro ingresso
+    workspace_name = request.GET.get('workspace_name')
+    workspace = Workspace.get_or_set(user, workspace_name, do_save=False)
+    workspace.delete()
+    return JsonResponse(response)
 
 
 

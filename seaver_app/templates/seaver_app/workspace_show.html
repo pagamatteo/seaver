@@ -11,7 +11,7 @@
     <link href="{% static 'seaver_app/dist/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css" />
     <!--<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css" />-->
     <!-- Ionicons 2.0.0 -->
-    <link href="http://code.ionicframework.com/ionicons/2.0.0/css/ionicons.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="http://code.ionicframework.com/ionicons/2.0.0/css/ionicons.min.css" rel="stylesheet" type="text/css" />
     <!-- Theme style -->
     <link href="{% static 'seaver_app/dist/css/AdminLTE.min.css' %}" rel="stylesheet" type="text/css" />
     <!-- AdminLTE Skins. Choose a skin from the css/skins 
@@ -57,7 +57,7 @@
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                   <img src="{% static 'seaver_app/dist/img/user2-160x160.jpg' %}" class="user-image" alt="User Image"/>
-                  <span class="hidden-xs">User</span>
+                  <span class="hidden-xs">{{ username }}</span>
                 </a>
                 <ul class="dropdown-menu">
                   <!-- User image -->
@@ -104,7 +104,7 @@
               <img src="{% static 'seaver_app/dist/img/user2-160x160.jpg' %}" class="img-circle" alt="User Image" />
             </div>
             <div class="pull-left info">
-              <p>User</p>
+              <p>{{ username }}</p>
 
               <!--<a href="#"><i class="fa fa-circle text-success"></i> Online</a>-->
             </div>
@@ -128,7 +128,7 @@
               </a>
               {% for workspace in workspaces %}
                 <ul class="treeview-menu">
-                  <li class="active"><a href="#"><i class="fa fa-circle-o"></i> {{ workspace.0 }}</a></li>
+                  <li class="active"><a href="{% url 'workspace' workspace.0 %}"><i class="fa fa-circle-o"></i> {{ workspace.0 }}</a></li>
                 </ul>
               {% endfor %}
             </li>
@@ -162,6 +162,7 @@
                   <div class="box-header">
                     <i class="fa fa-fw fa-folder"></i><h3 class="box-title">{{ workspace.0 }}</h3>
                     <div class="box-tools pull-right">
+                      <button class="btn btn-primary btn-sm" onclick="delete_workspace(event, '{% url 'delete_workspace' 'workspace_name' %}')"><i class="glyphicon glyphicon-trash"></i></button>
                       <button class="btn btn-primary btn-sm" data-widget="collapse"><i class="fa fa-minus"></i></button>
                       <!--<button class="btn btn-primary btn-sm" data-widget="remove"><i class="fa fa-times"></i></button>-->
                     </div>
@@ -171,7 +172,7 @@
                     <p><i class="fa fa-fw fa-file-text"></i> File 2</p>
                     <!--<div class=".box.box-solid.bg-light-blue">-->
                     <center>
-                      <a href="#" class="small-box-footer">
+                      <a href="{% url 'workspace' workspace.0 %}" class="small-box-footer">
                         Go to workspace <i class="fa fa-arrow-circle-right"></i>
                       </a>
                     </center>

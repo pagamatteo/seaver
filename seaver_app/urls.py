@@ -19,9 +19,10 @@ from django.contrib.auth import views as auth_views
 from .apis import router as api_router
 
 urlpatterns = [
-    url(r'^workspace/$', views.show_workspaces, name='workspace'),
+    url(r'^workspace/$', views.show_workspaces, name='workspaces'),
     url(r'^create_workspace/$', views.create_empty_workspace, name='create_workspace'),
-    url(r'workspace/(?P<name>\w+)/$', views.open_workspace),
+    url(r'^delete_workspace/(?P<name>\w+( \w+)*)/$', views.delete_workspace, name='delete_workspace'),
+    url(r'workspace/(?P<name>\w+( \w+)*)/$', views.open_workspace, name='workspace'),
     url(r'^signup/$', views.signup, name='signup'),
     url(r'^login/$', auth_views.login, {'template_name': 'seaver_app/login.html'}, name='login'),
     url(r'^logout/$', auth_views.logout, {'template_name': 'seaver_app/logged_out.html'}, name='logout'),
