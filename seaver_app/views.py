@@ -134,32 +134,31 @@ def create_empty_workspace(request):
     :return:
     """
 
-    errors = {}
     user = request.user
     form = WorkspaceForm(request.GET)
     if form.is_valid():
         workspace_name = form.cleaned_data.get('workspace_name')
         workspace = Workspace.get_or_set(user, workspace_name, do_save=True)
-        # in python3 le parentesi sono obbligatorie
-        print(workspace_name)
-        print(workspace)
 
         # valida il modello
         try:
             workspace.full_clean()
         except ValidationError as e:
-            # Do something based on the errors contained in e.message_dict.
-            # Display them to a user, or handle them programmatically.
+            # todo Do something based on the errors contained in e.message_dict.
+            # todo Display them to a user, or handle them programmatically.
             pass
 
         # cambia la data di ultima modifica
         workspace.save()
-        return JsonResponse(errors)
-    else:
-        errors = form.errors
-        return JsonResponse(errors)
 
-def delete_workspace(request, name):
+        response = {'errors': False, 'results': {'workspace_name': workspace_name}}
+        return JsonResponse(response)
+    else:
+        response = {'errors': True, 'results': form.errors}
+        return JsonResponse(response)
+
+
+def delete_workspace(request, workspace_name):
     """
     Eliminazione di un workspace.
 
@@ -168,10 +167,9 @@ def delete_workspace(request, name):
     :return:
     """
 
-    response = {'message': "Ok"}
+    response = {'errors': False}
     user = request.user
     # todo controllo parametro ingresso
-    workspace_name = request.GET.get('workspace_name')
     workspace = Workspace.get_or_set(user, workspace_name, do_save=False)
     workspace.delete()
     return JsonResponse(response)

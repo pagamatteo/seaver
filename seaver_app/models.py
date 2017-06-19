@@ -41,8 +41,7 @@ class Workspace(models.Model):
     """
     user = models.ForeignKey(
         User,
-        related_name='workspaces',
-        on_delete=models.CASCADE
+        related_name='workspaces'
     )
 
     name = models.CharField(max_length=50)
