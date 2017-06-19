@@ -107,11 +107,19 @@ class File(models.Model):
     name = models.CharField(max_length=50)
     active = models.BooleanField(default=False, db_index=True)
     offset = models.FloatField(default=0)
-    stretching = models.FloatField(default=0)
+    stretching = models.FloatField(default=1)
 
     class Meta:
         unique_together = ('workspace', 'name')
         index_together = [['workspace', 'name']]
+
+    def clean(self):
+        """
+        Definisce la validazione custom del modello
+        :return:
+        """
+        if self.stretching <= 0:
+            raise ValidationError({'streatching': 'value {} is not > 0'.format(self.stretching)})
 
     def __str__(self):
         return str(self.name)
