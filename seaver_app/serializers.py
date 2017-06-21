@@ -2,18 +2,13 @@
 """
 Contiene gli oggetti serializzati: tradotti da python a json, etc...
 """
-from .models import File as FileModel, Workspace, BulkWriter, FileData
-from rest_framework import routers, serializers, viewsets
+from .models import File as FileModel, Workspace, BulkWriter, FileData, PunctualAnnotationEvent, IntervalAnnotationEvent
+from rest_framework import serializers
 from .csvreader import CSVReader, FileToStrings, StringsToLines, NumberOfFieldsChangedException
 from django.contrib.auth.models import User
 
-# class WorkSpaceSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Workspace
-#         fields = {}
 
-
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
         read_only_fields =("id", "last_login", "is_superuser", "is_staff", "is_active", "date_joined", "groups",
@@ -27,6 +22,20 @@ class FileSerializer(serializers.ModelSerializer):
         model = FileModel
         fields = ('pk', 'workspace', 'name', 'active', 'offset', 'stretching')
         read_only_fields = ('workspace', )
+
+
+class PunctualAnnotationEventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PunctualAnnotationEvent
+        fields = ('pk', 'punctual_annotation', 'workspace', 'index', 'offset')
+        read_only_fields = ('index', )
+
+
+class IntervalAnnotationEventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = IntervalAnnotationEvent
+        fields = ('pk', 'interval_annotation', 'workspace', 'index', 'start', 'stop')
+        read_only_fields = ('index', )
 
 
 class FileUploadSerializer(serializers.Serializer):

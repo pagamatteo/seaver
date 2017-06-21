@@ -2,14 +2,14 @@
 """
 Le view degli oggetti serializzati
 """
-from rest_framework import status, permissions, serializers, generics, routers
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework import status, permissions, serializers, generics, routers, viewsets, mixins
+from rest_framework.decorators import permission_classes
 from rest_framework.response import Response
-from .models import File as FileModel, Workspace
-from .serializers import FileSerializer, FileUploadSerializer, UserSerializer
+from .models import File as FileModel, Workspace, PunctualAnnotationEvent
+from .serializers import FileSerializer, FileUploadSerializer, UserSerializer, PunctualAnnotationEventSerializer, \
+    IntervalAnnotationEventSerializer
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
-from . import permissions as app_permissions
 from django.http import Http404
 
 
@@ -53,18 +53,49 @@ from django.http import Http404
 #     def perform_create(self, serializer):
 #         serializer.save(owner=self.request.user)
 
-@permission_classes((permissions.IsAuthenticated, ))
-class UserView(generics.RetrieveUpdateAPIView):
+# @permission_classes((permissions.IsAuthenticated, ))
+# class UserView(generics.RetrieveUpdateAPIView):
+#     serializer_class = UserSerializer
+#
+#     def get_queryset(self):
+#         # solo l'utente corrente può accedere ai propri dati
+#         return User.objects.filter(pk=self.request.user.pk)
+#
+#
+# @permission_classes((permissions.IsAuthenticated, ))
+# class FileListView(generics.ListAPIView):
+#     serializer_class = FileSerializer
+#
+#     def get_queryset(self):
+#         user = self.request.user
+#         workspaces = Workspace.objects.filter(user=user)
+#         return FileModel.objects.filter(workspace__in=workspaces)
+#
+#
+# @permission_classes((permissions.IsAuthenticated, ))
+# class FileDetailedView(generics.RetrieveUpdateAPIView, generics.ListAPIView):
+#     serializer_class = FileSerializer
+#
+#     def get_queryset(self):
+#         user = self.request.user
+#         workspaces = Workspace.objects.filter(user=user)
+#         return FileModel.objects.filter(workspace__in=workspaces)
+
+
+class UserView(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticated, )
 
     def get_queryset(self):
         # solo l'utente corrente può accedere ai propri dati
         return User.objects.filter(pk=self.request.user.pk)
 
 
-@permission_classes((permissions.IsAuthenticated, ))
-class FileListView(generics.ListAPIView):
+# @permission_classes((permissions.IsAuthenticated, ))
+class FileView(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin,
+               viewsets.GenericViewSet):
     serializer_class = FileSerializer
+    permission_classes = (permissions.IsAuthenticated, )
 
     def get_queryset(self):
         user = self.request.user
@@ -73,14 +104,22 @@ class FileListView(generics.ListAPIView):
 
 
 @permission_classes((permissions.IsAuthenticated, ))
-class FileDetailedView(generics.RetrieveUpdateAPIView, generics.ListAPIView):
-    serializer_class = FileSerializer
+class PunctualAnnotationEventView(viewsets.ModelViewSet):
+    serializer_class = PunctualAnnotationEventSerializer
 
     def get_queryset(self):
         user = self.request.user
         workspaces = Workspace.objects.filter(user=user)
-        return FileModel.objects.filter(workspace__in=workspaces)
+        return PunctualAnnotationEvent.objects.filter(workspace__in=workspaces)
 
+@permission_classes((permissions.IsAuthenticated,))
+class IntervalAnnotationEventView(viewsets.ModelViewSet):
+    serializer_class = IntervalAnnotationEventSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        workspaces = Workspace.objects.filter(user=user)
+        return PunctualAnnotationEvent.objects.filter(workspace__in=workspaces)
 
 # todo non testata
 @permission_classes((permissions.IsAuthenticated, ))
@@ -105,9 +144,9 @@ class FileUploadedView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# router = routers.DefaultRouter()
-# # router.register(r'user', UserView, 'user')
-# router.register(r'file', FileListView, 'file-list')
-# # router.register(r'file/(?P<pk>[0-9]+)', FileDetailedView, 'file-detailed')
-# router.register(r'file-upload', FileUploadedView, 'file-upload')
+router = routers.DefaultRouter()
+router.register(r'users', UserView, 'users')
+router.register(r'files', FileView, 'files')
+router.register(r'punctual-events', PunctualAnnotationEventView, 'punctual')
+router.register(r'interval-events', IntervalAnnotationEventView, 'interval')
 

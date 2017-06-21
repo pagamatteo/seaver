@@ -14,21 +14,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url, include
+from rest_framework import routers
 from . import views, apis_views
 from django.contrib.auth import views as auth_views
-from .apis import router as api_router
 
 urlpatterns = [
     url(r'^workspace/$', views.show_workspaces, name='workspaces'),
     url(r'^create_workspace/$', views.create_empty_workspace, name='create_workspace'),
     url(r'^delete_workspace/(?P<workspace_name>\w+( \w+)*)/$', views.delete_workspace, name='delete_workspace'),
-    url(r'workspace/(?P<name>\w+( \w+)*)/$', views.open_workspace, name='workspace'),
+    url(r'^workspace/(?P<name>\w+( \w+)*)/$', views.open_workspace, name='workspace'),
     url(r'^signup/$', views.signup, name='signup'),
     url(r'^login/$', auth_views.login, {'template_name': 'seaver_app/login.html'}, name='login'),
     url(r'^logout/$', auth_views.logout, {'template_name': 'seaver_app/logged_out.html'}, name='logout'),
-    # url(r'^apis$', include(apis_views.router.urls)),
-    url(r'^apis/user/(?P<pk>[0-9]+)/$', apis_views.UserView.as_view()),
-    url(r'^apis/file/$', apis_views.FileListView.as_view()),
-    url(r'^apis/file/(?P<pk>[0-9]+)/$', apis_views.FileDetailedView.as_view()),
+    url(r'^apis/', include(apis_views.router.urls)),
     url(r'^apis/file-upload/$', apis_views.FileUploadedView.as_view())
 ]

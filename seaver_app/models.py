@@ -168,7 +168,7 @@ class PunctualAnnotation(models.Model):
     """
     Classe che modella un'annotazione puntuale.
     """
-    name = models.CharField(max_length=20)#, primary_key=True)
+    name = models.CharField(max_length=20, unique=True)#, primary_key=True)
     description = models.TextField()
 
 
@@ -181,19 +181,24 @@ class PunctualAnnotationEvent(models.Model):
         related_name='events',
         on_delete=models.CASCADE
     )
+    workspace = models.ForeignKey(
+        Workspace,
+        related_name= 'punctual_annotations',
+        on_delete=models.CASCADE
+    )
     index = models.PositiveIntegerField()
     offset = models.FloatField(default=0)
 
     class Meta:
-        unique_together = ('punctual_annotation', 'index')
-        index_together = [['punctual_annotation', 'index']]
+        unique_together = ('workspace', 'index')
+        index_together = [['workspace', 'index']]
 
 
 class IntervalAnnotation(models.Model):
     """
     Classe che modella un'annotazione con durata.
     """
-    name = models.CharField(max_length=20)#, primary_key=True)
+    name = models.CharField(max_length=20, unique=True)#, primary_key=True)
     description = models.TextField()
 
 
@@ -206,10 +211,23 @@ class IntervalAnnotationEvent(models.Model):
         related_name='events',
         on_delete=models.CASCADE
     )
+    workspace = models.ForeignKey(
+        Workspace,
+        related_name='interval_annotations',
+        on_delete=models.CASCADE
+    )
     index = models.PositiveIntegerField()
     start = models.FloatField()
     stop = models.FloatField()
 
     class Meta:
-        unique_together = ('interval_annotation', 'index')
-        index_together = [['interval_annotation', 'index']]
+        unique_together = ('workspace', 'index')
+        index_together = [['workspace', 'index']]
+
+    def clean(self):
+        """
+        Definisce la validazione custom del modello
+        :return:
+        """
+        if self.stop <= self.start:
+            raise ValidationError({'stop': 'stop {} must be > start {}'.format(self.stop, self.start)})
