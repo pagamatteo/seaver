@@ -27,15 +27,13 @@ class FileSerializer(serializers.ModelSerializer):
 class PunctualAnnotationEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = PunctualAnnotationEvent
-        fields = ('pk', 'punctual_annotation', 'workspace', 'index', 'offset')
-        read_only_fields = ('index', )
+        fields = ('pk', 'punctual_annotation', 'workspace', 'offset')
 
 
 class IntervalAnnotationEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = IntervalAnnotationEvent
-        fields = ('pk', 'interval_annotation', 'workspace', 'index', 'start', 'stop')
-        read_only_fields = ('index', )
+        fields = ('pk', 'interval_annotation', 'workspace', 'start', 'stop')
 
 
 class FileUploadSerializer(serializers.Serializer):
