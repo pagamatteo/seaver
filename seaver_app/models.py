@@ -186,12 +186,13 @@ class PunctualAnnotationEvent(models.Model):
         related_name= 'punctual_annotations',
         on_delete=models.CASCADE
     )
-    index = models.PositiveIntegerField()
+    # index = models.PositiveIntegerField()
     offset = models.FloatField(default=0)
 
-    class Meta:
-        unique_together = ('workspace', 'index')
-        index_together = [['workspace', 'index']]
+    # class Meta:
+    #     # unique_together = ('workspace', 'index')
+    #     # index_together = [['workspace', 'index']]
+    #     index_together = [['workspace']]
 
 
 class IntervalAnnotation(models.Model):
@@ -216,13 +217,14 @@ class IntervalAnnotationEvent(models.Model):
         related_name='interval_annotations',
         on_delete=models.CASCADE
     )
-    index = models.PositiveIntegerField()
+    # index = models.PositiveIntegerField()
     start = models.FloatField()
     stop = models.FloatField()
 
-    class Meta:
-        unique_together = ('workspace', 'index')
-        index_together = [['workspace', 'index']]
+    # class Meta:
+    #     unique_together = ('workspace', 'index')
+    #     index_together = [['workspace', 'index']]
+    #     index_together = [['workspace']]
 
     def clean(self):
         """
