@@ -16,21 +16,27 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         exclude = ('password', )
 
 
-class FileSerializer(serializers.ModelSerializer):
+class WorkspaceSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Workspace
+        fields = ('url', 'user', 'name', 'modified_on')
+
+
+class FileSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = FileModel
-        fields = ('pk', 'workspace', 'name', 'active', 'offset', 'stretching')
+        fields = ('url', 'workspace', 'name', 'active', 'offset', 'stretching')
         read_only_fields = ('workspace', )
 
 
-class PunctualAnnotationEventSerializer(serializers.ModelSerializer):
+class PunctualAnnotationEventSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = PunctualAnnotationEvent
         fields = ('pk', 'punctual_annotation', 'workspace', 'offset')
 
 
-class IntervalAnnotationEventSerializer(serializers.ModelSerializer):
+class IntervalAnnotationEventSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = IntervalAnnotationEvent
         fields = ('pk', 'interval_annotation', 'workspace', 'start', 'stop')

@@ -7,7 +7,7 @@ from rest_framework.decorators import permission_classes
 from rest_framework.response import Response
 from .models import File as FileModel, Workspace, PunctualAnnotationEvent
 from .serializers import FileSerializer, FileUploadSerializer, UserSerializer, PunctualAnnotationEventSerializer, \
-    IntervalAnnotationEventSerializer
+    IntervalAnnotationEventSerializer, WorkspaceSerializer
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from django.http import Http404
@@ -82,13 +82,23 @@ from django.http import Http404
 #         return FileModel.objects.filter(workspace__in=workspaces)
 
 
-class UserView(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
+class UserView(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.ListModelMixin,
+               viewsets.GenericViewSet):
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticated, )
 
     def get_queryset(self):
         # solo l'utente corrente può accedere ai propri dati
         return User.objects.filter(pk=self.request.user.pk)
+        # return User.objects.all()
+
+
+@permission_classes((permissions.IsAuthenticated, ))
+class WorkspaceView(viewsets.ModelViewSet):
+    serializer_class = WorkspaceSerializer
+
+    def get_queryset(self):
+        return Workspace.objects.filter(user=self.request.user)
 
 
 # @permission_classes((permissions.IsAuthenticated, ))
@@ -145,8 +155,9 @@ class FileUploadedView(APIView):
 
 
 router = routers.DefaultRouter()
-router.register(r'users', UserView, 'users')
-router.register(r'files', FileView, 'files')
+router.register(r'user', UserView, 'user')
+router.register(r'workspace', WorkspaceView, 'workspace')
+router.register(r'file', FileView, 'file')
 router.register(r'punctual-events', PunctualAnnotationEventView, 'punctual')
 router.register(r'interval-events', IntervalAnnotationEventView, 'interval')
 
