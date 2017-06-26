@@ -110,7 +110,7 @@ class FileView(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateMo
     def get_queryset(self):
         user = self.request.user
         workspaces = Workspace.objects.filter(user=user)
-        return FileModel.objects.filter(workspace__in=workspaces)
+        return FileModel.objects.filter(workspace__in=workspaces).order_by('name')
 
 
 @permission_classes((permissions.IsAuthenticated, ))
