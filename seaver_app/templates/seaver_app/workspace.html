@@ -4,22 +4,61 @@
 <title>Seaver | Workspace</title>
     {% block script %}
         <script>
-           Vue.options.delimiters = ['[[', ']]'];
+            Vue.options.delimiters = ['[[', ']]'];
 
-            var app;
-            var fv;
-            window.onload = function () {
-            $.get("{% url 'file-list' %}",
-            function (data, status) {
-                    var files_data = data.results;
-                    fv = new Vue({
-                        el: '#files',
-                        data: {
-                            files: files_data
+            window.onload = function (){
+            {% for f in files %}
+                new Vue({
+                    el: '#file{{ f.pk }}',
+                    data: {
+                        checked: {% if f.active %} true {% else %} false {% endif %},
+                        offset: {{ f.offset }},
+                        stretching: {{ f.stretching }},
+                        file_url: '{% url 'file-detail' f.pk%}'
+                    },
+                    methods: {
+                        activeChanged: function () {
+                            var data = {
+                                active: this.checked
+                            };
+                            $.ajax({
+                                type: 'PUT',
+                                url: this.file_url,
+                                data: data,
+                                dataType: 'json',
+                                success: function () {
+
+                                }
+                            });
                         }
-                    })
+                    }
+                    {#                    watch: {#}
+{#                        checked: function (newChecked) {#}
+{#                            $.post(this.file_url, {#}
+{#                                'active': newChecked#}
+{#                            }, function () {#}
+{#                                this.checked = new#}
+{#                            })#}
+{#                        }#}
+{#                    }#}
                 });
-            }
+            {% endfor %}
+            };
+
+
+{#            var fv;#}
+{#            window.onload = function () {#}
+{#                $.get("{% url 'file-list' %}",#}
+{#                    function (data, status) {#}
+{#                        var files_data = data.results;#}
+{#                        fv = new Vue({#}
+{#                            el: '#files',#}
+{#                            data: {#}
+{#                                files: files_data#}
+{#                            }#}
+{#                        })#}
+{#                    });#}
+{#            }#}
         </script>
     {% endblock %}
 {% endblock %}
@@ -32,9 +71,21 @@
     </form>
     <div id="files">
         <h3>files</h3>
-        <div v-for="file in files">
-            <!-- {% templatetag openvariable %} file.name {% templatetag closevariable %} -->
-            [[ file.name ]]
-        </div>
+{#        <div v-for="file in files">#}
+{#            <!-- {% templatetag openvariable %} file.name {% templatetag closevariable %} -->#}
+{#            [[ file.name ]]#}
+{#        </div>#}
+        {% for f in files %}
+            <div id="file{{ f.pk }}">
+                <ul>
+                    <li>Name: {{ f.name }}</li>
+                    <li>Active: <input type="checkbox" id="active{{ f.pk }}" v-model="checked"
+                        v-on:change="activeChanged"></li>
+                    <li>Offset: [[ offset ]]</li>
+                    <li>Stretching: [[ stretching ]]</li>
+                </ul>
+            </div>
+        {% endfor %}
+
     </div>
 {% endblock %}

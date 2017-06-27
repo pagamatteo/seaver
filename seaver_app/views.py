@@ -10,7 +10,7 @@ from .forms import *
 from django.contrib.auth import login, authenticate
 from .csvreader import FileToStrings, StringsToLines, CSVReader, NumberOfFieldsChangedException
 from django.core.exceptions import ValidationError
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 
 @login_required()
 def show_workspaces(request):
@@ -56,45 +56,48 @@ def open_workspace(request, name):
     # cambia la data di ultima modifica
     workspace.save()
 
-    file_upload_form = FileUploadForm(request.POST, request.FILES)
+    file_upload_form = FileUploadForm()
 
-    if file_upload_form.is_valid():
-        # creo il modello del file
-        file_model = FileModel()
-        file_model.workspace = workspace
-        file_uploaded = file_upload_form.cleaned_data['file']
-        # ottengo un nome valido per il file (non già usato)
-        file_model.name = FileModel.get_valid_name(workspace, file_uploaded.name)
-        file_model.save()
+    files = FileModel.objects.filter(workspace=workspace)
 
-        # creo il lettore csv
-        csv_reader = CSVReader(StringsToLines(FileToStrings(file_uploaded)))
-        # creo il db bulk writer
-        bulk_writer = BulkWriter(FileData)
+    if request.method == 'POST':
+        file_upload_form = FileUploadForm(request.POST, request.FILES)
 
-        try:
-            # leggo numero riga, numero colonna, valore
-            for r, c, value in csv_reader:
-                # costruisco il file data
-                file_data = FileData()
-                file_data.file = file_model
-                file_data.field_index = r
-                file_data.field_name = 'field{}'.format(c)
-                file_data.field_value = value
+        if file_upload_form.is_valid():
+            # creo il modello del file
+            file_model = FileModel()
+            file_model.workspace = workspace
+            file_uploaded = file_upload_form.cleaned_data['file']
+            # ottengo un nome valido per il file (non già usato)
+            file_model.name = FileModel.get_valid_name(workspace, file_uploaded.name)
+            file_model.save()
 
-                bulk_writer.append(file_data)
+            # creo il lettore csv
+            csv_reader = CSVReader(StringsToLines(FileToStrings(file_uploaded)))
+            # creo il db bulk writer
+            bulk_writer = BulkWriter(FileData)
 
-            bulk_writer.flush()
-        except NumberOfFieldsChangedException:
-            # se c'è stato un errore cancello il file
-            file_model.delete()
+            try:
+                # leggo numero riga, numero colonna, valore
+                for r, c, value in csv_reader:
+                    # costruisco il file data
+                    file_data = FileData()
+                    file_data.file = file_model
+                    file_data.field_index = r
+                    file_data.field_name = 'field{}'.format(c)
+                    file_data.field_value = value
 
-        # restituisco il modello di file vuoto
-        file_upload_form = FileUploadForm()
+                    bulk_writer.append(file_data)
+
+                bulk_writer.flush()
+            except NumberOfFieldsChangedException:
+                # se c'è stato un errore cancello il file
+                file_model.delete()
 
     contex = {'wname': workspace.name,
               'form_action': request.path,
-              'file_upload_form': file_upload_form}
+              'file_upload_form': file_upload_form,
+              'files': files}
 
     return render(request, 'seaver_app/workspace.html', contex)
 
