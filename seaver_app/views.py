@@ -60,6 +60,8 @@ def open_workspace(request, name):
 
     files = FileModel.objects.filter(workspace=workspace)
 
+
+
     if request.method == 'POST':
         file_upload_form = FileUploadForm(request.POST, request.FILES)
 
@@ -79,6 +81,7 @@ def open_workspace(request, name):
 
             try:
                 # leggo numero riga, numero colonna, valore
+                # todo modificare, e' stato aggiunto il modello FileFieldName
                 for r, c, value in csv_reader:
                     # costruisco il file data
                     file_data = FileData()

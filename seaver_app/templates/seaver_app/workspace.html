@@ -6,6 +6,23 @@
         <script>
             Vue.options.delimiters = ['[[', ']]'];
 
+
+            {# from https://docs.djangoproject.com/en/1.11/ref/csrf/#ajax #}
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+
+            var csrftoken = Cookies.get('csrftoken');
+
             window.onload = function (){
             {% for f in files %}
                 new Vue({
@@ -22,43 +39,22 @@
                                 active: this.checked
                             };
                             $.ajax({
-                                type: 'PUT',
+                                type: 'PATCH',
                                 url: this.file_url,
                                 data: data,
                                 dataType: 'json',
-                                success: function () {
+                                success: function (data, textStatus, jqXHR) {
 
+                                },
+                                errors: function (jqXHR, textStatus, errorThrown ) {
+                                  this.checked = ! this.checked;
                                 }
                             });
                         }
                     }
-                    {#                    watch: {#}
-{#                        checked: function (newChecked) {#}
-{#                            $.post(this.file_url, {#}
-{#                                'active': newChecked#}
-{#                            }, function () {#}
-{#                                this.checked = new#}
-{#                            })#}
-{#                        }#}
-{#                    }#}
                 });
             {% endfor %}
             };
-
-
-{#            var fv;#}
-{#            window.onload = function () {#}
-{#                $.get("{% url 'file-list' %}",#}
-{#                    function (data, status) {#}
-{#                        var files_data = data.results;#}
-{#                        fv = new Vue({#}
-{#                            el: '#files',#}
-{#                            data: {#}
-{#                                files: files_data#}
-{#                            }#}
-{#                        })#}
-{#                    });#}
-{#            }#}
         </script>
     {% endblock %}
 {% endblock %}

@@ -141,26 +141,39 @@ class File(models.Model):
         return name_to_check
 
 
+class FileFieldName(models.Model):
+    """
+    Classe che modella i nomi dei campi del file
+    """
+    file = models.ForeignKey(
+        File,
+        related_name='field_names',
+        on_delete=models.CASCADE
+    )
+    name = models.CharField(max_length=20)
+
+    class Meta:
+        unique_together = ('file', 'name')
+
+
 class FileData(models.Model):
     """
     Classe che modella i dati contenuti all'interno di un file presente in un certo workspace.
     """
-    file = models.ForeignKey(
-        File,
-        related_name='file_data',
+    field_name = models.ForeignKey(
+        FileFieldName,
+        related_name='field_datas',
         on_delete=models.CASCADE
     )
-    field_name = models.CharField(max_length=20)
     field_index = models.PositiveIntegerField()
     field_value = models.FloatField()
 
     class Meta:
-        unique_together = ('file', 'field_name', 'field_index')
-        index_together = [['file', 'field_name'],
-                          ['file', 'field_name', 'field_index']]
+        unique_together = ('field_name', 'field_index')
+        index_together = [['field_name', 'field_index']]
 
     def __str__(self):
-        return '{}, {}, {}, {}'.format(self.file.name, self.field_name, self.field_index,
+        return '{}, {}, {}, {}'.format(self.field_name, self.field_index,
                                        self.field_value)
 
 

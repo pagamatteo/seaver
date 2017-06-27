@@ -30,6 +30,9 @@ class FileSerializer(serializers.HyperlinkedModelSerializer):
         read_only_fields = ('workspace', )
 
 
+# todo serializzare il modello FileFieldName
+
+
 class PunctualAnnotationEventSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = PunctualAnnotationEvent
