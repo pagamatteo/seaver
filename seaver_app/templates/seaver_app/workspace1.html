@@ -1,0 +1,87 @@
+{% extends 'seaver_app/base.html' %}
+{% comment %} Workspace page. {% endcomment %}
+{% block head %}
+<title>Seaver | Workspace</title>
+    {% block script %}
+        <script>
+            Vue.options.delimiters = ['[[', ']]'];
+
+
+            {# from https://docs.djangoproject.com/en/1.11/ref/csrf/#ajax #}
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+
+            var csrftoken = Cookies.get('csrftoken');
+
+            window.onload = function (){
+            {% for f in files %}
+                new Vue({
+                    el: '#file{{ f.pk }}',
+                    data: {
+                        checked: {% if f.active %} true {% else %} false {% endif %},
+                        offset: {{ f.offset }},
+                        stretching: {{ f.stretching }},
+                        file_url: '{% url 'file-detail' f.pk%}'
+                    },
+                    methods: {
+                        activeChanged: function () {
+                            var data = {
+                                active: this.checked
+                            };
+                            $.ajax({
+                                type: 'PATCH',
+                                url: this.file_url,
+                                data: data,
+                                dataType: 'json',
+                                success: function (data, textStatus, jqXHR) {
+
+                                },
+                                errors: function (jqXHR, textStatus, errorThrown ) {
+                                  this.checked = ! this.checked;
+                                }
+                            });
+                        }
+                    }
+                });
+            {% endfor %}
+            };
+        </script>
+    {% endblock %}
+{% endblock %}
+{% block body %}
+  <h2>Workspace {{ wname }}</h2>
+    <form enctype="multipart/form-data" action="{{ form_action }}" method="post">
+    {% csrf_token %}
+    {{ file_upload_form }}
+    <input type="submit" value="submit">
+    </form>
+    <div id="files">
+        <h3>files</h3>
+{#        <div v-for="file in files">#}
+{#            <!-- {% templatetag openvariable %} file.name {% templatetag closevariable %} -->#}
+{#            [[ file.name ]]#}
+{#        </div>#}
+        {% for f in files %}
+            <div id="file{{ f.pk }}">
+                <ul>
+                    <li>Name: {{ f.name }}</li>
+                    <li>Active: <input type="checkbox" id="active{{ f.pk }}" v-model="checked"
+                        v-on:change="activeChanged"></li>
+                    <li>Offset: [[ offset ]]</li>
+                    <li>Stretching: [[ stretching ]]</li>
+                </ul>
+            </div>
+        {% endfor %}
+
+    </div>
+{% endblock %}

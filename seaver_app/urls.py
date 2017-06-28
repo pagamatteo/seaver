@@ -27,5 +27,7 @@ urlpatterns = [
     url(r'^login/$', auth_views.login, {'template_name': 'seaver_app/login.html'}, name='login'),
     url(r'^logout/$', auth_views.logout, {'template_name': 'seaver_app/logged_out.html'}, name='logout'),
     url(r'^apis/', include(apis_views.router.urls)),
-    url(r'^apis/file-upload/$', apis_views.FileUploadedView.as_view())
+    url(r'^apis/file-upload/$', apis_views.FileUploadedView.as_view()),
+    #url(r'workspace/(?P<name>\w+( \w+)*)/create_file/$', views.create_empty_workspace, name='create_file'),
+    url(r'^workspace/(?P<workspace_name>\w+( \w+)*)/delete_file/(?P<file_name>\w+( \w+)*)$', views.delete_file, name='delete_file'),
 ]

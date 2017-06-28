@@ -100,3 +100,99 @@ function ask_delete_workspace_confirm(event, url) {
     $('#delete_workspace_modal').modal('toggle');
     $('#confirm_delete_workspace').on("click", function(){ delete_workspace(event, url); });
 }
+
+
+
+
+function manage_delete_file_response(file_sidebar_menu){
+    $('#delete_file_modal').modal('toggle');
+    //workspace_box_to_delete.closest(".workspace_box_col").remove();
+}
+
+/*
+Funzione che cancella un file.
+*/
+function delete_file(event, url_structure) {
+    var file_sidebar_menu = $(event.target).parent();
+    var file_name = file_sidebar_menu.text();
+    //var worksapce_name = workspace_box_to_delete.closest( ".box-header " ).find( "h3" ).html();
+    var url = url_structure.replace("file_name", file_name);
+    console.log("url: " + url);
+
+    $.ajax({
+        url: url,
+        success: function (response) {
+            if (response["errors"] == false)
+                //location.reload();
+                manage_delete_file_response(file_sidebar_menu);
+        }
+      });
+}
+
+
+function ask_delete_file_confirm(event, url) {
+    $('#delete_file_modal').modal('toggle');
+    $('#confirm_delete_file').on("click", function(){ delete_file(event, url); });
+}
+
+var chartData = [ {
+    "country": "USA",
+    "visits": 4252
+  }, {
+    "country": "China",
+    "visits": 1882
+  }, {
+    "country": "Japan",
+    "visits": 1809
+  }, {
+    "country": "Germany",
+    "visits": 1322
+  }, {
+    "country": "UK",
+    "visits": 1122
+  }, {
+    "country": "France",
+    "visits": 1114
+  }, {
+    "country": "India",
+    "visits": 984
+  }, {
+    "country": "Spain",
+    "visits": 711
+  }, {
+    "country": "Netherlands",
+    "visits": 665
+  }, {
+    "country": "Russia",
+    "visits": 580
+  }, {
+    "country": "South Korea",
+    "visits": 443
+  }, {
+    "country": "Canada",
+    "visits": 441
+  }, {
+    "country": "Brazil",
+    "visits": 395
+  }, {
+    "country": "Italy",
+    "visits": 386
+  }, {
+    "country": "Australia",
+    "visits": 384
+  }, {
+    "country": "Taiwan",
+    "visits": 338
+  }, {
+    "country": "Poland",
+    "visits": 328
+} ];
+AmCharts.makeChart( "chartdiv", {
+  "type": "serial",
+  "dataProvider": chartData,
+  "categoryField": "country",
+  "graphs": [ {
+    "valueField": "visits",
+    "type": "column"
+  } ]
+} );

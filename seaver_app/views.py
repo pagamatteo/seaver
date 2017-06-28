@@ -5,7 +5,7 @@ from os import path
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Workspace, File as FileModel, FileData, BulkWriter
+from .models import Workspace, File as FileModel, FileData, BulkWriter, FileFieldName
 from .forms import *
 from django.contrib.auth import login, authenticate
 from .csvreader import FileToStrings, StringsToLines, CSVReader, NumberOfFieldsChangedException
@@ -81,13 +81,19 @@ def open_workspace(request, name):
 
             try:
                 # leggo numero riga, numero colonna, valore
-                # todo modificare, e' stato aggiunto il modello FileFieldName
+                fields_names = {}
                 for r, c, value in csv_reader:
                     # costruisco il file data
                     file_data = FileData()
-                    file_data.file = file_model
                     file_data.field_index = r
-                    file_data.field_name = 'field{}'.format(c)
+                    if c not in fields_names:
+                        file_field_name = FileFieldName()
+                        file_field_name.file = file_model
+                        file_field_name.name = 'field{}'.format(c)
+                        file_field_name.save()
+
+                        fields_names[c] = file_field_name
+                    file_data.field_name = fields_names[c]
                     file_data.field_value = value
 
                     bulk_writer.append(file_data)
@@ -181,7 +187,34 @@ def delete_workspace(request, workspace_name):
     return JsonResponse(response)
 
 
+def create_file(request):
+    """
+    Creazione file.
 
+    :param request:
+    :return:
+    """
+    response = {}
+    return JsonResponse(response)
+
+
+def delete_file(request, workspace_name, file_name):
+    """
+    Eliminazione di un file.
+
+    :param request:
+    :param name:
+    :return:
+    """
+
+    response = {'errors': False}
+    print("Ricevuta richiesta di cancellare il file {}/{}".format(workspace_name, file_name))
+    user = request.user
+    # todo controllo parametro ingresso
+    workspace = Workspace.get_or_set(user, workspace_name, do_save=False)
+    file = FileModel.objects.get(workspace = workspace, name = file_name)
+    file.delete()
+    return JsonResponse(response)
 
 
 

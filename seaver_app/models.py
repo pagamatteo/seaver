@@ -136,7 +136,7 @@ class File(models.Model):
         else:
             name_to_check = '{} ({})'.format(name, index)
         if cls.objects.filter(workspace=workspace, name=name_to_check).exists():
-            return cls.get_valid_name(name, index + 1)
+            return cls.get_valid_name(workspace, name, index + 1)
 
         return name_to_check
 
@@ -154,6 +154,9 @@ class FileFieldName(models.Model):
 
     class Meta:
         unique_together = ('file', 'name')
+
+    def __str__(self):
+        return '{}, {}'.format(self.file.name, self.name)
 
 
 class FileData(models.Model):
@@ -173,7 +176,7 @@ class FileData(models.Model):
         index_together = [['field_name', 'field_index']]
 
     def __str__(self):
-        return '{}, {}, {}, {}'.format(self.field_name, self.field_index,
+        return '{}, {}, {}'.format(self.field_name, self.field_index,
                                        self.field_value)
 
 
