@@ -7,6 +7,8 @@ from .models import File as FileModel, Workspace, BulkWriter, FileData, Punctual
 from rest_framework import serializers
 from .csvreader import CSVReader, FileToStrings, StringsToLines, NumberOfFieldsChangedException
 from django.contrib.auth.models import User
+from django.urls import reverse
+import urllib.parse
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -20,21 +22,30 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class WorkspaceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Workspace
-        fields = ('url', 'user', 'name', 'modified_on')
+        fields = ('url', 'user', 'name', 'modified_on', 'files')
 
 
 class FileSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = FileModel
-        fields = ('url', 'workspace', 'name', 'active', 'offset', 'stretching')
+        fields = ('url', 'workspace', 'name', 'active', 'offset', 'stretching', 'field_names')
         read_only_fields = ('workspace', )
 
 
 class FileFieldSerializer(serializers.HyperlinkedModelSerializer):
+    # url to get field data
+    field_data = serializers.SerializerMethodField()
+
     class Meta:
         model = FileFieldName
-        fields = ('url', 'file', 'computed', 'active')
+        fields = ('url', 'file', 'computed', 'active', 'field_data')
+
+    def get_field_data(self, obj):
+        p = reverse('fielddata-detail', args=[obj.pk])
+        field_data_url = self.context['request'].build_absolute_uri(p)
+
+        return field_data_url
 
 
 class PunctualAnnotationEventSerializer(serializers.HyperlinkedModelSerializer):
@@ -99,18 +110,8 @@ class FileUploadSerializer(serializers.Serializer):
             raise e
 
 
-class FilesDataListRequestSerializer(serializers.Serializer):
-    files = serializers.HyperlinkedRelatedField(
-        many=True,
-        view_name='file-detail',
-        read_only=True
-    )
-
-
-class FileFieldDataListSerializer(serializers.Serializer):
-    field = FileFieldSerializer()
-    data = serializers.ListField(child=serializers.FloatField())
-
-
-class FilesDataListResponseSerializer(serializers.Serializer):
-    fields = serializers.ListField(child=FileFieldDataListSerializer())
+class FieldDataSerializer(serializers.Serializer):
+    """
+    Data di field
+    """
+    field_data = serializers.ListField(serializers.FloatField())

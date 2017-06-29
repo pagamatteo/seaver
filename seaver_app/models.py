@@ -183,6 +183,15 @@ class FileData(models.Model):
         return '{}, {}, {}'.format(self.field_name, self.field_index,
                                        self.field_value)
 
+    @classmethod
+    def get_all_data(cls, field):
+        query = cls.objects.filter(field_name=field).order_by('field_index')
+
+        data = []
+        for file_data in query:
+            data.append(file_data.field_value)
+
+        return data
 
 class PunctualAnnotation(models.Model):
     """

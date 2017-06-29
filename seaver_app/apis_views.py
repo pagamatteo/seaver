@@ -7,8 +7,7 @@ from rest_framework.decorators import permission_classes
 from rest_framework.response import Response
 from .models import File as FileModel, Workspace, PunctualAnnotationEvent, FileFieldName, FileData
 from .serializers import FileSerializer, FileUploadSerializer, UserSerializer, PunctualAnnotationEventSerializer, \
-    IntervalAnnotationEventSerializer, WorkspaceSerializer, FileFieldSerializer, FileFieldDataListSerializer, \
-    FilesDataListRequestSerializer, FilesDataListResponseSerializer
+    IntervalAnnotationEventSerializer, WorkspaceSerializer, FileFieldSerializer, FieldDataSerializer
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from django.http import Http404
@@ -165,20 +164,44 @@ class FileUploadedView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@permission_classes((permissions.IsAuthenticated, ))
-class FileDataListView(APIView):
+@permission_classes((permissions.IsAuthenticated,))
+class FieldDataView(APIView):
+    """
+    View of the data of a field
+    """
+    def get(self, request, pk):
+        """
 
-    def get(self, request):
-        serializer = FilesDataListRequestSerializer(data=request.data)
-        if serializer.is_valid():
-            user = request.user
+        :param request:
+        :param pk: field pk
+        :return:
+        """
+        user = request.user
+        workspaces = Workspace.objects.filter(user=user)
+        files = FileModel.objects.filter(workspace__in=workspaces)
+        file_field = FileFieldName.objects.filter(file__in=files).filter(pk=pk)
 
+        if not file_field.exists():
+            return Http404()
+
+        data = FileData.get_all_data(file_field)
+
+        class DataModel:
+            def __init__(self, data):
+                self.field_data = data
+
+        data_model = DataModel(data)
+
+        serializer = FieldDataSerializer(data_model)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 router = routers.DefaultRouter()
 router.register(r'user', UserView, 'user')
 router.register(r'workspace', WorkspaceView, 'workspace')
 router.register(r'file', FileView, 'file')
+router.register(r'file-field', FileFieldView, 'filefieldname')
 router.register(r'punctual-events', PunctualAnnotationEventView, 'punctual')
 router.register(r'interval-events', IntervalAnnotationEventView, 'interval')
 
