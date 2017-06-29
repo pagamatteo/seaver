@@ -2,7 +2,8 @@
 """
 Contiene gli oggetti serializzati: tradotti da python a json, etc...
 """
-from .models import File as FileModel, Workspace, BulkWriter, FileData, PunctualAnnotationEvent, IntervalAnnotationEvent
+from .models import File as FileModel, Workspace, BulkWriter, FileData, PunctualAnnotationEvent, \
+    IntervalAnnotationEvent, FileFieldName
 from rest_framework import serializers
 from .csvreader import CSVReader, FileToStrings, StringsToLines, NumberOfFieldsChangedException
 from django.contrib.auth.models import User
@@ -30,7 +31,10 @@ class FileSerializer(serializers.HyperlinkedModelSerializer):
         read_only_fields = ('workspace', )
 
 
-# todo serializzare il modello FileFieldName
+class FileFieldSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = FileFieldName
+        fields = ('url', 'file', 'computed', 'active')
 
 
 class PunctualAnnotationEventSerializer(serializers.HyperlinkedModelSerializer):
@@ -89,7 +93,24 @@ class FileUploadSerializer(serializers.Serializer):
                 bulk_writer.append(file_data)
 
             bulk_writer.flush()
-        except NumberOfFieldsChangedException as e:
+        except Exception as e:
             # se c'è stato un errore cancello il file
             file_model.delete()
             raise e
+
+
+class FilesDataListRequestSerializer(serializers.Serializer):
+    files = serializers.HyperlinkedRelatedField(
+        many=True,
+        view_name='file-detail',
+        read_only=True
+    )
+
+
+class FileFieldDataListSerializer(serializers.Serializer):
+    field = FileFieldSerializer()
+    data = serializers.ListField(child=serializers.FloatField())
+
+
+class FilesDataListResponseSerializer(serializers.Serializer):
+    fields = serializers.ListField(child=FileFieldDataListSerializer())

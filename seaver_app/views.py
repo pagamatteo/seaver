@@ -83,9 +83,7 @@ def open_workspace(request, name):
                 # leggo numero riga, numero colonna, valore
                 fields_names = {}
                 for r, c, value in csv_reader:
-                    # costruisco il file data
-                    file_data = FileData()
-                    file_data.field_index = r
+                    # se non esiste costruisco il fileFieldName
                     if c not in fields_names:
                         file_field_name = FileFieldName()
                         file_field_name.file = file_model
@@ -93,15 +91,20 @@ def open_workspace(request, name):
                         file_field_name.save()
 
                         fields_names[c] = file_field_name
+
+                    # costruisco il file data
+                    file_data = FileData()
+                    file_data.field_index = r
                     file_data.field_name = fields_names[c]
                     file_data.field_value = value
 
                     bulk_writer.append(file_data)
 
                 bulk_writer.flush()
-            except NumberOfFieldsChangedException:
+            except Exception as e:
                 # se c'è stato un errore cancello il file
                 file_model.delete()
+                raise e
 
     contex = {'wname': workspace.name,
               'form_action': request.path,

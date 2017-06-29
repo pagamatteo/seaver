@@ -5,9 +5,10 @@ Le view degli oggetti serializzati
 from rest_framework import status, permissions, serializers, generics, routers, viewsets, mixins
 from rest_framework.decorators import permission_classes
 from rest_framework.response import Response
-from .models import File as FileModel, Workspace, PunctualAnnotationEvent
+from .models import File as FileModel, Workspace, PunctualAnnotationEvent, FileFieldName, FileData
 from .serializers import FileSerializer, FileUploadSerializer, UserSerializer, PunctualAnnotationEventSerializer, \
-    IntervalAnnotationEventSerializer, WorkspaceSerializer
+    IntervalAnnotationEventSerializer, WorkspaceSerializer, FileFieldSerializer, FileFieldDataListSerializer, \
+    FilesDataListRequestSerializer, FilesDataListResponseSerializer
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from django.http import Http404
@@ -112,6 +113,16 @@ class FileView(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateMo
         workspaces = Workspace.objects.filter(user=user)
         return FileModel.objects.filter(workspace__in=workspaces).order_by('name')
 
+@permission_classes((permissions.IsAuthenticated, ))
+class FileFieldView(viewsets.ModelViewSet):
+    serializer_class = FileFieldSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        workspaces = Workspace.objects.filter(user=user)
+        files = FileModel.objects.filter(workspace__in=workspaces)
+        return FileFieldName.objects.filter(file__in=files)
+
 
 @permission_classes((permissions.IsAuthenticated, ))
 class PunctualAnnotationEventView(viewsets.ModelViewSet):
@@ -152,6 +163,16 @@ class FileUploadedView(APIView):
             serializers.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@permission_classes((permissions.IsAuthenticated, ))
+class FileDataListView(APIView):
+
+    def get(self, request):
+        serializer = FilesDataListRequestSerializer(data=request.data)
+        if serializer.is_valid():
+            user = request.user
+
 
 
 router = routers.DefaultRouter()

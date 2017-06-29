@@ -151,6 +151,10 @@ class FileFieldName(models.Model):
         on_delete=models.CASCADE
     )
     name = models.CharField(max_length=20)
+    # if the field is computer using other fields
+    computed = models.BooleanField(default=False)
+    # if the is visible in the chart
+    active = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('file', 'name')
