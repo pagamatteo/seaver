@@ -237,5 +237,85 @@
 
     <!-- AdminLTE for demo purposes -->
     <script src="{% static 'seaver_app/dist/js/demo.js' %}" type="text/javascript"></script>
+
+    <script>
+        {# utilita' che controlla lo stato di completamento delle richieste  #}
+        var requests_watcher = {
+            requests: 0,
+            responses: 0,
+            success: function () {
+                alert("loading compleated");
+            },
+            add: function (n) {
+                this.requests += n;
+            },
+            remove: function (n) {
+                this.responses += n;
+                if (this.responses >= this.requests) {
+                    this.success()
+                }
+            }
+        };
+
+{#        ottine i dati del campo #}
+        function get_field_data(field_data_url, field) {
+            requests_watcher.add(1);
+            $.get(field_data_url).done(function (data) {
+                field.data = data.field_data;
+            }).fail(function (errors) {
+               alert("errore nel caricamento dei dati del campo: " + errors);
+            }).always(function () {
+                requests_watcher.remove(1);
+            });
+        }
+
+{#        ottiene il campo #}
+        function get_field(field_url, f) {
+            requests_watcher.add(1);
+            $.get(field_url).done(function (data) {
+                f.fields.push(data);
+                get_field_data(data.field_data, data);
+            }).fail(function (errors) {
+                alert("errore downloading field: " + errors);
+            }).always(function () {
+                requests_watcher.remove(1);
+            })
+        }
+
+        function get_file(file_url) {
+            requests_watcher.add(1);
+            $.get(file_url).done(function (data) {
+                data.fields = [];
+                workspace.files.push(data);
+                data.field_names.forEach(function (field_url) {
+                    get_field(field_url, data)
+                });
+            }).fail(function (errors) {
+               alert("errori nel caricamento del file: " + errors);
+            }).always(function () {
+                requests_watcher.remove(1);
+            });
+        }
+
+        function get_workspace(workspace_url) {
+            $.get(workspace_url).done(function (data) {
+                workspace = data;
+                var fs = data.files;
+                workspace.files = [];
+                fs.forEach(function (f_url) {
+                    get_file(f_url);
+                });
+            }).fail(function (error) {
+                alert("error loading workspace: " + error);
+            })
+        }
+
+        var workspace;
+        
+        var workspace_url = '{% url 'workspace-detail' workspace.pk %}';
+        get_workspace(workspace_url);
+
+        
+    </script>
   </body>
 </html>

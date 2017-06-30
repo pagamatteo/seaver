@@ -39,7 +39,7 @@ class FileFieldSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = FileFieldName
-        fields = ('url', 'file', 'computed', 'active', 'field_data')
+        fields = ('url', 'file', 'name', 'computed', 'active', 'field_data')
 
     def get_field_data(self, obj):
         p = reverse('fielddata-detail', args=[obj.pk])
