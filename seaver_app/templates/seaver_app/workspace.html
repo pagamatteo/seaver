@@ -33,6 +33,9 @@
     <script src="{% static 'seaver_app/amcharts/amcharts.js' %}"></script>
     <script src="{% static 'seaver_app/amcharts/serial.js' %}"></script>
 
+      <!-- vue -->
+      <script src="{% static "seaver_app/vue.js" %}"></script>
+
 
     <script src="{% static 'seaver_app/dist/js/seaver.js' %}"></script>
 
@@ -118,9 +121,9 @@
               <a href="#">
                   <i class="fa fa-dashboard"></i> <span>Files</span><div class="box-tools pull-right"><button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#create_file_modal"><i class="fa fa-plus"></i></button></div>
               </a>
-              <ul class="treeview-menu">
-                  <li class="active"><a href="#"><i class="fa fa-circle-o"></i>File 1 <i class="fa fa-times pull-right" onclick="ask_delete_file_confirm(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>
-                  <li class="active"><a href="#"><i class="fa fa-circle-o"></i>File 2 <i class="fa fa-times pull-right" onclick="ask_delete_file_confirm(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>
+              <ul id="files_list" class="treeview-menu">
+                  <li v-for="f in files" class="active"><a href="#"><i class="fa fa-circle-o"></i>[[ f.name ]]<i class="fa fa-times pull-right" onclick="ask_delete_file_confirm(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>
+{#                  <li class="active"><a href="#"><i class="fa fa-circle-o"></i>File 2 <i class="fa fa-times pull-right" onclick="ask_delete_file_confirm(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>#}
               </ul>
               <!--{% for workspace in workspaces %}
                 <ul class="treeview-menu">
@@ -238,6 +241,28 @@
     <!-- AdminLTE for demo purposes -->
     <script src="{% static 'seaver_app/dist/js/demo.js' %}" type="text/javascript"></script>
 
+    <!-- init -->
+    <script>
+        Vue.options.delimiters = ['[[', ']]'];
+
+
+            {# from https://docs.djangoproject.com/en/1.11/ref/csrf/#ajax #}
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+
+            var csrftoken = Cookies.get('csrftoken');
+    </script>
+
     <script>
         {# utilita' che controlla lo stato di completamento delle richieste  #}
         var requests_watcher = {
@@ -245,6 +270,7 @@
             responses: 0,
             success: function () {
                 alert("loading compleated");
+                after_loaded();
             },
             add: function (n) {
                 this.requests += n;
@@ -310,10 +336,24 @@
             })
         }
 
+        function after_loaded() {
+            v_files.files = workspace.files;
+        }
+
         var workspace;
+        var v_files;
         
         var workspace_url = '{% url 'workspace-detail' workspace.pk %}';
         get_workspace(workspace_url);
+
+        window.onload = function (){
+            v_files = new Vue({
+                el: '#files_list',
+                data: {
+                    files: []
+                }
+            });
+        }
 
         
     </script>
