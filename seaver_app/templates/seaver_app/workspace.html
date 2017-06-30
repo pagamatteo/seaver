@@ -313,6 +313,8 @@
             $.get(file_url).done(function (data) {
                 data.fields = [];
                 workspace.files.push(data);
+{#                carica il nome del file nella barra laterale #}
+                v_files.files.push(data);
                 data.field_names.forEach(function (field_url) {
                     get_field(field_url, data)
                 });
@@ -337,7 +339,7 @@
         }
 
         function after_loaded() {
-            v_files.files = workspace.files;
+{#            v_files.files = workspace.files;#}
         }
 
         var workspace;
