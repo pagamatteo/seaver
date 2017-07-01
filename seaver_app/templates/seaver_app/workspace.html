@@ -35,6 +35,8 @@
 
       <!-- vue -->
       <script src="{% static "seaver_app/vue.js" %}"></script>
+      <!-- token -->
+      <script src="{% static "seaver_app/js-cookie.js" %}"></script>
 
 
     <script src="{% static 'seaver_app/dist/js/seaver.js' %}"></script>
@@ -340,7 +342,13 @@
         }
 
         function after_loaded() {
-{#            v_files.files = workspace.files;#}
+            {#  v_files.files = workspace.files;#}
+
+            workspace.files.forEach(function (f) {
+                f.fields.forEach(function (field) {
+                    add_field_to_chart(f, field);
+                })
+            })
         }
 
         var workspace;
@@ -378,9 +386,9 @@
                     }
                 }
 
-                field.data.forEach(function (val, i) {
-                    this.data[i * field.stretching + field.offset][field_name] = val;
-                });
+                for (i = 0; i < field.data.length; i += 1) {
+                    this.data[i * field.stretching + field.offset][field_name] = field.data[i];
+                };
             },
             __delete_field_data: function (field_name) {
                 var field = this.fields[field_name];
@@ -409,6 +417,7 @@
                     this.__delete_field_data(field_name);
                 }
 
+                this.fields[field_name] = {};
                 this.fields[field_name].data = data;
                 this.fields[field_name].offset = offset;
                 this.fields[field_name].stretching = stretching;
@@ -435,7 +444,22 @@
                 });
                 this.modified_fields.clear();
                 this.__resize();
+            },
+            rename_field: function (previous_name, current_name) {
+                if (previous_name !== current_name){
+                    var previous_field = this.fields[previous_name];
+                    this.delete_field(previous_field);
+                    this.add_field(current_name, previous_field.data, previous_field.offset,
+                        previous_field.stretching);
+                }
             }
+        };
+
+        function add_field_to_chart(f, field){
+            {# f: file            #}
+          var  chart_field_name = f.name + "_" + field.name;
+
+          chart_manager.add_field(chart_field_name, field.data, f.offset, f.stretching);
         }
     </script>
   </body>

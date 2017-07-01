@@ -11,6 +11,7 @@ from django.contrib.auth import login, authenticate
 from .csvreader import FileToStrings, StringsToLines, CSVReader, NumberOfFieldsChangedException
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse, Http404
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 @login_required()
 def show_workspaces(request):
@@ -34,6 +35,7 @@ def show_workspaces(request):
 
 
 @login_required()
+@ensure_csrf_cookie
 def open_workspace(request, name):
     """
     Apre o crea il workspace selezionato
