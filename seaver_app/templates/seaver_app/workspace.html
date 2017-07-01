@@ -452,6 +452,7 @@
                 this.__resize();
                 delete this.fields[field_name];
             },
+            {# todo da modificare sia offset che streatching in quanto la cancellazione non funziona  #}
             set_offset: function (field_name, offset) {
                 this.fields[field_name].offset = offset;
                 this.modified_fields.add(field_name);
