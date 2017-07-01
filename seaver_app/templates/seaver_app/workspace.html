@@ -345,10 +345,24 @@
             {#  v_files.files = workspace.files;#}
 
             workspace.files.forEach(function (f) {
-                f.fields.forEach(function (field) {
-                    add_field_to_chart(f, field);
+                manage_file_in_chart(f);
+            });
+
+            chart.dataProvider = chart_manager.data;
+
+            graphs = [];
+            for (field_name in chart_manager.fields){
+                graphs.push({
+                    "balloonText": "[[title]] of [[category]]:[[value]]",
+                    "bullet": "round",
+                    "id": field_name,
+                    "title": field_name,
+                    "valueField": field_name
                 })
-            })
+            }
+            chart.graphs = graphs;
+
+            chart.validateData();
         }
 
         var workspace;
@@ -424,7 +438,16 @@
 
                 this.__create_field_data(field_name);
             },
+            add_field_if_not_exists: function (field_name, data, offset, stretching) {
+                if (field_name in this.fields)
+                    return;
+
+                this.add_field(field_name, data, offset, stretching);
+            },
             delete_field: function (field_name) {
+                if (!(field_name in this.fields))
+                    return;
+
                 this.__delete_field_data(field_name);
                 this.__resize();
                 delete this.fields[field_name];
@@ -460,6 +483,25 @@
           var  chart_field_name = f.name + "_" + field.name;
 
           chart_manager.add_field(chart_field_name, field.data, f.offset, f.stretching);
+        }
+
+        function manage_file_in_chart(f) {
+            if (f.active) {
+                f.fields.forEach(function (field) {
+                    var chart_field_name = f.name + "_" + field.name;
+                    if (field.active) {
+                        chart_manager.add_field_if_not_exists(chart_field_name,
+                            field.data, f.offset, f.stretching);
+                    } else {
+                        chart_manager.delete_field(chart_field_name);
+                    }
+                });
+            } else {
+                f.fields.forEach(function (field) {
+                    var chart_field_name = f.name + "_" + field.name;
+                    chart_manager.delete_field(chart_field_name);
+                })
+            }
         }
     </script>
   </body>

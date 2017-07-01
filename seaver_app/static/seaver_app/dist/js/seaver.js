@@ -135,64 +135,157 @@ function ask_delete_file_confirm(event, url) {
     $('#confirm_delete_file').on("click", function(){ delete_file(event, url); });
 }
 
-var chartData = [ {
-    "country": "USA",
-    "visits": 4252
-  }, {
-    "country": "China",
-    "visits": 1882
-  }, {
-    "country": "Japan",
-    "visits": 1809
-  }, {
-    "country": "Germany",
-    "visits": 1322
-  }, {
-    "country": "UK",
-    "visits": 1122
-  }, {
-    "country": "France",
-    "visits": 1114
-  }, {
-    "country": "India",
-    "visits": 984
-  }, {
-    "country": "Spain",
-    "visits": 711
-  }, {
-    "country": "Netherlands",
-    "visits": 665
-  }, {
-    "country": "Russia",
-    "visits": 580
-  }, {
-    "country": "South Korea",
-    "visits": 443
-  }, {
-    "country": "Canada",
-    "visits": 441
-  }, {
-    "country": "Brazil",
-    "visits": 395
-  }, {
-    "country": "Italy",
-    "visits": 386
-  }, {
-    "country": "Australia",
-    "visits": 384
-  }, {
-    "country": "Taiwan",
-    "visits": 338
-  }, {
-    "country": "Poland",
-    "visits": 328
-} ];
-AmCharts.makeChart( "chartdiv", {
-  "type": "serial",
-  "dataProvider": chartData,
-  "categoryField": "country",
-  "graphs": [ {
-    "valueField": "visits",
-    "type": "column"
-  } ]
-} );
+// var chartData = [ {
+//     "country": "USA",
+//     "visits": 4252
+//   }, {
+//     "country": "China",
+//     "visits": 1882
+//   }, {
+//     "country": "Japan",
+//     "visits": 1809
+//   }, {
+//     "country": "Germany",
+//     "visits": 1322
+//   }, {
+//     "country": "UK",
+//     "visits": 1122
+//   }, {
+//     "country": "France",
+//     "visits": 1114
+//   }, {
+//     "country": "India",
+//     "visits": 984
+//   }, {
+//     "country": "Spain",
+//     "visits": 711
+//   }, {
+//     "country": "Netherlands",
+//     "visits": 665
+//   }, {
+//     "country": "Russia",
+//     "visits": 580
+//   }, {
+//     "country": "South Korea",
+//     "visits": 443
+//   }, {
+//     "country": "Canada",
+//     "visits": 441
+//   }, {
+//     "country": "Brazil",
+//     "visits": 395
+//   }, {
+//     "country": "Italy",
+//     "visits": 386
+//   }, {
+//     "country": "Australia",
+//     "visits": 384
+//   }, {
+//     "country": "Taiwan",
+//     "visits": 338
+//   }, {
+//     "country": "Poland",
+//     "visits": 328
+// } ];
+// AmCharts.makeChart( "chartdiv", {
+//   "type": "serial",
+//   "dataProvider": chartData,
+//   "categoryField": "country",
+//   "graphs": [ {
+//     "valueField": "visits",
+//     "type": "column"
+//   } ]
+// } );
+
+var chart_data = [
+						{
+							"column-1": 8,
+							"column-2": 5,
+							"index": "category 1"
+						},
+						{
+							"column-1": 6,
+							"column-2": 7,
+							"index": "category 2"
+						},
+						{
+							"column-1": 2,
+							"column-2": 3,
+							"index": "category 3"
+						},
+						{
+							"column-1": 1,
+							"column-2": 3,
+							"index": "category 4"
+						},
+						{
+							"column-1": 2,
+							"column-2": 1,
+							"index": "category 5"
+						},
+						{
+							"column-1": 3,
+							"column-2": 2,
+							"index": "category 6"
+						},
+						{
+							"column-1": 6,
+							"column-2": 8,
+							"index": "category 7"
+						}
+					];
+
+var chart = AmCharts.makeChart("chartdiv",
+				{
+					"type": "serial",
+					"categoryField": "index",
+					"startDuration": 1,
+					"categoryAxis": {
+						"gridPosition": "start"
+					},
+					"chartCursor": {
+						"enabled": true
+					},
+					"chartScrollbar": {
+						"enabled": true
+					},
+					"trendLines": [],
+					"graphs": [
+						{
+							"balloonText": "[[title]] of [[category]]:[[value]]",
+							"bullet": "round",
+							"id": "AmGraph-1",
+							"title": "graph 1",
+							"valueField": "column-1"
+						},
+						{
+							"balloonText": "[[title]] of [[category]]:[[value]]",
+							"bullet": "square",
+							"id": "AmGraph-2",
+							"title": "graph 2",
+							"valueField": "column-2"
+						}
+					],
+					"guides": [],
+					"valueAxes": [
+						{
+							"id": "ValueAxis-1",
+							"title": "Axis title"
+						}
+					],
+					"allLabels": [],
+					"balloon": {},
+					"legend": {
+						"enabled": true,
+						"useGraphSettings": true
+					},
+					"titles": [
+						{
+							"id": "Title-1",
+							"size": 15,
+							"text": "Chart Title"
+						}
+					],
+					"dataProvider": chart_data
+				}
+			);

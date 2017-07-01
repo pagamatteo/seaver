@@ -154,7 +154,7 @@ class FileFieldName(models.Model):
     # if the field is computer using other fields
     computed = models.BooleanField(default=False)
     # if the is visible in the chart
-    active = models.BooleanField(default=False)
+    active = models.BooleanField(default=True)
 
     class Meta:
         unique_together = ('file', 'name')
