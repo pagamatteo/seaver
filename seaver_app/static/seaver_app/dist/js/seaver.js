@@ -243,12 +243,15 @@ var chart = AmCharts.makeChart("chartdiv",
 				{
 					"type": "serial",
 					"categoryField": "index",
+					"mouseWheelScrollEnabled": true,
+					"mouseWheelZoomEnabled": true,
 					"startDuration": 1,
 					"categoryAxis": {
 						"gridPosition": "start"
 					},
 					"chartCursor": {
-						"enabled": true
+						"enabled": true,
+						"selectWithoutZooming": true
 					},
 					"chartScrollbar": {
 						"enabled": true
@@ -280,7 +283,8 @@ var chart = AmCharts.makeChart("chartdiv",
 					"allLabels": [],
 					"balloon": {},
 					"legend": {
-						"enabled": true,
+						"enabled": false,
+						"position": "left",
 						"useGraphSettings": true
 					},
 					"titles": [

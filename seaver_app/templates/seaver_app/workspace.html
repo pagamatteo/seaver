@@ -382,34 +382,43 @@
 
         function after_loaded() {
             {#  v_files.files = workspace.files;#}
-            console.log(workspace);
+
+            chart_manager.set_chart(chart);
+
             workspace.files.forEach(function (f) {
-                manage_file_in_chart(f);
+                chart_manager.add_file(f);
             });
 
-            console.log(chart_manager);
-            chart.dataProvider = chart_manager.data;
-
-            graphs = [];
-            for (field_name in chart_manager.fields){
-                graphs.push({
-                    "balloonText": "[[title]] of [[category]]:[[value]]",
-                    "bullet": "round",
-                    "id": field_name,
-                    "title": field_name,
-                    "valueField": field_name
-                })
-            }
-            chart.graphs = graphs;
-
-            chart.validateData();
+            chart_manager.refresh();
         }
+
+{#            workspace.files.forEach(function (f) {#}
+{#                manage_file_in_chart(f);#}
+{#            });#}
+{##}
+{#            chart.dataProvider = chart_manager.data;#}
+{##}
+{#            graphs = [];#}
+{#            for (field_name in chart_manager.fields){#}
+{#                graphs.push({#}
+{#                    "balloonText": "[[title]] of [[category]]:[[value]]",#}
+{#                    "bullet": "round",#}
+{#                    "id": field_name,#}
+{#                    "title": field_name,#}
+{#                    "valueField": field_name#}
+{#                })#}
+{#            }#}
+{#            chart.graphs = graphs;#}
+{##}
+{#            chart.validateData();#}
+{#        }#}
 
         var workspace;
         var v_files;
         var menu_files;
-        
+
         var workspace_url = '{% url 'workspace-detail' workspace.pk %}';
+        get_workspace(workspace_url);
 
         window.onload = function (){
 {#            gestisce la barra laterale dei file #}
@@ -445,10 +454,40 @@
 
     <script>
 {#        todo da testare #}
+        {# todo crea un limitatore di punti per field: points_per_field #}
         var chart_manager = {
             fields: {},
             data: [],
-            modified_fields: new Set(),
+            {# come avviene la visualizzazione di un field #}
+            graphs: {},
+            chart: null,
+            {# 0 significa tutti #}
+            points_per_field: 0,
+            __get_index_increment: function (field_name) {
+                var index_increment = Math.floor(this.fields[field_name].data.length / this.points_per_field);
+                if (index_increment < 1)
+                    index_increment = 1;
+
+                return index_increment;
+            },
+            __create_graph: function (field_name) {
+                if (field_name in this.graphs)
+                    return;
+
+                this.graphs[field_name] = {
+                    "balloonText": "[[title]] of [[category]]:[[value]]",
+                    "bullet": "round",
+                    "id": field_name,
+                    "title": field_name,
+                    "valueField": field_name,
+                    "hidden": false
+                };
+            },
+            __delete_graph: function (field_name) {
+                if (field_name in this.graphs) {
+                    delete this.graphs[field_name];
+                }
+            },
             __create_field_data: function (field_name) {
                 var field = this.fields[field_name];
                 var field_length = field.data.length * field.stretching + field.offset;
@@ -459,22 +498,30 @@
                     }
                 }
 
-                for (i = 0; i < field.data.length; i += 1) {
+                var index_increment = this.__get_index_increment(field_name);
+
+                for (i = 0; i < field.data.length; i += index_increment) {
                     this.data[i * field.stretching + field.offset][field_name] = field.data[i];
-                };
+                }
             },
             __delete_field_data: function (field_name) {
                 var field = this.fields[field_name];
 
-                for (var i = 0; i < field.data.length; i += 1) {
+                var index_increment = this.__get_index_increment(field_name);
+
+                for (var i = 0; i < field.data.length; i += index_increment) {
                     delete this.data[i * field.stretching + field.offset][field_name];
                 }
+            },
+            __update_field_data: function (field_name) {
+                this.__delete_field_data(field_name);
+                this.__create_field_data(field_name);
             },
             __resize: function () {
                 var i = this.data.length;
                 var found = false;
                 <!-- elimina la coda di dati vuoti -->
-                while ((i > 0) || (!found)) {
+                while ((i > 0) && (!found)) {
                     i -= 1;
 
                     <!-- se non contiene solo la chiave index abbiamo trovato un dato non vuoto -->
@@ -484,6 +531,30 @@
                         this.data = this.data.slice(0, i + 1);
                     }
                 }
+            },
+            set_chart: function (chart) {
+                this.chart = chart;
+            },
+            set_points_per_field: function (points_per_field) {
+                for (field_name in this.fields){
+                    if (this.fields.hasOwnProperty(field_name)){
+                        this.__delete_field_data(field_name);
+                    }
+                }
+
+                this.points_per_field = points_per_field;
+
+                for (field_name in this.fields){
+                    if (this.fields.hasOwnProperty(field_name)){
+                        this.__delete_field_data(field_name);
+                    }
+                }
+            },
+            show_graph: function (field_name) {
+                this.chart.showGraph(this.graphs[field_name]);
+            },
+            hide_graph: function (field_name) {
+                this.chart.hideGraph(this.graphs[field_name]);
             },
             add_field: function (field_name, data, offset, stretching) {
                 if (field_name in this.fields) {
@@ -496,6 +567,8 @@
                 this.fields[field_name].stretching = stretching;
 
                 this.__create_field_data(field_name);
+
+                this.__create_graph(field_name)
             },
             add_field_if_not_exists: function (field_name, data, offset, stretching) {
                 if (field_name in this.fields)
@@ -510,23 +583,37 @@
                 this.__delete_field_data(field_name);
                 this.__resize();
                 delete this.fields[field_name];
+
+                this.__delete_graph(field_name);
             },
-            {# todo da modificare sia offset che streatching in quanto la cancellazione non funziona  #}
             set_offset: function (field_name, offset) {
-                this.fields[field_name].offset = offset;
-                this.modified_fields.add(field_name);
+                if (this.fields[field_name].offset !== offset){
+                    this.__delete_field_data(field_name);
+                    this.fields[field_name].offset = offset;
+                    this.__create_field_data(field_name);
+                    this.__resize();
+                }
             },
             set_stretching: function (field_name, stretching) {
-                this.fields[field_name].stretching = stretching;
-                this.modified_fields.add(field_name);
+                if (this.fields[field_name].stretching !== stretching){
+                    this.__delete_field_data(field_name);
+                    this.fields[field_name].stretching = stretching;
+                    this.__create_field_data(field_name);
+                    this.__resize();
+                }
             },
             refresh: function () {
-                this.modified_fields.forEach(function (field_name) {
-                    this.__delete_field_data(field_name);
-                    this.__create_field_data(field_name);
-                });
-                this.modified_fields.clear();
-                this.__resize();
+                var graphs = [];
+                for (key in this.graphs){
+                    if (this.graphs.hasOwnProperty(key))
+                    {
+                        graphs.push(this.graphs[key]);
+                    }
+                }
+                this.chart.graphs = graphs;
+                this.chart.dataProvider = this.data;
+                this.chart.validateData();
+{#                this.chart.validateNow();#}
             },
             rename_field: function (previous_name, current_name) {
                 if (previous_name !== current_name){
@@ -535,8 +622,30 @@
                     this.add_field(current_name, previous_field.data, previous_field.offset,
                         previous_field.stretching);
                 }
+            },
+            {#  file method #}
+            get_field_name: function (f, field) {
+                return f.name + "_" + field.name;
+            },
+            add_file: function (f) {
+                for (var i = 0; i < f.fields.length; i += 1) {
+                    var field = f.fields[i];
+                    var  chart_field_name = this.get_field_name(f, field);
+                    this.add_field_if_not_exists(chart_field_name, field.data, f.offset, f.stretching);
+
+                    this.graphs[chart_field_name].hidden = !((f.active) && (field.active));
+                }
+            },
+            delete_file: function (f) {
+                for (var i = 0; i < f.fields.length; i += 1) {
+                    var field = f.fields[i];
+                    var chart_field_name = this.get_field_name(f, field);
+                    this.delete_field(chart_field_name);
+                }
             }
         };
+        chart_manager.set_points_per_field(50);
+
 
         function add_field_to_chart(f, field){
             {# f: file            #}
