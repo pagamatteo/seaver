@@ -402,6 +402,15 @@
             {# come avviene la visualizzazione di un field #}
             graphs: {},
             chart: null,
+            {# 0 significa tutti #}
+            points_per_field: 0,
+            __get_index_increment: function (field_name) {
+                var index_increment = Math.floor(this.fields[field_name].data.length / this.points_per_field);
+                if (index_increment < 1)
+                    index_increment = 1;
+
+                return index_increment;
+            },
             __create_graph: function (field_name) {
                 if (field_name in this.graphs)
                     return;
@@ -430,14 +439,18 @@
                     }
                 }
 
-                for (i = 0; i < field.data.length; i += 1) {
+                var index_increment = this.__get_index_increment(field_name);
+
+                for (i = 0; i < field.data.length; i += index_increment) {
                     this.data[i * field.stretching + field.offset][field_name] = field.data[i];
                 }
             },
             __delete_field_data: function (field_name) {
                 var field = this.fields[field_name];
 
-                for (var i = 0; i < field.data.length; i += 1) {
+                var index_increment = this.__get_index_increment(field_name);
+
+                for (var i = 0; i < field.data.length; i += index_increment) {
                     delete this.data[i * field.stretching + field.offset][field_name];
                 }
             },
@@ -449,7 +462,7 @@
                 var i = this.data.length;
                 var found = false;
                 <!-- elimina la coda di dati vuoti -->
-                while ((i > 0) || (!found)) {
+                while ((i > 0) && (!found)) {
                     i -= 1;
 
                     <!-- se non contiene solo la chiave index abbiamo trovato un dato non vuoto -->
@@ -462,6 +475,21 @@
             },
             set_chart: function (chart) {
                 this.chart = chart;
+            },
+            set_points_per_field: function (points_per_field) {
+                for (field_name in this.fields){
+                    if (this.fields.hasOwnProperty(field_name)){
+                        this.__delete_field_data(field_name);
+                    }
+                }
+
+                this.points_per_field = points_per_field;
+
+                for (field_name in this.fields){
+                    if (this.fields.hasOwnProperty(field_name)){
+                        this.__delete_field_data(field_name);
+                    }
+                }
             },
             show_graph: function (field_name) {
                 this.chart.showGraph(this.graphs[field_name]);
@@ -526,6 +554,7 @@
                 this.chart.graphs = graphs;
                 this.chart.dataProvider = this.data;
                 this.chart.validateData();
+{#                this.chart.validateNow();#}
             },
             rename_field: function (previous_name, current_name) {
                 if (previous_name !== current_name){
@@ -556,6 +585,8 @@
                 }
             }
         };
+        chart_manager.set_points_per_field(50);
+
 
         function add_field_to_chart(f, field){
             {# f: file            #}
