@@ -56,6 +56,7 @@ function manage_create_workspace_response(response) {
 Funzione che recupera i campi del form relativo alla creazione di un nuovo workspace e contatta il server
 per creare il nuovo workspace.
 */
+// TODO SISTEMARE LA CREAZIONE DI UN WORKSPACE QUANDO NON NE ESISTE NESSUNO
 function create_workspace() {
     var form = $("#create_workspace_form");
     console.log("Create workspace...");
@@ -115,7 +116,9 @@ Funzione che cancella un file.
 function delete_file(event, url_structure) {
     var file_sidebar_menu = $(event.target).parent();
     var file_name = file_sidebar_menu.text();
+    console.log(file_name);
     //var worksapce_name = workspace_box_to_delete.closest( ".box-header " ).find( "h3" ).html();
+    console.log(url_structure);
     var url = url_structure.replace("file_name", file_name);
     console.log("url: " + url);
 
@@ -134,6 +137,7 @@ function ask_delete_file_confirm(event, url) {
     $('#delete_file_modal').modal('toggle');
     $('#confirm_delete_file').on("click", function(){ delete_file(event, url); });
 }
+
 
 // var chartData = [ {
 //     "country": "USA",

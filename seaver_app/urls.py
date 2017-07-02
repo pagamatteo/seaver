@@ -30,5 +30,5 @@ urlpatterns = [
     url(r'^apis/file-upload/$', apis_views.FileUploadedView.as_view()),
     url(r'^apis/field-data/(?P<pk>[0-9]+)/$', apis_views.FieldDataView.as_view(), name='fielddata-detail'),
     #url(r'workspace/(?P<name>\w+( \w+)*)/create_file/$', views.create_empty_workspace, name='create_file'),
-    url(r'^workspace/(?P<workspace_name>\w+( \w+)*)/delete_file/(?P<file_name>\w+( \w+)*)$', views.delete_file, name='delete_file'),
+    url(r'^workspace/(?P<workspace_name>\w+( \w+)*)/delete_file/(?P<file_name>.+)/$', views.delete_file, name='delete_file'),
 ]

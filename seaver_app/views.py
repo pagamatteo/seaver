@@ -134,7 +134,7 @@ def signup(request):
             if user is not None:
                 login(request, user)
                 # Redirect to a success page.
-                return redirect('workspace')
+                return redirect('workspaces')
             else:
                 # Return an 'invalid login' error message.
                 return
@@ -218,7 +218,7 @@ def delete_file(request, workspace_name, file_name):
     user = request.user
     # todo controllo parametro ingresso
     workspace = Workspace.get_or_set(user, workspace_name, do_save=False)
-    file = FileModel.objects.get(workspace = workspace, name = file_name)
+    file = FileModel.objects.get(workspace=workspace, name=file_name)
     file.delete()
     return JsonResponse(response)
 

@@ -204,4 +204,4 @@ router.register(r'file', FileView, 'file')
 router.register(r'file-field', FileFieldView, 'filefieldname')
 router.register(r'punctual-events', PunctualAnnotationEventView, 'punctual')
 router.register(r'interval-events', IntervalAnnotationEventView, 'interval')
-
+router.register(r'file-data', FieldDataView, 'filedata')

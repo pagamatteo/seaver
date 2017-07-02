@@ -34,9 +34,9 @@
     <script src="{% static 'seaver_app/amcharts/serial.js' %}"></script>
 
       <!-- vue -->
-      <script src="{% static "seaver_app/vue.js" %}"></script>
+      <script src="{% static 'seaver_app/vue.js' %}"></script>
       <!-- token -->
-      <script src="{% static "seaver_app/js-cookie.js" %}"></script>
+      <script src="{% static 'seaver_app/js-cookie.js' %}"></script>
 
 
     <script src="{% static 'seaver_app/dist/js/seaver.js' %}"></script>
@@ -155,7 +155,45 @@
         <!-- Main content -->
         <section class="content">
           <!-- CONTENUTO PARTE CENTRALE DELLA PAGINA -->
-          <div id="chartdiv" style="width: 640px; height: 400px;"></div>
+          <div class="row">
+              <div class="col-md-9">
+                  <div id="chartdiv"></div><!-- style="width: 640px; height: 400px;"></div>-->
+              </div>
+              <div class="col-md-3">
+                  <section class="sidebar">
+                      <ul class="sidebar-menu">
+                        <li class="active treeview">
+                          <a href="#">
+                            <i class="fa fa-list-ul"></i> <span>Select files or fields ...</span>
+                            <i class="fa fa-angle-left pull-right"></i>
+                          </a>
+                          <ul class="treeview-menu" id="menu_files_list">
+                            <li v-for="f in files" class="active"><a href="#"><i class="fa fa-circle-o"></i>[[ f.name ]]<i class="fa fa-square-o pull-right" onclick="activate_file(event, 'http://localhost:8000/apis/file/3/')"></i></a>
+                              <ul v-for="ff in f.fields" class="treeview-menu">
+                                <li><a href="#"><i class="fa fa-circle-o"></i>[[ ff.name ]]<i class="fa fa-square-o pull-right" onclick="active_field(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>
+                              </ul>
+                            </li>
+                            <!--<li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
+                            <li>
+                              <a href="#"><i class="fa fa-circle-o"></i> Level One <i class="fa fa-angle-left pull-right"></i></a>
+                              <ul class="treeview-menu">
+                                <li><a href="#"><i class="fa fa-circle-o"></i> Level Two</a></li>
+                                <li>
+                                  <a href="#"><i class="fa fa-circle-o"></i> Level Two <i class="fa fa-angle-left pull-right"></i></a>
+                                  <ul class="treeview-menu">
+                                    <li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
+                                    <li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
+                                  </ul>
+                                </li>
+                              </ul>
+                            </li>
+                            <li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>-->
+                          </ul>
+                        </li>
+                      </ul>
+                  </section>
+              </div>
+          </div>
         </section><!-- /.content -->
         <!-- Create file modal -->
         <div class="modal fade" id="create_file_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -318,6 +356,7 @@
                 workspace.files.push(data);
 {#                carica il nome del file nella barra laterale #}
                 v_files.files.push(data);
+                menu_files.files.push(data);
                 data.field_names.forEach(function (field_url) {
                     get_field(field_url, data)
                 });
@@ -343,11 +382,12 @@
 
         function after_loaded() {
             {#  v_files.files = workspace.files;#}
-
+            console.log(workspace);
             workspace.files.forEach(function (f) {
                 manage_file_in_chart(f);
             });
 
+            console.log(chart_manager);
             chart.dataProvider = chart_manager.data;
 
             graphs = [];
@@ -367,9 +407,9 @@
 
         var workspace;
         var v_files;
+        var menu_files;
         
         var workspace_url = '{% url 'workspace-detail' workspace.pk %}';
-        get_workspace(workspace_url);
 
         window.onload = function (){
 {#            gestisce la barra laterale dei file #}
@@ -379,6 +419,25 @@
                     files: []
                 }
             });
+
+            menu_files = new Vue({
+                el: '#menu_files_list',
+                data: {
+                    files: []
+                }
+            });
+        }
+        get_workspace(workspace_url);
+
+
+
+        function activate_file(event, url) {
+            var file_to_activate = $(event.target);
+            console.log(file_to_activate);
+            console.log(url);
+            file_to_activate.toggleClass('fa-square-o fa-check-square-o');
+            var current_active_status =
+            console.log(current_active_status);
         }
 
         
