@@ -357,6 +357,7 @@
 {#                carica il nome del file nella barra laterale #}
                 v_files.files.push(data);
                 menu_files.files.push(data);
+                console.log(menu_files);
                 data.field_names.forEach(function (field_url) {
                     get_field(field_url, data)
                 });
@@ -418,7 +419,7 @@
         var menu_files;
 
         var workspace_url = '{% url 'workspace-detail' workspace.pk %}';
-        get_workspace(workspace_url);
+        //get_workspace(workspace_url);
 
         window.onload = function (){
 {#            gestisce la barra laterale dei file #}
@@ -442,6 +443,7 @@
             });
         };
         get_workspace(workspace_url);
+        console.log(menu_files);
 
 
 
