@@ -157,7 +157,7 @@
           <!-- CONTENUTO PARTE CENTRALE DELLA PAGINA -->
           <div class="row">
               <div class="col-md-9">
-                  <div id="chartdiv"></div><!-- style="width: 640px; height: 400px;"></div>-->
+                  <div id="chartdiv" style="width: 640px; height: 400px;"></div>
               </div>
               <div class="col-md-3">
                   <section class="sidebar">
@@ -168,9 +168,9 @@
                             <i class="fa fa-angle-left pull-right"></i>
                           </a>
                           <ul class="treeview-menu" id="menu_files_list">
-                            <li v-for="f in files" class="active"><a href="#"><i class="fa fa-circle-o"></i>[[ f.name ]]<i class="fa fa-square-o pull-right" onclick="activate_file(event, 'http://localhost:8000/apis/file/3/')"></i></a>
+                            <li v-for="f in files" class="active"><a href="#"><i class="fa fa-circle-o"></i>[[ f.name ]]<i class="fa fa-square-o pull-right" v-on:click="activate_file"></i></a>
                               <ul v-for="ff in f.fields" class="treeview-menu">
-                                <li><a href="#"><i class="fa fa-circle-o"></i>[[ ff.name ]]<i class="fa fa-square-o pull-right" onclick="active_field(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>
+                                <li><a href="#"><i class="fa fa-circle-o"></i>[[ ff.name ]]<i class="fa fa-square-o pull-right" onclick="active_field(event, [[f.url]])"></i></a></li>
                               </ul>
                             </li>
                             <!--<li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
@@ -433,6 +433,11 @@
                 el: '#menu_files_list',
                 data: {
                     files: []
+                },
+                methods: {
+                    activate_file: function (){
+
+                    }
                 }
             });
         }
