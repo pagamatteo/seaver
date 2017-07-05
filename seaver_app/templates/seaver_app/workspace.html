@@ -354,7 +354,9 @@
             requests_watcher.add(1);
             $.get(field_url).done(function (data) {
 {#                put in alphabetic order #}
-                var field_index = _.sortedIndexBy(f.fields, data, 'name');
+                var field_index = _.sortedIndexBy(f.fields, data, function (e) {
+                    return e.name.toLowerCase();
+                });
                 f.fields.splice(field_index, 0, data);
                 get_field_data(data.field_data, data);
             }).fail(function (errors) {
@@ -369,7 +371,9 @@
             $.get(file_url).done(function (data) {
                 data.fields = [];
 {#                put in alphabetic order #}
-                var file_index = _.sortedIndexBy(workspace.files, data, 'name');
+                var file_index = _.sortedIndexBy(workspace.files, data, function (e) {
+                    return e.name.toLowerCase();
+                });
                 workspace.files.splice(file_index, 0, data);
 {#                carica il nome del file nella barra laterale #}
 {#                v_files.files.push(data);#}
