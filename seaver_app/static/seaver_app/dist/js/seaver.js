@@ -113,24 +113,44 @@ function manage_delete_file_response(file_sidebar_menu){
 /*
 Funzione che cancella un file.
 */
-function delete_file(event, url_structure) {
-    var file_sidebar_menu = $(event.target).parent();
-    var file_name = file_sidebar_menu.text();
-    console.log(file_name);
-    //var worksapce_name = workspace_box_to_delete.closest( ".box-header " ).find( "h3" ).html();
-    console.log(url_structure);
-    var url = url_structure.replace("file_name", file_name);
-    console.log("url: " + url);
+function delete_file(index) {
+    var f = workspace.files[index];
 
     $.ajax({
-        url: url,
-        success: function (response) {
-            if (response["errors"] == false)
-                //location.reload();
-                manage_delete_file_response(file_sidebar_menu);
-        }
-      });
+        url: f.url,
+        method: 'DELETE'
+    }).done(function (data) {
+        //location.reload();
+        // elimino il file dal grafico
+        chart_manager.delete_file(f);
+        chart_manager.refresh();
+        // elimino il file dal workspace (e quindi dai menù)
+        workspace.files.splice(index, 1);
+        // chiudo la finestra di eliminazione del file
+        $('#delete_file_modal').modal('toggle');
+    }).fail(function (data) {
+        console.log(data);
+    })
 }
+// function delete_file(event, url_structure) {
+//     var file_sidebar_menu = $(event.target).parent();
+//     var file_name = file_sidebar_menu.text();
+//     console.log(file_name);
+//     //var worksapce_name = workspace_box_to_delete.closest( ".box-header " ).find( "h3" ).html();
+//     console.log(url_structure);
+//     var url = url_structure.replace("file_name", file_name);
+//     console.log("url: " + url);
+//
+//     $.ajax({
+//         url: url,
+//         success: function (response) {
+//             if (response["errors"] == false)
+//                 //location.reload();
+//                 manage_delete_file_response(file_sidebar_menu);
+//         }
+//       });
+// }
+
 
 
 function ask_delete_file_confirm(event, url) {

@@ -126,7 +126,7 @@
                   <i class="fa fa-dashboard"></i> <span>Files</span><div class="box-tools pull-right"><button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#create_file_modal"><i class="fa fa-plus"></i></button></div>
               </a>
               <ul id="files_list" class="treeview-menu">
-                  <li v-for="f in files" class="active"><a href="#"><i class="fa fa-circle-o"></i>[[ f.name ]]<i class="fa fa-times pull-right" onclick="ask_delete_file_confirm(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>
+                  <li v-for="(f, index) in files" class="active"><a href="#"><i class="fa fa-circle-o"></i>[[ f.name ]]<i class="fa fa-times pull-right" v-on:click="ask_delete_file_confirm(index)"></i></a></li>
 {#                  <li class="active"><a href="#"><i class="fa fa-circle-o"></i>File 2 <i class="fa fa-times pull-right" onclick="ask_delete_file_confirm(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>#}
               </ul>
               <!--{% for workspace in workspaces %}
@@ -353,7 +353,9 @@
         function get_field(field_url, f) {
             requests_watcher.add(1);
             $.get(field_url).done(function (data) {
-                f.fields.push(data);
+{#                put in alphabetic order #}
+                var field_index = _.sortedIndexBy(f.fields, data, 'name');
+                f.fields.splice(field_index, 0, data);
                 get_field_data(data.field_data, data);
             }).fail(function (errors) {
                 alert("errore downloading field: " + errors);
@@ -366,10 +368,12 @@
             requests_watcher.add(1);
             $.get(file_url).done(function (data) {
                 data.fields = [];
-                workspace.files.push(data);
+{#                put in alphabetic order #}
+                var file_index = _.sortedIndexBy(workspace.files, data, 'name');
+                workspace.files.splice(file_index, 0, data);
 {#                carica il nome del file nella barra laterale #}
-                v_files.files.push(data);
-                menu_files.files.push(data);
+{#                v_files.files.push(data);#}
+{#                menu_files.files.push(data);#}
                 console.log(menu_files);
                 data.field_names.forEach(function (field_url) {
                     get_field(field_url, data)
@@ -386,6 +390,8 @@
                 workspace = data;
                 var fs = data.files;
                 workspace.files = [];
+                v_files.files = workspace.files;
+                menu_files.files = workspace.files;
                 fs.forEach(function (f_url) {
                     get_file(f_url);
                 });
@@ -440,6 +446,12 @@
                 el: '#files_list',
                 data: {
                     files: []
+                },
+                methods: {
+                    ask_delete_file_confirm: function (index) {
+                        $('#delete_file_modal').modal('toggle');
+                        $('#confirm_delete_file').on("click", function(){ delete_file(index); });
+                    }
                 }
             });
 
