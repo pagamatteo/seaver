@@ -168,11 +168,20 @@
                             <i class="fa fa-angle-left pull-right"></i>
                           </a>
                           <ul class="treeview-menu" id="menu_files_list">
-                            <li v-for="f in files" class="active"><a href="#"><i class="fa fa-circle-o"></i>[[ f.name ]]<i class="fa fa-square-o pull-right" v-on:click="activate_file"></i></a>
-                              <ul v-for="ff in f.fields" class="treeview-menu">
-                                <li><a href="#"><i class="fa fa-circle-o"></i>[[ ff.name ]]<i class="fa fa-square-o pull-right" onclick="active_field(event, [[f.url]])"></i></a></li>
-                              </ul>
-                            </li>
+{#                            <li v-for="(f, f_index) in files" class="active"><a href="#"><i class="fa fa-circle-o"></i>[[ f.name ]]<i v-bind:class="classObject" v-on:click="activate_file(f_index)"></i></a>#}
+{#                              <ul v-for="ff in f.fields" class="treeview-menu">#}
+{#                                <li><a href="#"><i class="fa fa-circle-o"></i>[[ ff.name ]]<i class="fa fa-square-o pull-right" onclick="active_field(event, [[f.url]])"></i></a></li>#}
+{#                              </ul>#}
+{#                            </li>#}
+                              <li v-for="(f, f_index) in files" class="active"><a href="#"><i
+                                      class="fa fa-circle-o"></i>[[ f.name ]]<i v-bind:class="f.active ? 'fa fa-check-square-o pull-right' : 'fa fa-square-o pull-right'"
+                                                                                v-on:click="activate_file(f_index)"></i></a>
+                                  <ul v-for="(ff, ff_index) in f.fields" class="treeview-menu">
+                                      <li><a href="#"><i class="fa fa-circle-o"></i>[[ ff.name ]]<i
+                                              v-bind:class="ff.active ? 'fa fa-check-square-o pull-right' : 'fa fa-square-o pull-right'"
+                                              v-on:click="activate_field(f_index, ff_index)"></i></a></li>
+                                  </ul>
+                              </li>
                             <!--<li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
                             <li>
                               <a href="#"><i class="fa fa-circle-o"></i> Level One <i class="fa fa-angle-left pull-right"></i></a>
@@ -192,6 +201,8 @@
                         </li>
                       </ul>
                   </section>
+                  <comp1 ><comp2></comp2></comp1>
+
               </div>
           </div>
         </section><!-- /.content -->
@@ -436,8 +447,39 @@
                     files: []
                 },
                 methods: {
-                    activate_file: function (){
+                    activate_file: function (index){
+                        {# attivo/disattivo il file e salvo il risultato su server  #}
+                        var f = this.files[index];
+                        f.active = ! f.active;
+                        $.ajax(f.url,{
+                            method: "PATCH",
+                            data: {
+                                "active": f.active
+                            }
+                        });
 
+{#                      attivo / disattivo i file  #}
+                        chart_manager.show_hide_file(f);
+                    },
+                    activate_field: function (file_index, field_index) {
+                        var f = this.files[file_index];
+                        var field = f.fields[field_index];
+
+{#                        cambio il valore di active e lo salvo nel db #}
+                        field.active = ! field.active;
+                        $.ajax(field.url,{
+                            method: "PATCH",
+                            data: {
+                                "active": field.active
+                            }
+                        });
+
+{#                    visualizzo / nascondo il campo #}
+                        var chart_field_name = chart_manager.get_field_name(f, field);
+                        if (f.active && field.active)
+                            chart_manager.show_graph(chart_field_name);
+                        else
+                            chart_manager.hide_graph(chart_field_name);
                     }
                 }
             });
@@ -447,14 +489,14 @@
 
 
 
-        function activate_file(event, url) {
-            var file_to_activate = $(event.target);
-            console.log(file_to_activate);
-            console.log(url);
-            file_to_activate.toggleClass('fa-square-o fa-check-square-o');
-            var current_active_status =
-            console.log(current_active_status);
-        }
+{#        function activate_file(event, url) {#}
+{#            var file_to_activate = $(event.target);#}
+{#            console.log(file_to_activate);#}
+{#            console.log(url);#}
+{#            file_to_activate.toggleClass('fa-square-o fa-check-square-o');#}
+{#            var current_active_status =#}
+{#            console.log(current_active_status);#}
+{#        }#}
 
         
     </script>
@@ -647,6 +689,16 @@
                     var field = f.fields[i];
                     var chart_field_name = this.get_field_name(f, field);
                     this.delete_field(chart_field_name);
+                }
+            },
+            show_hide_file: function (f) {
+                for (var i = 0; i < f.fields.length; i += 1) {
+                    var field = f.fields[i];
+                    var chart_field_name = this.get_field_name(f, field);
+                    if (f.active && field.active)
+                        this.show_graph(chart_field_name);
+                    else
+                        this.hide_graph(chart_field_name)
                 }
             }
         };
