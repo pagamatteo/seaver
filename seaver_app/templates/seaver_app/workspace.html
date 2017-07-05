@@ -37,6 +37,8 @@
       <script src="{% static 'seaver_app/vue.js' %}"></script>
       <!-- token -->
       <script src="{% static 'seaver_app/js-cookie.js' %}"></script>
+      <!-- loadash -->
+      <script src="{% static 'seaver_app/lodash.min.js' %}"></script>
 
 
     <script src="{% static 'seaver_app/dist/js/seaver.js' %}"></script>
@@ -512,6 +514,7 @@
             {# 0 significa tutti #}
             points_per_field: 0,
             __get_index_increment: function (field_name) {
+{#                restituisce di quanto deve crescere l'indice della serie #}
                 var index_increment = Math.floor(this.fields[field_name].data.length / this.points_per_field);
                 if (index_increment < 1)
                     index_increment = 1;
@@ -538,18 +541,30 @@
             },
             __create_field_data: function (field_name) {
                 var field = this.fields[field_name];
-                var field_length = field.data.length * field.stretching + field.offset;
-                if (field_length > this.data.length) {
-                    var previous_length = this.data.length;
-                    for (var i = previous_length; i < field_length; i += 1) {
-                        this.data[i] = {index: i};
-                    }
-                }
+{#                var field_length = field.data.length * field.stretching + field.offset;#}
+{#                if (field_length > this.data.length) {#}
+{#                    var previous_length = this.data.length;#}
+{#                    for (var i = previous_length; i < field_length; i += 1) {#}
+{#                        this.data[i] = {index: i};#}
+{#                    }#}
+{#                }#}
 
                 var index_increment = this.__get_index_increment(field_name);
 
                 for (i = 0; i < field.data.length; i += index_increment) {
-                    this.data[i * field.stretching + field.offset][field_name] = field.data[i];
+                    var point_index = i * field.stretching + field.offset;
+                    var point_data = {'index': point_index};
+{#                    in che posizione di data inserire il nuovo punto #}
+                    var data_index = _.sortedIndexBy(this.data, point_data, 'index');
+                    if ((data_index < this.data.length) && (this.data[data_index].index === point_index)){
+{#                        se l'elemento esiste già #}
+                        this.data[data_index][field_name] = field.data[i];
+                    }
+                    else {
+                        point_data[field_name] = field.data[i];
+                        this.data.splice(data_index, 0, point_data);
+                    }
+{#                    this.data[i * field.stretching + field.offset][field_name] = field.data[i];#}
                 }
             },
             __delete_field_data: function (field_name) {
@@ -558,27 +573,24 @@
                 var index_increment = this.__get_index_increment(field_name);
 
                 for (var i = 0; i < field.data.length; i += index_increment) {
-                    delete this.data[i * field.stretching + field.offset][field_name];
+                    var point_index = i * field.stretching + field.offset;
+                    var point_data = {'index': point_index};
+{#                    in che posizione di data inserire il nuovo punto #}
+                    var data_index = _.sortedIndexBy(this.data, point_data, 'index');
+
+                    delete this.data[data_index][field_name];
+
+{#                    se l'elemento contiene solo index lo elimino dall'array #}
+                    if (Object.keys(this.data[data_index]).length === 1) {
+                        this.data.splice(data_index, 1);
+                        i -= 1;
+                    }
+
                 }
             },
             __update_field_data: function (field_name) {
                 this.__delete_field_data(field_name);
                 this.__create_field_data(field_name);
-            },
-            __resize: function () {
-                var i = this.data.length;
-                var found = false;
-                <!-- elimina la coda di dati vuoti -->
-                while ((i > 0) && (!found)) {
-                    i -= 1;
-
-                    <!-- se non contiene solo la chiave index abbiamo trovato un dato non vuoto -->
-                    if (Object.keys(this.data[i]).length > 1) {
-                        found = true;
-                        <!-- elimino tutti i dati successivi -->
-                        this.data = this.data.slice(0, i + 1);
-                    }
-                }
             },
             set_chart: function (chart) {
                 this.chart = chart;
@@ -629,7 +641,6 @@
                     return;
 
                 this.__delete_field_data(field_name);
-                this.__resize();
                 delete this.fields[field_name];
 
                 this.__delete_graph(field_name);
@@ -639,7 +650,6 @@
                     this.__delete_field_data(field_name);
                     this.fields[field_name].offset = offset;
                     this.__create_field_data(field_name);
-                    this.__resize();
                 }
             },
             set_stretching: function (field_name, stretching) {
@@ -647,7 +657,6 @@
                     this.__delete_field_data(field_name);
                     this.fields[field_name].stretching = stretching;
                     this.__create_field_data(field_name);
-                    this.__resize();
                 }
             },
             refresh: function () {
