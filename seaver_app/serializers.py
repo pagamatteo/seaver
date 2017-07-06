@@ -115,3 +115,17 @@ class FieldDataSerializer(serializers.Serializer):
     Data di field
     """
     field_data = serializers.ListField(serializers.FloatField())
+
+
+class FieldAnalysisRequestSerializer(serializers.Serializer):
+    """
+    Usata per richiedere la creazione di un'analisi
+    """
+    # field = serializers.PrimaryKeyRelatedField(
+    #     queryset=FileFieldName.objects.all()
+    # )
+    name = serializers.CharField(max_length=20)
+
+    analysis = serializers.ChoiceField(
+        (('fft', 'Fast Fourier Transform'), )
+    )

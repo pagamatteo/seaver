@@ -7,10 +7,16 @@ from rest_framework.decorators import permission_classes
 from rest_framework.response import Response
 from .models import File as FileModel, Workspace, PunctualAnnotationEvent, FileFieldName, FileData
 from .serializers import FileSerializer, FileUploadSerializer, UserSerializer, PunctualAnnotationEventSerializer, \
-    IntervalAnnotationEventSerializer, WorkspaceSerializer, FileFieldSerializer, FieldDataSerializer
+    IntervalAnnotationEventSerializer, WorkspaceSerializer, FileFieldSerializer, FieldDataSerializer, \
+    FieldAnalysisRequestSerializer
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
-from django.http import Http404
+from django.http import Http404, HttpResponseServerError
+from . import analysis
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 # @api_view(['POST'])
@@ -195,6 +201,51 @@ class FieldDataView(APIView):
         serializer = FieldDataSerializer(data_model)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@permission_classes((permissions.IsAuthenticated, ))
+class AnalysisView(APIView):
+    def post(self, request, pk):
+        # controllo che l'input sia valido
+        serializer = FieldAnalysisRequestSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        user = request.user
+        workspaces = Workspace.objects.filter(user=user)
+        files = FileModel.objects.filter(workspace__in=workspaces)
+        file_field = FileFieldName.objects.filter(file__in=files).filter(pk=pk)
+
+        if not file_field.exists():
+            return Http404()
+
+        file_field = file_field.get()
+
+        # creo il nuovo FileFieldName d'analisi
+        analysis_field = FileFieldName()
+        analysis_field.file = file_field.file
+        analysis_field.name = serializer.validated_data['name']
+        analysis_field.computed = True
+        analysis_field.save()
+
+        # ottengo i dati
+        data = FileData.get_all_data(file_field)
+
+        if serializer.validated_data['analysis'] == 'fft':
+            # Fast Fourie Transform
+            analysis_data = analysis.fft(data)
+        else:
+            logger.error('{} is not a valid analysis'.format(serializer.validated_data['analysis']))
+            return HttpResponseServerError()
+
+        # salvo i nuovi dati
+        FileData.save_data(analysis_field, analysis.series_to_filedata(analysis_data))
+
+        # restituisco il nuovo file
+        serializer = FileFieldSerializer(analysis_field, context={'request': request})
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 
 router = routers.DefaultRouter()

@@ -193,6 +193,20 @@ class FileData(models.Model):
 
         return data
 
+    @classmethod
+    def save_data(cls, field, data):
+        bulk_writer = BulkWriter(cls)
+
+        for i in range(0, len(data)):
+            file_data = cls()
+            file_data.field_name = field
+            file_data.field_index = i
+            file_data.field_value = data[i]
+
+            bulk_writer.append(file_data)
+
+        bulk_writer.flush()
+
 class PunctualAnnotation(models.Model):
     """
     Classe che modella un'annotazione puntuale.
