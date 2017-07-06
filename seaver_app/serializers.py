@@ -126,6 +126,13 @@ class FieldAnalysisRequestSerializer(serializers.Serializer):
     # )
     name = serializers.CharField(max_length=20)
 
-    analysis = serializers.ChoiceField(
-        (('fft', 'Fast Fourier Transform'), )
+    type = serializers.ChoiceField(
+        (
+            ('fft', 'Fast Fourier Transform'),
+            ('ewma', 'Exponentially-weighted moving average')
+        )
+    )
+
+    kargs = serializers.DictField(
+        default={}
     )

@@ -221,25 +221,40 @@ class AnalysisView(APIView):
 
         file_field = file_field.get()
 
+        # controllo che non esista giù un altro campo con il nome indicato
+        analysis_name = serializer.validated_data['name']
+        analysis_file = file_field.file
+        if FileFieldName.objects.filter(file=analysis_file, name=analysis_name).exists():
+            return Response({'name': ['The name {} already exist for file {}'.format(analysis_name, analysis_file)]},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         # creo il nuovo FileFieldName d'analisi
         analysis_field = FileFieldName()
-        analysis_field.file = file_field.file
-        analysis_field.name = serializer.validated_data['name']
+        analysis_field.file = analysis_file
+        analysis_field.name = analysis_name
         analysis_field.computed = True
         analysis_field.save()
 
         # ottengo i dati
         data = FileData.get_all_data(file_field)
 
-        if serializer.validated_data['analysis'] == 'fft':
-            # Fast Fourie Transform
-            analysis_data = analysis.fft(data)
-        else:
-            logger.error('{} is not a valid analysis'.format(serializer.validated_data['analysis']))
-            return HttpResponseServerError()
+        analysis_type = serializer.validated_data['type']
+        analysis_kargs = serializer.validated_data['kargs']
+        try:
+            if analysis_type == 'fft':
+                # Fast Fourie Transform
+                analysis_data = analysis.fft(data, analysis_kargs)
+            elif analysis_type == 'ewma':
+                analysis_data = analysis.ewma(data, analysis_kargs)
+            else:
+                logger.error('{} is not a valid analysis'.format(serializer.validated_data['analysis']))
+                return HttpResponseServerError()
+        except Exception as e:
+            analysis_field.delete()
+            raise e
 
         # salvo i nuovi dati
-        FileData.save_data(analysis_field, analysis.series_to_filedata(analysis_data))
+        FileData.save_data(analysis_field, analysis_data)
 
         # restituisco il nuovo file
         serializer = FileFieldSerializer(analysis_field, context={'request': request})

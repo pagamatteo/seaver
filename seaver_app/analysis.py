@@ -18,9 +18,15 @@ def series_to_filedata(s):
     return s.values
 
 
-def fft(data):
+def fft(data, kargs):
     s = fielddata_to_series(data)
-    s = s.transpose()
+    s = s.transpose(**kargs)
     s = np.log(s)
     s = s.dropna()
-    return s
+    return series_to_filedata(s)
+
+
+def ewma(data, kargs):
+    s = fielddata_to_series(data)
+    s = pd.ewma(s, **kargs)
+    return series_to_filedata(s)
