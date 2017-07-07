@@ -260,60 +260,64 @@ var chart_data = [
 					];
 
 var chart = AmCharts.makeChart("chartdiv",
-				{
-					"type": "serial",
-					"categoryField": "index",
-					"mouseWheelScrollEnabled": true,
-					"mouseWheelZoomEnabled": true,
-					"startDuration": 1,
-					"categoryAxis": {
-						"gridPosition": "start"
-					},
-					"chartCursor": {
-						"enabled": true,
-						"selectWithoutZooming": true
-					},
-					"chartScrollbar": {
-						"enabled": true
-					},
-					"trendLines": [],
-					"graphs": [
-						{
-							"balloonText": "[[title]] of [[category]]:[[value]]",
-							"bullet": "round",
-							"id": "AmGraph-1",
-							"title": "graph 1",
-							"valueField": "column-1"
-						},
-						{
-							"balloonText": "[[title]] of [[category]]:[[value]]",
-							"bullet": "square",
-							"id": "AmGraph-2",
-							"title": "graph 2",
-							"valueField": "column-2"
-						}
-					],
-					"guides": [],
-					"valueAxes": [
-						{
-							"id": "ValueAxis-1",
-							"title": "Axis title"
-						}
-					],
-					"allLabels": [],
-					"balloon": {},
-					"legend": {
-						"enabled": false,
-						"position": "left",
-						"useGraphSettings": true
-					},
-					"titles": [
-						{
-							"id": "Title-1",
-							"size": 15,
-							"text": "Chart Title"
-						}
-					],
-					"dataProvider": chart_data
-				}
-			);
+    {
+        "type": "serial",
+        "categoryField": "index",
+        "mouseWheelScrollEnabled": true,
+        "mouseWheelZoomEnabled": true,
+        "startDuration": 1,
+        "categoryAxis": {
+            "startOnAxis": true,
+            "axisColor": "#DADADA",
+            "gridAlpha": 0.07,
+            "title": "Year",
+            "guides": []
+        },
+        "chartCursor": {
+            "enabled": true,
+            "selectWithoutZooming": true
+        },
+        "chartScrollbar": {
+            "enabled": true
+        },
+        "trendLines": [],
+        "graphs": [
+            {
+                "balloonText": "[[title]] of [[category]]:[[value]]",
+                "bullet": "round",
+                "id": "AmGraph-1",
+                "title": "graph 1",
+                "valueField": "column-1"
+            },
+            {
+                "balloonText": "[[title]] of [[category]]:[[value]]",
+                "bullet": "square",
+                "id": "AmGraph-2",
+                "title": "graph 2",
+                "valueField": "column-2"
+            }
+        ],
+        "guides": [],
+        "valueAxes": [
+            {
+                "id": "ValueAxis-1",
+                "title": "Axis title"
+            }
+        ],
+        "allLabels": [],
+        "balloon": {},
+        "legend": {
+            "enabled": false,
+            "position": "left",
+            "useGraphSettings": true
+        },
+        "titles": [
+            {
+                "id": "Title-1",
+                "size": 15,
+                "text": "Chart Title"
+            }
+        ],
+        "dataProvider": chart_data
+    }
+);

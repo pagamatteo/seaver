@@ -393,14 +393,20 @@
         });
         
         function get_punctual_event(url) {
+            requests_watcher.add('event');
             $.get(url).done(function (data) {
                 workspace.punctuals.push(data);
+            }).always(function () {
+                requests_watcher.remove('event');
             })
         }
 
         function get_interval_event(url) {
+            requests_watcher.add('event');
             $.get(url).done(function (data) {
                 workspace.intervals.push(data);
+            }).always(function () {
+                requests_watcher.remove('event');
             })
         }
 
@@ -486,6 +492,7 @@
 
 
         function get_puctual_annotations(url) {
+            requests_watcher.add('ann');
             $.get(url).done(function (data) {
                 // se la lista non è finita
                 if (data['next'] !== null)
@@ -494,16 +501,23 @@
                 var punctuals = annotation_events.punctual;
                 for (var i=0; i < data['count']; i += 1){
                     var result = data['results'][i];
+
+                    // salvo l'annotazione per la ricerca by url
+                    annotations_by_url[result.url] = result;
+
                     var index = _.sortedIndexBy(punctuals, result, function (e) {
                         return e.name.toLowerCase();
                     });
                     punctuals.splice(index, 0, result)
                 }
+            }).always(function () {
+                requests_watcher.remove('ann');
             })
         }
 
 
         function get_interval_annotations(url) {
+            requests_watcher.add('ann');
             $.get(url).done(function (data) {
                 // se la lista non è finita
                 if (data['next'] !== null)
@@ -512,11 +526,17 @@
                 var intervals = annotation_events.interval;
                 for (var i=0; i < data['count']; i += 1){
                     var result = data['results'][i];
+
+                    // salvo l'annotazione per la ricerca by url
+                    annotations_by_url[result.url] = result;
+
                     var index = _.sortedIndexBy(intervals, result, function (e) {
                         return e.name.toLowerCase();
                     });
                     intervals.splice(index, 0, result)
                 }
+            }).always(function () {
+                requests_watcher.remove('ann');
             })
         }
 
@@ -541,29 +561,9 @@
             chart_manager.refresh();
         }
 
-{#            workspace.files.forEach(function (f) {#}
-{#                manage_file_in_chart(f);#}
-{#            });#}
-{##}
-{#            chart.dataProvider = chart_manager.data;#}
-{##}
-{#            graphs = [];#}
-{#            for (field_name in chart_manager.fields){#}
-{#                graphs.push({#}
-{#                    "balloonText": "[[title]] of [[category]]:[[value]]",#}
-{#                    "bullet": "round",#}
-{#                    "id": field_name,#}
-{#                    "title": field_name,#}
-{#                    "valueField": field_name#}
-{#                })#}
-{#            }#}
-{#            chart.graphs = graphs;#}
-{##}
-{#            chart.validateData();#}
-{#        }#}
-
         var workspace;
         var annotation_events = {'punctual': [], 'interval': []};
+        var annotations_by_url = {};
         var v_files;
         var menu_files;
 
@@ -653,6 +653,7 @@
             data: [],
             {# come avviene la visualizzazione di un field #}
             graphs: {},
+            guides: [],
             chart: null,
             {# 0 significa tutti #}
             points_per_field: 0,
@@ -737,6 +738,7 @@
             },
             set_chart: function (chart) {
                 this.chart = chart;
+                this.guides = chart.categoryAxis.guides;
             },
             set_points_per_field: function (points_per_field) {
                 for (field_name in this.fields){
@@ -852,6 +854,21 @@
                     else
                         this.hide_graph(chart_field_name)
                 }
+            },
+            // todo da completare
+            add_event: function (e) {
+                var guide = {
+                    category: "2001",
+                    toCategory: "2003",
+                    lineColor: "#CC0000",
+                    lineAlpha: 1,
+                    fillAlpha: 0.2,
+                    fillColor: "#CC0000",
+                    dashLength: 2,
+                    inside: true,
+                    labelRotation: 90,
+                    label: "fines for speeding increased"
+                };
             }
         };
         chart_manager.set_points_per_field(50);

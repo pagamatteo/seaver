@@ -69,7 +69,7 @@ class IntervalAnnotationSerializer(serializers.HyperlinkedModelSerializer):
 class IntervalAnnotationEventSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = IntervalAnnotationEvent
-        fields = ('pk', 'interval_annotation', 'workspace', 'start', 'stop')
+        fields = ('url', 'pk', 'interval_annotation', 'workspace', 'start', 'stop')
 
 
 class FileUploadSerializer(serializers.Serializer):
