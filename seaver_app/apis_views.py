@@ -5,10 +5,11 @@ Le view degli oggetti serializzati
 from rest_framework import status, permissions, serializers, generics, routers, viewsets, mixins
 from rest_framework.decorators import permission_classes
 from rest_framework.response import Response
-from .models import File as FileModel, Workspace, PunctualAnnotationEvent, FileFieldName, FileData
+from .models import File as FileModel, Workspace, PunctualAnnotationEvent, FileFieldName, FileData, \
+    IntervalAnnotation, PunctualAnnotation, IntervalAnnotationEvent
 from .serializers import FileSerializer, FileUploadSerializer, UserSerializer, PunctualAnnotationEventSerializer, \
     IntervalAnnotationEventSerializer, WorkspaceSerializer, FileFieldSerializer, FieldDataSerializer, \
-    FieldAnalysisRequestSerializer
+    FieldAnalysisRequestSerializer, PunctualAnnotationSerializer, IntervalAnnotationSerializer
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from django.http import Http404, HttpResponseServerError
@@ -130,6 +131,12 @@ class FileFieldView(viewsets.ModelViewSet):
 
 
 @permission_classes((permissions.IsAuthenticated, ))
+class PunctualAnnotationView(viewsets.ModelViewSet):
+    serializer_class = PunctualAnnotationSerializer
+    queryset = PunctualAnnotation.objects.order_by('name')
+
+
+@permission_classes((permissions.IsAuthenticated, ))
 class PunctualAnnotationEventView(viewsets.ModelViewSet):
     serializer_class = PunctualAnnotationEventSerializer
 
@@ -138,6 +145,13 @@ class PunctualAnnotationEventView(viewsets.ModelViewSet):
         workspaces = Workspace.objects.filter(user=user)
         return PunctualAnnotationEvent.objects.filter(workspace__in=workspaces)
 
+
+@permission_classes((permissions.IsAuthenticated, ))
+class IntervalAnnotationView(viewsets.ModelViewSet):
+    serializer_class = IntervalAnnotationSerializer
+    queryset = IntervalAnnotation.objects.order_by('name')
+
+
 @permission_classes((permissions.IsAuthenticated,))
 class IntervalAnnotationEventView(viewsets.ModelViewSet):
     serializer_class = IntervalAnnotationEventSerializer
@@ -145,7 +159,7 @@ class IntervalAnnotationEventView(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         workspaces = Workspace.objects.filter(user=user)
-        return PunctualAnnotationEvent.objects.filter(workspace__in=workspaces)
+        return IntervalAnnotationEvent.objects.filter(workspace__in=workspaces)
 
 # todo non testata
 @permission_classes((permissions.IsAuthenticated, ))
@@ -268,6 +282,8 @@ router.register(r'user', UserView, 'user')
 router.register(r'workspace', WorkspaceView, 'workspace')
 router.register(r'file', FileView, 'file')
 router.register(r'file-field', FileFieldView, 'filefieldname')
-router.register(r'punctual-events', PunctualAnnotationEventView, 'punctual')
-router.register(r'interval-events', IntervalAnnotationEventView, 'interval')
+router.register(r'punctual', PunctualAnnotationView)
+router.register(r'punctual-event', PunctualAnnotationEventView, 'punctualannotationevent')
+router.register(r'interval', IntervalAnnotationView)
+router.register(r'interval-event', IntervalAnnotationEventView, 'intervalannotationevent')
 router.register(r'file-data', FieldDataView, 'filedata')

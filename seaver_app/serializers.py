@@ -3,7 +3,7 @@
 Contiene gli oggetti serializzati: tradotti da python a json, etc...
 """
 from .models import File as FileModel, Workspace, BulkWriter, FileData, PunctualAnnotationEvent, \
-    IntervalAnnotationEvent, FileFieldName
+    IntervalAnnotationEvent, FileFieldName, PunctualAnnotation, IntervalAnnotation
 from rest_framework import serializers
 from .csvreader import CSVReader, FileToStrings, StringsToLines, NumberOfFieldsChangedException
 from django.contrib.auth.models import User
@@ -22,7 +22,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class WorkspaceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Workspace
-        fields = ('url', 'user', 'name', 'modified_on', 'files')
+        fields = ('url', 'user', 'name', 'modified_on', 'files', 'punctual_annotations', 'interval_annotations')
 
 
 class FileSerializer(serializers.HyperlinkedModelSerializer):
@@ -48,10 +48,22 @@ class FileFieldSerializer(serializers.HyperlinkedModelSerializer):
         return field_data_url
 
 
+class PunctualAnnotationSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = PunctualAnnotation
+        fields = ('url', 'pk', 'name', 'description')
+
+
 class PunctualAnnotationEventSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = PunctualAnnotationEvent
-        fields = ('pk', 'punctual_annotation', 'workspace', 'offset')
+        fields = ('url', 'pk', 'punctual_annotation', 'workspace', 'offset')
+
+
+class IntervalAnnotationSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = IntervalAnnotation
+        fields = ('url', 'pk', 'name', 'description')
 
 
 class IntervalAnnotationEventSerializer(serializers.HyperlinkedModelSerializer):

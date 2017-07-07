@@ -207,12 +207,16 @@ class FileData(models.Model):
 
         bulk_writer.flush()
 
+
 class PunctualAnnotation(models.Model):
     """
     Classe che modella un'annotazione puntuale.
     """
     name = models.CharField(max_length=20, unique=True)#, primary_key=True)
     description = models.TextField()
+
+    def __str__(self):
+        return self.name
 
 
 class PunctualAnnotationEvent(models.Model):
@@ -232,6 +236,9 @@ class PunctualAnnotationEvent(models.Model):
     # index = models.PositiveIntegerField()
     offset = models.FloatField(default=0)
 
+    def __str__(self):
+        return '{}, {}, {}'.format(self.punctual_annotation.name, self.workspace.name, self.offset)
+
     # class Meta:
     #     # unique_together = ('workspace', 'index')
     #     # index_together = [['workspace', 'index']]
@@ -244,6 +251,9 @@ class IntervalAnnotation(models.Model):
     """
     name = models.CharField(max_length=20, unique=True)#, primary_key=True)
     description = models.TextField()
+
+    def __str__(self):
+        return self.name
 
 
 class IntervalAnnotationEvent(models.Model):
@@ -263,6 +273,9 @@ class IntervalAnnotationEvent(models.Model):
     # index = models.PositiveIntegerField()
     start = models.FloatField()
     stop = models.FloatField()
+
+    def __str__(self):
+        return '{}, {}, {}, {}'.format(self.interval_annotation.name, self.workspace.name, self.start, self.stop)
 
     # class Meta:
     #     unique_together = ('workspace', 'index')

@@ -319,39 +319,106 @@
     <!-- load data -->
     <script>
         {# utilita' che controlla lo stato di completamento delle richieste  #}
+{#        var requests_watcher = {#}
+{#            requests: 0,#}
+{#            responses: 0,#}
+{#            success: function () {#}
+{#                alert("loading compleated");#}
+{#                after_files_loaded();#}
+{#            },#}
+{#            add: function (n) {#}
+{#                this.requests += n;#}
+{#            },#}
+{#            remove: function (n) {#}
+{#                this.responses += n;#}
+{#                if (this.responses >= this.requests) {#}
+{#                    this.success()#}
+{#                }#}
+{#            }#}
+{#        };#}
+
+        // osservatore di richieste
         var requests_watcher = {
-            requests: 0,
-            responses: 0,
-            success: function () {
-                alert("loading compleated");
-                after_loaded();
+            // gruppi di richieste
+            groups: {},
+            // listeners di eventy
+            listeners: {
+                // si attivano per ogni gruppo che termina il download
+                'any': []
             },
-            add: function (n) {
-                this.requests += n;
-            },
-            remove: function (n) {
-                this.responses += n;
-                if (this.responses >= this.requests) {
-                    this.success()
+            add: function (group_name) {
+                // aggiungo il tipo di gruppo se non esiste
+                if (!(group_name in this.groups)) {
+                    this.groups[group_name] = {
+                        requests: 0,
+                        responses: 0
+                    };
                 }
+                this.groups[group_name].requests += 1;
+            },
+            remove: function (group_name) {
+                var group = this.groups[group_name];
+                group.responses += 1;
+
+                // ho finito di scaricare i dati
+                if (group.responses >= group.requests){
+                    // attivo tutti i listener su any
+                    this.listeners['any'].forEach(function (l) {
+                       l();
+                    });
+                    if (group_name in this.listeners){
+                        // attivo tutti i listeners
+                        var listeners = this.listeners[group_name];
+                        listeners.forEach(function (l) {
+                            l();
+                        })
+                    }
+                }
+            },
+            add_listener: function (group_name, listener) {
+                if (!(group_name in this.listeners)){
+                    this.listeners[group_name] = []
+                }
+
+                this.listeners[group_name].push(listener);
+            },
+            remove_listener: function (group_name, listener) {
+                _.pull(this.listeners[group_name], listener);
             }
         };
+        // creo l'osservatore per la terminazione del download dei file
+        requests_watcher.add_listener('files', function () {
+           alert("files loading compleated");
+           after_files_loaded();
+        });
+        
+        function get_punctual_event(url) {
+            $.get(url).done(function (data) {
+                workspace.punctuals.push(data);
+            })
+        }
+
+        function get_interval_event(url) {
+            $.get(url).done(function (data) {
+                workspace.intervals.push(data);
+            })
+        }
 
 {#        ottine i dati del campo #}
         function get_field_data(field_data_url, field) {
-            requests_watcher.add(1);
+            requests_watcher.add('files');
             $.get(field_data_url).done(function (data) {
                 field.data = data.field_data;
             }).fail(function (errors) {
                alert("errore nel caricamento dei dati del campo: " + errors);
             }).always(function () {
-                requests_watcher.remove(1);
+                requests_watcher.remove('files');
             });
         }
 
 {#        ottiene il campo #}
         function get_field(field_url, f) {
-            requests_watcher.add(1);
+            requests_watcher.add('files');
             $.get(field_url).done(function (data) {
 {#                put in alphabetic order #}
                 var field_index = _.sortedIndexBy(f.fields, data, function (e) {
@@ -362,12 +429,12 @@
             }).fail(function (errors) {
                 alert("errore downloading field: " + errors);
             }).always(function () {
-                requests_watcher.remove(1);
+                requests_watcher.remove('files');
             })
         }
 
         function get_file(file_url) {
-            requests_watcher.add(1);
+            requests_watcher.add('files');
             $.get(file_url).done(function (data) {
                 data.fields = [];
 {#                put in alphabetic order #}
@@ -385,13 +452,26 @@
             }).fail(function (errors) {
                alert("errori nel caricamento del file: " + errors);
             }).always(function () {
-                requests_watcher.remove(1);
+                requests_watcher.remove('files');
             });
         }
 
         function get_workspace(workspace_url) {
             $.get(workspace_url).done(function (data) {
                 workspace = data;
+                
+                // aggiungo i campi degli eventi
+                workspace['punctuals'] = [];
+                workspace['intervals'] = [];
+
+                // scarico gli annotation events
+                data['punctual_annotations'].forEach(function (url) {
+                   get_punctual_event(url);
+                });
+                data['interval_annotations'].forEach(function (url) {
+                    get_interval_event(url);
+                });
+                
                 var fs = data.files;
                 workspace.files = [];
                 v_files.files = workspace.files;
@@ -404,7 +484,52 @@
             })
         }
 
-        function after_loaded() {
+
+        function get_puctual_annotations(url) {
+            $.get(url).done(function (data) {
+                // se la lista non è finita
+                if (data['next'] !== null)
+                    get_puctual_annotations(data['next']);
+
+                var punctuals = annotation_events.punctual;
+                for (var i=0; i < data['count']; i += 1){
+                    var result = data['results'][i];
+                    var index = _.sortedIndexBy(punctuals, result, function (e) {
+                        return e.name.toLowerCase();
+                    });
+                    punctuals.splice(index, 0, result)
+                }
+            })
+        }
+
+
+        function get_interval_annotations(url) {
+            $.get(url).done(function (data) {
+                // se la lista non è finita
+                if (data['next'] !== null)
+                    get_interval_annotations(data['next']);
+
+                var intervals = annotation_events.interval;
+                for (var i=0; i < data['count']; i += 1){
+                    var result = data['results'][i];
+                    var index = _.sortedIndexBy(intervals, result, function (e) {
+                        return e.name.toLowerCase();
+                    });
+                    intervals.splice(index, 0, result)
+                }
+            })
+        }
+
+
+        function get_annotations() {
+            punctual_url = '{% url "punctualannotation-list" %}';
+            interval_url = '{% url "intervalannotation-list" %}';
+
+            get_puctual_annotations(punctual_url);
+            get_interval_annotations(interval_url);
+        }
+
+        function after_files_loaded() {
             {#  v_files.files = workspace.files;#}
 
             chart_manager.set_chart(chart);
@@ -438,6 +563,7 @@
 {#        }#}
 
         var workspace;
+        var annotation_events = {'punctual': [], 'interval': []};
         var v_files;
         var menu_files;
 
@@ -502,6 +628,7 @@
                 }
             });
         };
+        get_annotations();
         get_workspace(workspace_url);
         console.log(menu_files);
 
