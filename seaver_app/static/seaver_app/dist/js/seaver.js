@@ -270,7 +270,7 @@ var chart = AmCharts.makeChart("chartdiv",
             "startOnAxis": true,
             "axisColor": "#DADADA",
             "gridAlpha": 0.07,
-            "title": "Year",
+            "title": "Index",
             "guides": []
         },
         "chartCursor": {

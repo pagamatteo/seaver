@@ -57,7 +57,7 @@ class PunctualAnnotationSerializer(serializers.HyperlinkedModelSerializer):
 class PunctualAnnotationEventSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = PunctualAnnotationEvent
-        fields = ('url', 'pk', 'punctual_annotation', 'workspace', 'offset')
+        fields = ('url', 'pk', 'annotation', 'workspace', 'start')
 
 
 class IntervalAnnotationSerializer(serializers.HyperlinkedModelSerializer):
@@ -69,7 +69,7 @@ class IntervalAnnotationSerializer(serializers.HyperlinkedModelSerializer):
 class IntervalAnnotationEventSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = IntervalAnnotationEvent
-        fields = ('url', 'pk', 'interval_annotation', 'workspace', 'start', 'stop')
+        fields = ('url', 'pk', 'annotation', 'workspace', 'start', 'stop')
 
 
 class FileUploadSerializer(serializers.Serializer):

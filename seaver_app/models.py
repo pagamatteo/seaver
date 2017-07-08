@@ -223,7 +223,7 @@ class PunctualAnnotationEvent(models.Model):
     """
     Classe che modella un evento associato ad un'annotazione puntuale
     """
-    punctual_annotation = models.ForeignKey(
+    annotation = models.ForeignKey(
         PunctualAnnotation,
         related_name='events',
         on_delete=models.CASCADE
@@ -233,11 +233,10 @@ class PunctualAnnotationEvent(models.Model):
         related_name= 'punctual_annotations',
         on_delete=models.CASCADE
     )
-    # index = models.PositiveIntegerField()
-    offset = models.FloatField(default=0)
+    start = models.FloatField(default=0)
 
     def __str__(self):
-        return '{}, {}, {}'.format(self.punctual_annotation.name, self.workspace.name, self.offset)
+        return '{}, {}, {}'.format(self.annotation.name, self.workspace.name, self.start)
 
     # class Meta:
     #     # unique_together = ('workspace', 'index')
@@ -260,7 +259,7 @@ class IntervalAnnotationEvent(models.Model):
     """
     Classe che modella un evento associato ad un'annotazione con durata.
     """
-    interval_annotation = models.ForeignKey(
+    annotation = models.ForeignKey(
         IntervalAnnotation,
         related_name='events',
         on_delete=models.CASCADE
@@ -270,12 +269,11 @@ class IntervalAnnotationEvent(models.Model):
         related_name='interval_annotations',
         on_delete=models.CASCADE
     )
-    # index = models.PositiveIntegerField()
     start = models.FloatField()
     stop = models.FloatField()
 
     def __str__(self):
-        return '{}, {}, {}, {}'.format(self.interval_annotation.name, self.workspace.name, self.start, self.stop)
+        return '{}, {}, {}, {}'.format(self.annotation.name, self.workspace.name, self.start, self.stop)
 
     # class Meta:
     #     unique_together = ('workspace', 'index')

@@ -552,8 +552,6 @@
         function after_files_loaded() {
             {#  v_files.files = workspace.files;#}
 
-            chart_manager.set_chart(chart);
-
             workspace.files.forEach(function (f) {
                 chart_manager.add_file(f);
             });
@@ -571,6 +569,7 @@
         //get_workspace(workspace_url);
 
         window.onload = function (){
+
 {#            gestisce la barra laterale dei file #}
             v_files = new Vue({
                 el: '#files_list',
@@ -628,9 +627,20 @@
                 }
             });
         };
+        requests_watcher.add_listener('ann', function () {
+            get_workspace(workspace_url);
+        });
+
+        requests_watcher.add_listener('event', function () {
+            workspace.punctuals.forEach(function (e) {
+                chart_manager.add_event(e);
+            });
+            workspace.intervals.forEach(function (e) {
+                chart_manager.add_event(e);
+            });
+        });
+
         get_annotations();
-        get_workspace(workspace_url);
-        console.log(menu_files);
 
 
 
@@ -653,7 +663,6 @@
             data: [],
             {# come avviene la visualizzazione di un field #}
             graphs: {},
-            guides: [],
             chart: null,
             {# 0 significa tutti #}
             points_per_field: 0,
@@ -736,9 +745,29 @@
                 this.__delete_field_data(field_name);
                 this.__create_field_data(field_name);
             },
+            __add_annotation_index: function (index) {
+                // funzione che blocca l'indice per le annotazioni
+                var data_index = _.sortedIndexBy(this.data, {'index': index}, 'index');
+                // controllo che l'indice non esista già in data
+                if ((data_index < this.data.length) && (this.data[data_index].index === index)){
+                    // controllo che annotation esista
+                    if ('annotations' in this.data[data_index]){
+                        // aggiungo +1 alle annotazioni bloccanti
+                        this.data[data_index]['annotations'] += 1;
+                    } else {
+                        // solo un'annotazione sta bloccando il punto
+                        this.data[data_index]['annotations'] = 1;
+                    }
+                } else {
+                    // ora un'annotazione sta bloccando il punto
+                    this.data.splice(data_index, 0, {
+                        'index': index,
+                        'annotations': 1
+                    })
+                }
+            },
             set_chart: function (chart) {
                 this.chart = chart;
-                this.guides = chart.categoryAxis.guides;
             },
             set_points_per_field: function (points_per_field) {
                 for (field_name in this.fields){
@@ -855,50 +884,41 @@
                         this.hide_graph(chart_field_name)
                 }
             },
-            // todo da completare
             add_event: function (e) {
-                var guide = {
-                    category: "2001",
-                    toCategory: "2003",
-                    lineColor: "#CC0000",
-                    lineAlpha: 1,
-                    fillAlpha: 0.2,
-                    fillColor: "#CC0000",
-                    dashLength: 2,
-                    inside: true,
-                    labelRotation: 90,
-                    label: "fines for speeding increased"
-                };
+                var guide = new AmCharts.Guide();
+                guide.lineColor = "#CC0000";
+                guide.lineAlpha = 1;
+                guide.fillAlpha = 0.2;
+                guide.fillColor = "#CC0000";
+                guide.dashLength = 2;
+                guide.inside = true;
+                guide.labelRotation = 90;
+
+                guide.id = e.pk;
+                guide.category =  e.start;
+
+                // aggiungo che un'annotazione sta bloccando l'indice corrispondente
+                this.__add_annotation_index(e.start);
+
+                if ('stop' in e) {
+                    guide.toCategory = e.stop;
+                    // aggiungo che un'annotazione sta bloccando l'indice corrispondente
+                    this.__add_annotation_index(e.stop);
+                }
+
+                if (e.annotation in annotations_by_url){
+                    guide.label = annotations_by_url[e.annotation].name;
+                }
+                else {
+                    guide.label = 'annotation'
+                }
+
+                this.chart.categoryAxis.addGuide(guide);
             }
         };
+        chart_manager.set_chart(chart);
         chart_manager.set_points_per_field(50);
 
-
-        function add_field_to_chart(f, field){
-            {# f: file            #}
-          var  chart_field_name = f.name + "_" + field.name;
-
-          chart_manager.add_field(chart_field_name, field.data, f.offset, f.stretching);
-        }
-
-        function manage_file_in_chart(f) {
-            if (f.active) {
-                f.fields.forEach(function (field) {
-                    var chart_field_name = f.name + "_" + field.name;
-                    if (field.active) {
-                        chart_manager.add_field_if_not_exists(chart_field_name,
-                            field.data, f.offset, f.stretching);
-                    } else {
-                        chart_manager.delete_field(chart_field_name);
-                    }
-                });
-            } else {
-                f.fields.forEach(function (field) {
-                    var chart_field_name = f.name + "_" + field.name;
-                    chart_manager.delete_field(chart_field_name);
-                })
-            }
-        }
     </script>
   </body>
 </html>
