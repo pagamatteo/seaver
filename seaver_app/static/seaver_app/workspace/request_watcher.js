@@ -8,6 +8,8 @@ requests_watcher.add_listener('workspace', function () {
     // carico i file in Vue
     v_files.files = workspace.files;
     menu_files.files = workspace.files;
+    menu_punctual_events.events = workspace.punctuals;
+    menu_interval_events.events = workspace.intervals;
 });
 
 // creo l'osservatore per la terminazione del download dei file

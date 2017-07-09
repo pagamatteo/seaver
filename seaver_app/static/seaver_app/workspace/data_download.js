@@ -5,6 +5,10 @@
 function get_punctual_event(url) {
     requests_watcher.add('event');
     $.get(url).done(function (data) {
+        // ottengo l'annotazione corrispondente
+        var annotation = annotations_by_url[data.annotation];
+        data.annotation = annotation;
+
         workspace.punctuals.push(data);
     }).always(function () {
         requests_watcher.remove('event');
@@ -14,6 +18,10 @@ function get_punctual_event(url) {
 function get_interval_event(url) {
     requests_watcher.add('event');
     $.get(url).done(function (data) {
+        // ottengo l'annotazione corrispondente
+        var annotation = annotations_by_url[data.annotation];
+        data.annotation = annotation;
+
         workspace.intervals.push(data);
     }).always(function () {
         requests_watcher.remove('event');

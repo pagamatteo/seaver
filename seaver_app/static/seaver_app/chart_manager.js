@@ -247,12 +247,7 @@ function ChartManager(chart) {
             this.__add_annotation_index(e.stop);
         }
 
-        if (e.annotation in annotations_by_url) {
-            guide.label = annotations_by_url[e.annotation].name;
-        }
-        else {
-            guide.label = 'annotation'
-        }
+        guide.label = e.annotation.name;
 
         this.chart.categoryAxis.addGuide(guide);
     };
