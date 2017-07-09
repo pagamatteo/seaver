@@ -40,7 +40,6 @@
       <!-- loadash -->
       <script src="{% static 'seaver_app/lodash.min.js' %}"></script>
 
-
     <script src="{% static 'seaver_app/dist/js/seaver.js' %}"></script>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -294,251 +293,19 @@
     <!-- AdminLTE for demo purposes -->
     <script src="{% static 'seaver_app/dist/js/demo.js' %}" type="text/javascript"></script>
 
+    <!-- seaver app -->
+    <script src="{% static "seaver_app/csrftoken.js" %}"></script>
+    <script src="{% static "seaver_app/chart_manager.js" %}"></script>
+    <script src="{% static "seaver_app/request_watcher.js" %}"></script>
+    <script src="{% static "seaver_app/workspace/data_download.js" %}"></script>
+    <script src="{% static "seaver_app/workspace/request_watcher.js" %}"></script>
+
+
     <!-- init -->
     <script>
         Vue.options.delimiters = ['[[', ']]'];
 
-
-            {# from https://docs.djangoproject.com/en/1.11/ref/csrf/#ajax #}
-            $.ajaxSetup({
-                beforeSend: function (xhr, settings) {
-                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                    }
-                }
-            });
-
-            function csrfSafeMethod(method) {
-                // these HTTP methods do not require CSRF protection
-                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-            }
-
-            var csrftoken = Cookies.get('csrftoken');
-    </script>
-
-    <!-- load data -->
-    <script>
-        {# utilita' che controlla lo stato di completamento delle richieste  #}
-{#        var requests_watcher = {#}
-{#            requests: 0,#}
-{#            responses: 0,#}
-{#            success: function () {#}
-{#                alert("loading compleated");#}
-{#                after_files_loaded();#}
-{#            },#}
-{#            add: function (n) {#}
-{#                this.requests += n;#}
-{#            },#}
-{#            remove: function (n) {#}
-{#                this.responses += n;#}
-{#                if (this.responses >= this.requests) {#}
-{#                    this.success()#}
-{#                }#}
-{#            }#}
-{#        };#}
-
-        // osservatore di richieste
-        var requests_watcher = {
-            // gruppi di richieste
-            groups: {},
-            // listeners di eventy
-            listeners: {
-                // si attivano per ogni gruppo che termina il download
-                'any': []
-            },
-            add: function (group_name) {
-                // aggiungo il tipo di gruppo se non esiste
-                if (!(group_name in this.groups)) {
-                    this.groups[group_name] = {
-                        requests: 0,
-                        responses: 0
-                    };
-                }
-                this.groups[group_name].requests += 1;
-            },
-            remove: function (group_name) {
-                var group = this.groups[group_name];
-                group.responses += 1;
-
-                // ho finito di scaricare i dati
-                if (group.responses >= group.requests){
-                    // attivo tutti i listener su any
-                    this.listeners['any'].forEach(function (l) {
-                       l();
-                    });
-                    if (group_name in this.listeners){
-                        // attivo tutti i listeners
-                        var listeners = this.listeners[group_name];
-                        listeners.forEach(function (l) {
-                            l();
-                        })
-                    }
-                }
-            },
-            add_listener: function (group_name, listener) {
-                if (!(group_name in this.listeners)){
-                    this.listeners[group_name] = []
-                }
-
-                this.listeners[group_name].push(listener);
-            },
-            remove_listener: function (group_name, listener) {
-                _.pull(this.listeners[group_name], listener);
-            }
-        };
-        // creo l'osservatore per la terminazione del download dei file
-        requests_watcher.add_listener('files', function () {
-           alert("files loading compleated");
-           after_files_loaded();
-        });
-        
-        function get_punctual_event(url) {
-            requests_watcher.add('event');
-            $.get(url).done(function (data) {
-                workspace.punctuals.push(data);
-            }).always(function () {
-                requests_watcher.remove('event');
-            })
-        }
-
-        function get_interval_event(url) {
-            requests_watcher.add('event');
-            $.get(url).done(function (data) {
-                workspace.intervals.push(data);
-            }).always(function () {
-                requests_watcher.remove('event');
-            })
-        }
-
-{#        ottine i dati del campo #}
-        function get_field_data(field_data_url, field) {
-            requests_watcher.add('files');
-            $.get(field_data_url).done(function (data) {
-                field.data = data.field_data;
-            }).fail(function (errors) {
-               alert("errore nel caricamento dei dati del campo: " + errors);
-            }).always(function () {
-                requests_watcher.remove('files');
-            });
-        }
-
-{#        ottiene il campo #}
-        function get_field(field_url, f) {
-            requests_watcher.add('files');
-            $.get(field_url).done(function (data) {
-{#                put in alphabetic order #}
-                var field_index = _.sortedIndexBy(f.fields, data, function (e) {
-                    return e.name.toLowerCase();
-                });
-                f.fields.splice(field_index, 0, data);
-                get_field_data(data.field_data, data);
-            }).fail(function (errors) {
-                alert("errore downloading field: " + errors);
-            }).always(function () {
-                requests_watcher.remove('files');
-            })
-        }
-
-        function get_file(file_url) {
-            requests_watcher.add('files');
-            $.get(file_url).done(function (data) {
-                data.fields = [];
-{#                put in alphabetic order #}
-                var file_index = _.sortedIndexBy(workspace.files, data, function (e) {
-                    return e.name.toLowerCase();
-                });
-                workspace.files.splice(file_index, 0, data);
-{#                carica il nome del file nella barra laterale #}
-{#                v_files.files.push(data);#}
-{#                menu_files.files.push(data);#}
-                console.log(menu_files);
-                data.field_names.forEach(function (field_url) {
-                    get_field(field_url, data)
-                });
-            }).fail(function (errors) {
-               alert("errori nel caricamento del file: " + errors);
-            }).always(function () {
-                requests_watcher.remove('files');
-            });
-        }
-
-        function get_workspace(workspace_url) {
-            $.get(workspace_url).done(function (data) {
-                workspace = data;
-                
-                // aggiungo i campi degli eventi
-                workspace['punctuals'] = [];
-                workspace['intervals'] = [];
-
-                // scarico gli annotation events
-                data['punctual_annotations'].forEach(function (url) {
-                   get_punctual_event(url);
-                });
-                data['interval_annotations'].forEach(function (url) {
-                    get_interval_event(url);
-                });
-                
-                var fs = data.files;
-                workspace.files = [];
-                v_files.files = workspace.files;
-                menu_files.files = workspace.files;
-                fs.forEach(function (f_url) {
-                    get_file(f_url);
-                });
-            }).fail(function (error) {
-                alert("error loading workspace: " + error);
-            })
-        }
-
-
-        function get_puctual_annotations(url) {
-            requests_watcher.add('ann');
-            $.get(url).done(function (data) {
-                // se la lista non è finita
-                if (data['next'] !== null)
-                    get_puctual_annotations(data['next']);
-
-                var punctuals = annotation_events.punctual;
-                for (var i=0; i < data['count']; i += 1){
-                    var result = data['results'][i];
-
-                    // salvo l'annotazione per la ricerca by url
-                    annotations_by_url[result.url] = result;
-
-                    var index = _.sortedIndexBy(punctuals, result, function (e) {
-                        return e.name.toLowerCase();
-                    });
-                    punctuals.splice(index, 0, result)
-                }
-            }).always(function () {
-                requests_watcher.remove('ann');
-            })
-        }
-
-
-        function get_interval_annotations(url) {
-            requests_watcher.add('ann');
-            $.get(url).done(function (data) {
-                // se la lista non è finita
-                if (data['next'] !== null)
-                    get_interval_annotations(data['next']);
-
-                var intervals = annotation_events.interval;
-                for (var i=0; i < data['count']; i += 1){
-                    var result = data['results'][i];
-
-                    // salvo l'annotazione per la ricerca by url
-                    annotations_by_url[result.url] = result;
-
-                    var index = _.sortedIndexBy(intervals, result, function (e) {
-                        return e.name.toLowerCase();
-                    });
-                    intervals.splice(index, 0, result)
-                }
-            }).always(function () {
-                requests_watcher.remove('ann');
-            })
-        }
+        var csrftoken = Cookies.get('csrftoken');
 
 
         function get_annotations() {
@@ -549,28 +316,14 @@
             get_interval_annotations(interval_url);
         }
 
-        function after_files_loaded() {
-            {#  v_files.files = workspace.files;#}
-
-            workspace.files.forEach(function (f) {
-                chart_manager.add_file(f);
-            });
-
-            chart_manager.refresh();
-        }
-
-        var workspace;
-        var annotation_events = {'punctual': [], 'interval': []};
-        var annotations_by_url = {};
-        var v_files;
-        var menu_files;
-
-        var workspace_url = '{% url 'workspace-detail' workspace.pk %}';
-        //get_workspace(workspace_url);
 
         window.onload = function (){
 
-{#            gestisce la barra laterale dei file #}
+            workspace_url = '{% url 'workspace-detail' workspace.pk %}';
+
+            // CREO GLI ELEMENTI VUE
+
+            //gestisce la barra laterale dei file
             v_files = new Vue({
                 el: '#files_list',
                 data: {
@@ -601,14 +354,14 @@
                             }
                         });
 
-{#                      attivo / disattivo i file  #}
+                        // attivo / disattivo i file
                         chart_manager.show_hide_file(f);
                     },
                     activate_field: function (file_index, field_index) {
                         var f = this.files[file_index];
                         var field = f.fields[field_index];
 
-{#                        cambio il valore di active e lo salvo nel db #}
+                        // cambio il valore di active e lo salvo nel db
                         field.active = ! field.active;
                         $.ajax(field.url,{
                             method: "PATCH",
@@ -617,7 +370,7 @@
                             }
                         });
 
-{#                    visualizzo / nascondo il campo #}
+                      // visualizzo / nascondo il campo
                         var chart_field_name = chart_manager.get_field_name(f, field);
                         if (f.active && field.active)
                             chart_manager.show_graph(chart_field_name);
@@ -626,299 +379,19 @@
                     }
                 }
             });
+
+            // ASSEGNO IL CHART AL MANAGER
+            chart_manager = new ChartManager(chart);
+            chart_manager.set_points_per_field(50);
+
+            // OTTENGO LE ANNOTAZIONI DISPONIBILI
+            get_annotations();
         };
-        requests_watcher.add_listener('ann', function () {
-            get_workspace(workspace_url);
-        });
-
-        requests_watcher.add_listener('event', function () {
-            workspace.punctuals.forEach(function (e) {
-                chart_manager.add_event(e);
-            });
-            workspace.intervals.forEach(function (e) {
-                chart_manager.add_event(e);
-            });
-        });
-
-        get_annotations();
 
 
-
-{#        function activate_file(event, url) {#}
-{#            var file_to_activate = $(event.target);#}
-{#            console.log(file_to_activate);#}
-{#            console.log(url);#}
-{#            file_to_activate.toggleClass('fa-square-o fa-check-square-o');#}
-{#            var current_active_status =#}
-{#            console.log(current_active_status);#}
-{#        }#}
-
-        
-    </script>
-
-    <script>
-{#        todo da testare #}
-        var chart_manager = {
-            fields: {},
-            data: [],
-            {# come avviene la visualizzazione di un field #}
-            graphs: {},
-            chart: null,
-            {# 0 significa tutti #}
-            points_per_field: 0,
-            __get_index_increment: function (field_name) {
-{#                restituisce di quanto deve crescere l'indice della serie #}
-                var index_increment = Math.floor(this.fields[field_name].data.length / this.points_per_field);
-                if (index_increment < 1)
-                    index_increment = 1;
-
-                return index_increment;
-            },
-            __create_graph: function (field_name) {
-                if (field_name in this.graphs)
-                    return;
-
-                this.graphs[field_name] = {
-                    "balloonText": "[[title]] of [[category]]:[[value]]",
-                    "bullet": "round",
-                    "id": field_name,
-                    "title": field_name,
-                    "valueField": field_name,
-                    "hidden": false
-                };
-            },
-            __delete_graph: function (field_name) {
-                if (field_name in this.graphs) {
-                    delete this.graphs[field_name];
-                }
-            },
-            __create_field_data: function (field_name) {
-                var field = this.fields[field_name];
-{#                var field_length = field.data.length * field.stretching + field.offset;#}
-{#                if (field_length > this.data.length) {#}
-{#                    var previous_length = this.data.length;#}
-{#                    for (var i = previous_length; i < field_length; i += 1) {#}
-{#                        this.data[i] = {index: i};#}
-{#                    }#}
-{#                }#}
-
-                var index_increment = this.__get_index_increment(field_name);
-
-                for (i = 0; i < field.data.length; i += index_increment) {
-                    var point_index = i * field.stretching + field.offset;
-                    var point_data = {'index': point_index};
-{#                    in che posizione di data inserire il nuovo punto #}
-                    var data_index = _.sortedIndexBy(this.data, point_data, 'index');
-                    if ((data_index < this.data.length) && (this.data[data_index].index === point_index)){
-{#                        se l'elemento esiste già #}
-                        this.data[data_index][field_name] = field.data[i];
-                    }
-                    else {
-                        point_data[field_name] = field.data[i];
-                        this.data.splice(data_index, 0, point_data);
-                    }
-{#                    this.data[i * field.stretching + field.offset][field_name] = field.data[i];#}
-                }
-            },
-            __delete_field_data: function (field_name) {
-                var field = this.fields[field_name];
-
-                var index_increment = this.__get_index_increment(field_name);
-
-                for (var i = 0; i < field.data.length; i += index_increment) {
-                    var point_index = i * field.stretching + field.offset;
-                    var point_data = {'index': point_index};
-{#                    in che posizione di data inserire il nuovo punto #}
-                    var data_index = _.sortedIndexBy(this.data, point_data, 'index');
-
-                    delete this.data[data_index][field_name];
-
-{#                    se l'elemento contiene solo index lo elimino dall'array #}
-                    if (Object.keys(this.data[data_index]).length === 1) {
-                        this.data.splice(data_index, 1);
-                        i -= 1;
-                    }
-
-                }
-            },
-            __update_field_data: function (field_name) {
-                this.__delete_field_data(field_name);
-                this.__create_field_data(field_name);
-            },
-            __add_annotation_index: function (index) {
-                // funzione che blocca l'indice per le annotazioni
-                var data_index = _.sortedIndexBy(this.data, {'index': index}, 'index');
-                // controllo che l'indice non esista già in data
-                if ((data_index < this.data.length) && (this.data[data_index].index === index)){
-                    // controllo che annotation esista
-                    if ('annotations' in this.data[data_index]){
-                        // aggiungo +1 alle annotazioni bloccanti
-                        this.data[data_index]['annotations'] += 1;
-                    } else {
-                        // solo un'annotazione sta bloccando il punto
-                        this.data[data_index]['annotations'] = 1;
-                    }
-                } else {
-                    // ora un'annotazione sta bloccando il punto
-                    this.data.splice(data_index, 0, {
-                        'index': index,
-                        'annotations': 1
-                    })
-                }
-            },
-            set_chart: function (chart) {
-                this.chart = chart;
-            },
-            set_points_per_field: function (points_per_field) {
-                for (field_name in this.fields){
-                    if (this.fields.hasOwnProperty(field_name)){
-                        this.__delete_field_data(field_name);
-                    }
-                }
-
-                this.points_per_field = points_per_field;
-
-                for (field_name in this.fields){
-                    if (this.fields.hasOwnProperty(field_name)){
-                        this.__delete_field_data(field_name);
-                    }
-                }
-            },
-            show_graph: function (field_name) {
-                this.chart.showGraph(this.graphs[field_name]);
-            },
-            hide_graph: function (field_name) {
-                this.chart.hideGraph(this.graphs[field_name]);
-            },
-            add_field: function (field_name, data, offset, stretching) {
-                if (field_name in this.fields) {
-                    this.__delete_field_data(field_name);
-                }
-
-                this.fields[field_name] = {};
-                this.fields[field_name].data = data;
-                this.fields[field_name].offset = offset;
-                this.fields[field_name].stretching = stretching;
-
-                this.__create_field_data(field_name);
-
-                this.__create_graph(field_name)
-            },
-            add_field_if_not_exists: function (field_name, data, offset, stretching) {
-                if (field_name in this.fields)
-                    return;
-
-                this.add_field(field_name, data, offset, stretching);
-            },
-            delete_field: function (field_name) {
-                if (!(field_name in this.fields))
-                    return;
-
-                this.__delete_field_data(field_name);
-                delete this.fields[field_name];
-
-                this.__delete_graph(field_name);
-            },
-            set_offset: function (field_name, offset) {
-                if (this.fields[field_name].offset !== offset){
-                    this.__delete_field_data(field_name);
-                    this.fields[field_name].offset = offset;
-                    this.__create_field_data(field_name);
-                }
-            },
-            set_stretching: function (field_name, stretching) {
-                if (this.fields[field_name].stretching !== stretching){
-                    this.__delete_field_data(field_name);
-                    this.fields[field_name].stretching = stretching;
-                    this.__create_field_data(field_name);
-                }
-            },
-            refresh: function () {
-                var graphs = [];
-                for (key in this.graphs){
-                    if (this.graphs.hasOwnProperty(key))
-                    {
-                        graphs.push(this.graphs[key]);
-                    }
-                }
-                this.chart.graphs = graphs;
-                this.chart.dataProvider = this.data;
-                this.chart.validateData();
-{#                this.chart.validateNow();#}
-            },
-            rename_field: function (previous_name, current_name) {
-                if (previous_name !== current_name){
-                    var previous_field = this.fields[previous_name];
-                    this.delete_field(previous_field);
-                    this.add_field(current_name, previous_field.data, previous_field.offset,
-                        previous_field.stretching);
-                }
-            },
-            {#  file method #}
-            get_field_name: function (f, field) {
-                return f.name + "_" + field.name;
-            },
-            add_file: function (f) {
-                for (var i = 0; i < f.fields.length; i += 1) {
-                    var field = f.fields[i];
-                    var  chart_field_name = this.get_field_name(f, field);
-                    this.add_field_if_not_exists(chart_field_name, field.data, f.offset, f.stretching);
-
-                    this.graphs[chart_field_name].hidden = !((f.active) && (field.active));
-                }
-            },
-            delete_file: function (f) {
-                for (var i = 0; i < f.fields.length; i += 1) {
-                    var field = f.fields[i];
-                    var chart_field_name = this.get_field_name(f, field);
-                    this.delete_field(chart_field_name);
-                }
-            },
-            show_hide_file: function (f) {
-                for (var i = 0; i < f.fields.length; i += 1) {
-                    var field = f.fields[i];
-                    var chart_field_name = this.get_field_name(f, field);
-                    if (f.active && field.active)
-                        this.show_graph(chart_field_name);
-                    else
-                        this.hide_graph(chart_field_name)
-                }
-            },
-            add_event: function (e) {
-                var guide = new AmCharts.Guide();
-                guide.lineColor = "#CC0000";
-                guide.lineAlpha = 1;
-                guide.fillAlpha = 0.2;
-                guide.fillColor = "#CC0000";
-                guide.dashLength = 2;
-                guide.inside = true;
-                guide.labelRotation = 90;
-
-                guide.id = e.pk;
-                guide.category =  e.start;
-
-                // aggiungo che un'annotazione sta bloccando l'indice corrispondente
-                this.__add_annotation_index(e.start);
-
-                if ('stop' in e) {
-                    guide.toCategory = e.stop;
-                    // aggiungo che un'annotazione sta bloccando l'indice corrispondente
-                    this.__add_annotation_index(e.stop);
-                }
-
-                if (e.annotation in annotations_by_url){
-                    guide.label = annotations_by_url[e.annotation].name;
-                }
-                else {
-                    guide.label = 'annotation'
-                }
-
-                this.chart.categoryAxis.addGuide(guide);
-            }
-        };
-        chart_manager.set_chart(chart);
-        chart_manager.set_points_per_field(50);
-
+        var v_files;
+        var menu_files;
+        var chart_manager;
     </script>
   </body>
 </html>
