@@ -303,23 +303,18 @@
 
     <!-- init -->
     <script>
+        // cambio i delimitatori di Vue
         Vue.options.delimiters = ['[[', ']]'];
 
+        // ottengo il token per le richieste non safe (es post, put, ...)
         var csrftoken = Cookies.get('csrftoken');
-
-
-        function get_annotations() {
-            punctual_url = '{% url "punctualannotation-list" %}';
-            interval_url = '{% url "intervalannotation-list" %}';
-
-            get_puctual_annotations(punctual_url);
-            get_interval_annotations(interval_url);
-        }
 
 
         window.onload = function (){
 
             workspace_url = '{% url 'workspace-detail' workspace.pk %}';
+            punctual_url = '{% url "punctualannotation-list" %}';
+            interval_url = '{% url "intervalannotation-list" %}';
 
             // CREO GLI ELEMENTI VUE
 
@@ -385,7 +380,7 @@
             chart_manager.set_points_per_field(50);
 
             // OTTENGO LE ANNOTAZIONI DISPONIBILI
-            get_annotations();
+            get_annotations(punctual_url, interval_url);
         };
 
 

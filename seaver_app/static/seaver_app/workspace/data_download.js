@@ -148,6 +148,11 @@ function get_interval_annotations(url) {
     })
 }
 
+function get_annotations(punctual_url, interval_url) {
+    get_puctual_annotations(punctual_url);
+    get_interval_annotations(interval_url);
+}
+
 var workspace;
 var workspace_url;
 var annotation_events = {'punctual': [], 'interval': []};
