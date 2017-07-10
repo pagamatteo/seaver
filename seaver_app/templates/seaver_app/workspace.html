@@ -132,14 +132,14 @@
                   <i class="fa fa-dashboard"></i> <span>Punctual annotations</span><div class="box-tools pull-right"><button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#create_annotation_modal"><i class="fa fa-plus"></i></button></div>
               </a>
               <ul id="p_events_list" class="treeview-menu">
-                  <li v-for="(e, index) in events" class="active"><a href="#"><i class="fa fa-circle-o"></i>[[ e.annotation.name ]]<i class="fa fa-times pull-right" v-on:click="ask_delete_file_confirm(index)"></i></a></li>
+                  <li v-for="(e, index) in events" class="active" v-on:mouseover="highlight_event(index)" v-on:mouseout="remove_highlight_event(index)"><a href="#"><i class="fa fa-circle-o"></i>[[ e.annotation.name ]]<i class="fa fa-times pull-right" v-on:click="ask_delete_confirm(index)"></i></a></li>
 {#                  <li class="active"><a href="#"><i class="fa fa-circle-o"></i>File 2 <i class="fa fa-times pull-right" onclick="ask_delete_file_confirm(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>#}
               </ul>
                 <a href="#">
                   <i class="fa fa-dashboard"></i> <span>Interval annotations</span><div class="box-tools pull-right"><button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#create_annotation_modal"><i class="fa fa-plus"></i></button></div>
               </a>
               <ul id="i_events_list" class="treeview-menu">
-                  <li v-for="(e, index) in events" class="active"><a href="#"><i class="fa fa-circle-o"></i>[[ e.annotation.name ]]<i class="fa fa-times pull-right" v-on:click="ask_delete_file_confirm(index)"></i></a></li>
+                  <li v-for="(e, index) in events" class="active" v-on:mouseover="highlight_event(index)" v-on:mouseout="remove_highlight_event(index)"><a href="#"><i class="fa fa-circle-o"></i>[[ e.annotation.name ]]<i class="fa fa-times pull-right" v-on:click="ask_delete_confirm(index)"></i></a></li>
 {#                  <li class="active"><a href="#"><i class="fa fa-circle-o"></i>File 2 <i class="fa fa-times pull-right" onclick="ask_delete_file_confirm(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>#}
               </ul>
               <!--{% for workspace in workspaces %}
@@ -258,6 +258,25 @@
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
                 <button type="button" class="btn btn-primary" id="confirm_delete_file">Yes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+          <!-- Delete event modal -->
+        <div class="modal fade" id="delete_event_modal" tabindex="-1" role="dialog" aria-labelledby="delete_event_modal_label">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="delete_event_modal_label">Delete Event</h4>
+              </div>
+              <div class="modal-body">
+                Are you sure you want to delete the event ?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" id="confirm_delete_event">Yes</button>
               </div>
             </div>
           </div>
@@ -392,11 +411,39 @@
             menu_punctual_events = new Vue({
                 el: "#p_events_list",
                 data: {
-                    events: []
+                    events: [],
+                    default_color_event: '#CC0000',
+                    highlight_color_event: '#00cc03'
                 },
                 methods: {
-                    ask_delete_file_confirm: function () {
+                    ask_delete_confirm: function (index) {
+                        $('#delete_event_modal').modal('toggle');
+                        $('#confirm_delete_event').on("click", function(){ menu_punctual_events.delete_event(index) });
+                    },
+                    delete_event: function (index) {
+                        // cancello l'evento nel server
+                        var e = this.events[index];
+                        $.ajax(e.url, {
+                            method: 'DELETE'
+                        }).done(function () {
+                            // cancello l'evento dalla lista
+                            menu_punctual_events.events.splice(index, 1);
 
+                            // cancello l'evento dal grafico
+                            chart_manager.remove_event(e);
+                            chart_manager.refresh_properties();
+
+                            // esco dalla finestra di cancellazione
+                            $('#delete_event_modal').modal('toggle');
+                        })
+                    },
+                    highlight_event: function (index) {
+                        chart_manager.color_event(this.events[index], this.highlight_color_event);
+                        chart_manager.refresh_properties();
+                    },
+                    remove_highlight_event: function (index) {
+                        chart_manager.color_event(this.events[index], this.default_color_event);
+                        chart_manager.refresh_properties();
                     }
                 }
             });
@@ -404,11 +451,39 @@
             menu_interval_events = new Vue({
                 el: "#i_events_list",
                 data: {
-                    events: []
+                    events: [],
+                    default_color_event: '#CC0000',
+                    highlight_color_event: '#00cc03'
                 },
                 methods: {
-                    ask_delete_file_confirm: function () {
+                    ask_delete_confirm: function (index) {
+                        $('#delete_event_modal').modal('toggle');
+                        $('#confirm_delete_event').on("click", function(){ menu_interval_events.delete_event(index) });
+                    },
+                    delete_event: function (index) {
+                        // cancello l'evento nel server
+                        var e = this.events[index];
+                        $.ajax(e.url, {
+                            method: 'DELETE'
+                        }).done(function () {
+                            // cancello l'evento dalla lista
+                            menu_interval_events.events.splice(index, 1);
 
+                            // cancello l'evento dal grafico
+                            chart_manager.remove_event(e);
+                            chart_manager.refresh_properties();
+
+                            // esco dalla finestra di cancellazione
+                            $('#delete_event_modal').modal('toggle');
+                        })
+                    },
+                    highlight_event: function (index) {
+                        chart_manager.color_event(this.events[index], this.highlight_color_event);
+                        chart_manager.refresh_properties();
+                    },
+                    remove_highlight_event: function (index) {
+                        chart_manager.color_event(this.events[index], this.default_color_event);
+                        chart_manager.refresh_properties();
                     }
                 }
             });

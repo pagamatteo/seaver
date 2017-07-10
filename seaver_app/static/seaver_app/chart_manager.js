@@ -187,6 +187,9 @@ function ChartManager(chart) {
         this.chart.dataProvider = this.data;
         this.chart.validateData();
     };
+    this.refresh_properties = function () {
+        this.chart.validateNow();
+    };
     this.rename_field = function (previous_name, current_name) {
         if (previous_name !== current_name) {
             var previous_field = this.fields[previous_name];
@@ -259,6 +262,43 @@ function ChartManager(chart) {
         // ho trovato il guide corrispondente e lo rimuovo
         if (index !== -1) {
             this.chart.categoryAxis.removeGuide(this.guides[index]);
+
+            // decremento il valore di annotation
+            index = _.sortedIndexBy(this.data, {'index': e.start}, 'index');
+            if (index < this.data.length && this.data[index].index === e.start){
+                // se la coordinata x esiste
+                this.data[index].annotations -= 1;
+
+                // se non ci sono più indici sulla coordinata x
+                if (this.data[index].annotations <= 0){
+                    //rimuovo la coordinata x
+                    this.data.splice(index, 1);
+                }
+            }
+
+            // se è un'interval annotation
+            if ('stop' in e) {
+                index = _.sortedIndexBy(this.data, {'index': e.stop}, 'index');
+                if (index < this.data.length && this.data[index].index === e.stop) {
+                    // se la coordinata x esiste
+                    this.data[index].annotations -= 1;
+
+                    // se non ci sono più indici sulla coordinata x
+                    if (this.data[index].annotations <= 0) {
+                        //rimuovo la coordinata x
+                        this.data.splice(index, 1);
+                    }
+                }
+            }
+        }
+    };
+    this.color_event = function (e, color) {
+        var index = _.findIndex(this.guides, {'id': e.url}, 'id');
+
+        // se la guida esiste
+        if (index !== -1){
+            this.guides[index].lineColor = color;
+            this.guides[index].fillColor = color;
         }
     };
 
