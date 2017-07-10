@@ -4,16 +4,19 @@
 
 requests_watcher = new RequestWatcher();
 
-requests_watcher.add_listener('workspace', function () {
+var request_workspace_id = requests_watcher.add_listener('workspace', function () {
     // carico i file in Vue
     v_files.files = workspace.files;
     menu_files.files = workspace.files;
     menu_punctual_events.events = workspace.punctuals;
     menu_interval_events.events = workspace.intervals;
+
+    // rimuovo il listener
+    requests_watcher.remove_listener('workspace', request_workspace_id);
 });
 
 // creo l'osservatore per la terminazione del download dei file
-requests_watcher.add_listener('files', function () {
+var request_files_id = requests_watcher.add_listener('files', function () {
     alert("files loading compleated");
 
     // aggiungo i file al chart manager
@@ -23,18 +26,27 @@ requests_watcher.add_listener('files', function () {
 
     // eseguo il refresh del grafico
     chart_manager.refresh();
+
+    // rimuovo il listener
+    requests_watcher.remove_listener('files', request_files_id);
 });
 
-requests_watcher.add_listener('ann', function () {
+var request_annotation_id = requests_watcher.add_listener('ann', function () {
     // ottengo i dati del workspace
     get_workspace(workspace_url);
+
+    // rimuovo il listener
+    requests_watcher.remove_listener('ann', request_annotation_id);
 });
 
-requests_watcher.add_listener('event', function () {
+var request_event_id = requests_watcher.add_listener('event', function () {
     workspace.punctuals.forEach(function (e) {
         chart_manager.add_event(e);
     });
     workspace.intervals.forEach(function (e) {
         chart_manager.add_event(e);
     });
+
+    // rimuovo il listener  
+    requests_watcher.remove_listener('event', request_event_id);
 });
