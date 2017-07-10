@@ -62,7 +62,7 @@ function ChartManager(chart) {
             }
         }
     };
-    __delete_field_data = function (field_name) {
+    this.__delete_field_data = function (field_name) {
         var field = this.fields[field_name];
 
         var index_increment = this.__get_index_increment(field_name);

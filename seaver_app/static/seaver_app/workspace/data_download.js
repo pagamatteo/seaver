@@ -6,8 +6,7 @@ function get_punctual_event(url) {
     requests_watcher.add('event');
     $.get(url).done(function (data) {
         // ottengo l'annotazione corrispondente
-        var annotation = annotations_by_url[data.annotation];
-        data.annotation = annotation;
+        data.annotation = annotations_by_url[data.annotation];
 
         workspace.punctuals.push(data);
     }).always(function () {
@@ -19,8 +18,7 @@ function get_interval_event(url) {
     requests_watcher.add('event');
     $.get(url).done(function (data) {
         // ottengo l'annotazione corrispondente
-        var annotation = annotations_by_url[data.annotation];
-        data.annotation = annotation;
+        data.annotation = annotations_by_url[data.annotation];
 
         workspace.intervals.push(data);
     }).always(function () {

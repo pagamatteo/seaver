@@ -47,6 +47,6 @@ var request_event_id = requests_watcher.add_listener('event', function () {
         chart_manager.add_event(e);
     });
 
-    // rimuovo il listener  
+    // rimuovo il listener
     requests_watcher.remove_listener('event', request_event_id);
 });
