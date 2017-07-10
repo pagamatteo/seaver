@@ -12,6 +12,8 @@ from .csvreader import FileToStrings, StringsToLines, CSVReader, NumberOfFieldsC
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse, Http404
 from django.views.decorators.csrf import ensure_csrf_cookie
+from . import workspace_export
+
 
 @login_required()
 def show_workspaces(request):
@@ -116,6 +118,21 @@ def open_workspace(request, name):
 
     return render(request, 'seaver_app/workspace.html', contex)
 
+
+@login_required()
+def workspace_export_view(request, name):
+    user = request.user
+
+    try:
+        workspace = Workspace.objects.get(user=user, name=name)
+    except Workspace.DoesNotExist as e:
+        return Http404()
+
+    # serve solo per vedere se la funzione field_as_series va
+    field = FileFieldName.objects.first()
+    serie = workspace_export.field_as_series(field)
+
+    return serie
 
 def signup(request):
     """

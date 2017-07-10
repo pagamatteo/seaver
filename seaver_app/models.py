@@ -184,7 +184,12 @@ class FileData(models.Model):
                                        self.field_value)
 
     @classmethod
-    def get_all_data(cls, field):
+    def get_all_data_list(cls, field):
+        """
+        Restituisce tutti i dati del campo in forma di lista
+        :param field:
+        :return:
+        """
         query = cls.objects.filter(field_name=field).order_by('field_index')
 
         data = []
@@ -192,6 +197,10 @@ class FileData(models.Model):
             data.append(file_data.field_value)
 
         return data
+
+    @classmethod
+    def get_all_data(cls, field):
+        return cls.objects.filter(field_name=field).order_by('field_index').all()
 
     @classmethod
     def save_data(cls, field, data):

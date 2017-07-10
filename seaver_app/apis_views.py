@@ -204,7 +204,7 @@ class FieldDataView(APIView):
         if not file_field.exists():
             return Http404()
 
-        data = FileData.get_all_data(file_field)
+        data = FileData.get_all_data_list(file_field)
 
         class DataModel:
             def __init__(self, data):
@@ -250,7 +250,7 @@ class AnalysisView(APIView):
         analysis_field.save()
 
         # ottengo i dati
-        data = FileData.get_all_data(file_field)
+        data = FileData.get_all_data_list(file_field)
 
         analysis_type = serializer.validated_data['type']
         analysis_kargs = serializer.validated_data['kargs']
