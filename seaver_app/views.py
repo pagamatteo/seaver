@@ -10,9 +10,10 @@ from .forms import *
 from django.contrib.auth import login, authenticate
 from .csvreader import FileToStrings, StringsToLines, CSVReader, NumberOfFieldsChangedException
 from django.core.exceptions import ValidationError
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, Http404, HttpResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from . import workspace_export
+import csv
 
 
 @login_required()
@@ -128,10 +129,27 @@ def workspace_export_view(request, name):
     except Workspace.DoesNotExist as e:
         return Http404()
 
-    # serve solo per vedere se la funzione field_as_series va
+    # trasformo il workspace in un dataframe
     df = workspace_export.workspace_to_dataframe(workspace)
 
-    return df
+    # costruisco la risposta csv
+    response = HttpResponse()
+    response['content_type'] = 'txt/csv'
+    response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(workspace.name)
+
+    # creo il writr
+    csv_writer = csv.writer(response)
+
+    # output columns names
+    columns = ['Index', ] + [c for c in df.columns]
+    csv_writer.writerow(columns)
+
+    # itero sopra il dataframe e stampo ogni riga
+    for row in df.itertuples(name=None):
+        csv_writer.writerow(row)
+
+    return response
+
 
 def signup(request):
     """
