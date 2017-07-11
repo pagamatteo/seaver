@@ -105,8 +105,8 @@ class File(models.Model):
     )
     name = models.CharField(max_length=50)
     active = models.BooleanField(default=False, db_index=True)
-    offset = models.FloatField(default=0)
-    stretching = models.FloatField(default=1)
+    offset = models.PositiveIntegerField(default=0)
+    stretching = models.PositiveIntegerField(default=1)
 
     class Meta:
         unique_together = ('workspace', 'name')
@@ -242,7 +242,7 @@ class PunctualAnnotationEvent(models.Model):
         related_name= 'punctual_annotations',
         on_delete=models.CASCADE
     )
-    start = models.FloatField(default=0)
+    start = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return '{}, {}, {}'.format(self.annotation.name, self.workspace.name, self.start)
@@ -278,8 +278,8 @@ class IntervalAnnotationEvent(models.Model):
         related_name='interval_annotations',
         on_delete=models.CASCADE
     )
-    start = models.FloatField()
-    stop = models.FloatField()
+    start = models.PositiveIntegerField()
+    stop = models.PositiveIntegerField()
 
     def __str__(self):
         return '{}, {}, {}, {}'.format(self.annotation.name, self.workspace.name, self.start, self.stop)

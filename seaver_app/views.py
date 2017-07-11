@@ -5,7 +5,7 @@ from os import path
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Workspace, File as FileModel, FileData, BulkWriter, FileFieldName
+from .models import Workspace, File as FileModel, FileData, BulkWriter, FileFieldName, PunctualAnnotationEvent, IntervalAnnotationEvent
 from .forms import *
 from django.contrib.auth import login, authenticate
 from .csvreader import FileToStrings, StringsToLines, CSVReader, NumberOfFieldsChangedException
@@ -129,10 +129,9 @@ def workspace_export_view(request, name):
         return Http404()
 
     # serve solo per vedere se la funzione field_as_series va
-    field = FileFieldName.objects.first()
-    serie = workspace_export.field_as_series(field)
+    df = workspace_export.workspace_to_dataframe(workspace)
 
-    return serie
+    return df
 
 def signup(request):
     """
