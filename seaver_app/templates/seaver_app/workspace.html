@@ -192,7 +192,9 @@
                                       class="fa fa-circle-o"></i>[[ f.name ]]<i v-bind:class="f.active ? 'fa fa-check-square-o pull-right' : 'fa fa-square-o pull-right'"
                                                                                 v-on:click="activate_file(f_index)"></i></a>
                                   <ul v-for="(ff, ff_index) in f.fields" class="treeview-menu">
-                                      <li><a href="#"><i class="fa fa-circle-o"></i>[[ ff.name ]]<i
+                                      <li><a href="#"><i class="fa fa-circle-o"></i><span v-show="ff.name_on_change ? false : true" v-on:click="show_change_name_box(f_index, ff_index)">[[ ff.name ]]</span>
+                                          <input class="form-control input-sm" type="text" v-model="ff.name" v-show="ff.name_on_change ? true : false" v-on:keyup.enter="change_name(f_index, ff_index)">
+                                          <i
                                               v-bind:class="ff.active ? 'fa fa-check-square-o pull-right' : 'fa fa-square-o pull-right'"
                                               v-on:click="activate_field(f_index, ff_index)"></i></a></li>
                                   </ul>
@@ -404,6 +406,41 @@
                             chart_manager.show_graph(chart_field_name);
                         else
                             chart_manager.hide_graph(chart_field_name);
+                    },
+                    show_change_name_box: function (f_index, ff_index) {
+                        // mostra il box dove è possibile cambiare il nome del campo
+
+                        var field = this.files[f_index].fields[ff_index];
+
+                        // creo una copia deep
+                        field.previous_name = field.name.substr(0);
+
+                        field.name_on_change = true;
+                    },
+                    change_name: function (f_index, ff_index) {
+                        // prova ad aggiornare il nome del campo
+                        var f = this.files[f_index];
+                        var field = f.fields[ff_index];
+
+                        // salvo il risultato nel db
+                        $.ajax(field.url, {
+                            method: 'PATCH',
+                            data: {
+                                'name': field.name
+                            }
+                        }).done(function () {
+                            // cambio il nome nel grafico
+                            var previous_graph_name = f.name + '_' + field.previous_name;
+                            var current_graph_name = chart_manager.get_field_name(f, field);
+
+                            chart_manager.rename_field(previous_graph_name, current_graph_name);
+                            chart_manager.refresh();
+                        }).fail(function () {
+                            // rimetto il nome precedente
+                            field.name = field.previous_name;
+                        }).always(function () {
+                            field.name_on_change = false;
+                        })
                     }
                 }
             });

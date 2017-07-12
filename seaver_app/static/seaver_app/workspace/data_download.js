@@ -42,6 +42,9 @@ function get_field_data(field_data_url, field) {
 function get_field(field_url, f) {
     requests_watcher.add('files');
     $.get(field_url).done(function (data) {
+        // aggiungo al data un campo che serve per il menù laterale
+        data.name_on_change = false;
+
         // put in alphabetic order
         var field_index = _.sortedIndexBy(f.fields, data, function (e) {
             return e.name.toLowerCase();

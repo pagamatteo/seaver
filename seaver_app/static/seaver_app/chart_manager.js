@@ -110,7 +110,8 @@ function ChartManager(chart) {
     };
     this.set_chart = function (chart) {
         this.chart = chart;
-        this.guides = chart.categoryAxis.guides;
+        chart.dataProvider = this.data;
+        chart.categoryAxis.guides = this.guides;
     };
     this.set_points_per_field = function (points_per_field) {
         for (field_name in this.fields) {
@@ -184,7 +185,7 @@ function ChartManager(chart) {
             }
         }
         this.chart.graphs = graphs;
-        this.chart.dataProvider = this.data;
+        // this.chart.dataProvider = this.data;
         this.chart.validateData();
     };
     this.refresh_properties = function () {
@@ -193,9 +194,14 @@ function ChartManager(chart) {
     this.rename_field = function (previous_name, current_name) {
         if (previous_name !== current_name) {
             var previous_field = this.fields[previous_name];
-            this.delete_field(previous_field);
+            var hidden = this.graphs[previous_name].hidden;
+            this.delete_field(previous_name);
             this.add_field(current_name, previous_field.data, previous_field.offset,
                 previous_field.stretching);
+
+            if (hidden){
+                this.hide_graph(current_name);
+            }
         }
     };
     //  file method

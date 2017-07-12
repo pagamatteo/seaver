@@ -200,10 +200,21 @@ class FileData(models.Model):
 
     @classmethod
     def get_all_data(cls, field):
+        """
+        Restituisce tutti i file data riguardanti il campo  (ordinati per index)
+        :param field:
+        :return:
+        """
         return cls.objects.filter(field_name=field).order_by('field_index').all()
 
     @classmethod
     def save_data(cls, field, data):
+        """
+        Salva i dati sotto il campo
+        :param field:
+        :param data: lista di value
+        :return:
+        """
         bulk_writer = BulkWriter(cls)
 
         for i in range(0, len(data)):
