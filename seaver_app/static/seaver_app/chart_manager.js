@@ -78,7 +78,6 @@ function ChartManager(chart) {
             // se l'elemento contiene solo index lo elimino dall'array
             if (Object.keys(this.data[data_index]).length === 1) {
                 this.data.splice(data_index, 1);
-                i -= 1;
             }
 
         }

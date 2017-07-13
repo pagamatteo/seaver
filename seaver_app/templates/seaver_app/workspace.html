@@ -188,15 +188,24 @@
 {#                                <li><a href="#"><i class="fa fa-circle-o"></i>[[ ff.name ]]<i class="fa fa-square-o pull-right" onclick="active_field(event, [[f.url]])"></i></a></li>#}
 {#                              </ul>#}
 {#                            </li>#}
-                              <li v-for="(f, f_index) in files" class="active"><a href="#"><i
-                                      class="fa fa-circle-o"></i>[[ f.name ]]<i v-bind:class="f.active ? 'fa fa-check-square-o pull-right' : 'fa fa-square-o pull-right'"
-                                                                                v-on:click="activate_file(f_index)"></i></a>
+                              <li v-for="(f, f_index) in files" class="active"><a href="#">
+                                  <i
+                                          v-on:click="select_file(f_index)"
+                                          v-bind:class="(f_index === file_selected_index) ? 'fa fa-dot-circle-o' : 'fa fa-circle-o'"></i>[[
+                                  f.name ]]<i
+                                      v-bind:class="f.active ? 'fa fa-check-square-o pull-right' : 'fa fa-square-o pull-right'"
+                                      v-on:click="activate_file(f_index)"></i></a>
                                   <ul v-for="(ff, ff_index) in f.fields" class="treeview-menu">
-                                      <li><a href="#"><i class="fa fa-circle-o"></i><span v-show="ff.name_on_change ? false : true" v-on:click="show_change_name_box(f_index, ff_index)">[[ ff.name ]]</span>
-                                          <input class="form-control input-sm" type="text" v-model="ff.name" v-show="ff.name_on_change ? true : false" v-on:keyup.enter="change_name(f_index, ff_index)">
+                                      <li><a href="#"><i class="fa fa-circle-o"></i>
+                                          <span
+                                                  v-show="ff.name_on_change ? false : true"
+                                                  v-on:click="show_change_name_box(f_index, ff_index)">[[ ff.name ]]</span>
+                                          <input class="form-control input-sm" type="text" v-model="ff.name"
+                                                 v-show="ff.name_on_change ? true : false"
+                                                 v-on:keyup.enter="change_name(f_index, ff_index)">
                                           <i
-                                              v-bind:class="ff.active ? 'fa fa-check-square-o pull-right' : 'fa fa-square-o pull-right'"
-                                              v-on:click="activate_field(f_index, ff_index)"></i></a></li>
+                                                  v-bind:class="ff.active ? 'fa fa-check-square-o pull-right' : 'fa fa-square-o pull-right'"
+                                                  v-on:click="activate_field(f_index, ff_index)"></i></a></li>
                                   </ul>
                               </li>
                             <!--<li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
@@ -220,6 +229,16 @@
                   </section>
                   <comp1 ><comp2></comp2></comp1>
 
+              </div>
+              <div class="row">
+                  <div class="col-md-9">
+                      <div id="file_properties_form">
+                          <div>Offset</div>
+                          <input v-model.number="offset">
+                          <div>Stretching</div>
+                          <input v-model.number="stretching">
+                      </div>
+                  </div>
               </div>
           </div>
         </section><!-- /.content -->
@@ -353,6 +372,9 @@
 
             // CREO GLI ELEMENTI VUE
 
+            // var file_selected_index = -1;
+            // var field_selected_index = -1;
+
             //gestisce la barra laterale dei file
             v_files = new Vue({
                 el: '#files_list',
@@ -370,7 +392,40 @@
             menu_files = new Vue({
                 el: '#menu_files_list',
                 data: {
-                    files: []
+                    files: [],
+                    file_selected_index: -1
+                },
+                computed: {
+                    selected_file_offset: {
+                        get: function () {
+                            // se nessun file è stato selezionato
+                            if (this.file_selected_index < 0)
+                                return 0;
+
+                            return this.files[this.file_selected_index].offset;
+                        },
+                        set: function (value) {
+                            // se nessun file è stato selezionato esco
+                            if (this.file_selected_index < 0)
+                                return;
+
+                            // controllo che sia un numero
+                            if (typeof value !== "number")
+                                return;
+
+                            // controllo che il valore non sia minore di 0
+                            if (value < 0)
+                                return;
+
+                            // trasformo in int se necessario
+                            value = Math.round(value);
+
+                            this.files[this.file_selected_index].offset = value;
+
+                            // mando i risultati al server
+                            this.send_file_properties_to_server();
+                        }
+                    }
                 },
                 methods: {
                     activate_file: function (index){
@@ -441,6 +496,62 @@
                         }).always(function () {
                             field.name_on_change = false;
                         })
+                    },
+                    select_file: function (f_index) {
+                        // funzione che si attiva quando selezioni il file
+
+                        // salvo gli indici del campo selezionato
+                        this.file_selected_index = f_index;
+                    },
+                    send_file_properties_to_server: _.debounce(function () {
+                        // mando il nuovo offset e stretching al server
+
+                        // se nessun file è stato selezionato allora esco
+                        if (this.file_selected_index < 0)
+                            return;
+
+                        // recupero il file selezionato
+                        var f = this.files[this.file_selected_index];
+
+                        // salvo le nuove proprietà sul server
+                        $.ajax(f.url, {
+                            method: 'PATCH',
+                            data: {
+                                'offset': f.offset,
+                                'stretching': f.stretching
+                            }
+                        }).done(function () {
+                            // aggiorno il grafico
+                            // chart_manager.delete_file(f);
+                            // chart_manager.add_file(f);
+                            for (var i = 0; i < f.fields.length; i += 1)
+                            {
+                                var chart_field_name = chart_manager.get_field_name(f, f.fields[i]);
+                                chart_manager.set_offset(chart_field_name, f.offset);
+                                chart_manager.set_stretching(chart_field_name, f.stretching);
+                            }
+                            chart_manager.refresh();
+                        })
+                    },
+                        // esegui l'operazione ogni tot secondi
+                    1500)
+                }
+            });
+
+            // collegato alla form per modificare offset e stretching del file
+            file_propery_form = new Vue({
+                el: '#file_properties_form',
+                data: {
+                    stretching: 0
+                },
+                computed: {
+                    offset: {
+                        get: function () {
+                            return menu_files.selected_file_offset;
+                        },
+                        set: function (value) {
+                            menu_files.selected_file_offset = value;
+                        }
                     }
                 }
             });
