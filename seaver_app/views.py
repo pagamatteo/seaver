@@ -115,7 +115,7 @@ def open_workspace(request, name):
               'form_action': request.path,
               'file_upload_form': file_upload_form,
               'files': files,
-              'workspace': workspace    }
+              'workspace': workspace}
 
     return render(request, 'seaver_app/workspace.html', contex)
 

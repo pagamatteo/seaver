@@ -142,6 +142,9 @@
                   <li v-for="(e, index) in events" class="active" v-on:mouseover="highlight_event(index)" v-on:mouseout="remove_highlight_event(index)"><a href="#"><i class="fa fa-circle-o"></i>[[ e.annotation.name ]]<i class="fa fa-times pull-right" v-on:click="ask_delete_confirm(index)"></i></a></li>
 {#                  <li class="active"><a href="#"><i class="fa fa-circle-o"></i>File 2 <i class="fa fa-times pull-right" onclick="ask_delete_file_confirm(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>#}
               </ul>
+                    <a href="{% url "workspace_export" workspace.name %}" download target="_blank">
+                         <i class="fa fa-dashboard"></i><span>Export Workspace</span><div class="box-tools pull-right"></div>
+                    </a>
               <!--{% for workspace in workspaces %}
                 <ul class="treeview-menu">
                   <li class="active"><a href="{% url 'workspace' workspace.0 %}"><i class="fa fa-circle-o"></i> {{ workspace.0 }}</a></li>
@@ -425,6 +428,36 @@
                             // mando i risultati al server
                             this.send_file_properties_to_server();
                         }
+                    },
+                    selected_file_stretching: {
+                        get: function () {
+                            // se nessun file è stato selezionato
+                            if (this.file_selected_index < 0)
+                                return 1;
+
+                            return this.files[this.file_selected_index].stretching;
+                        },
+                        set: function (value) {
+                            // se nessun file è stato selezionato esco
+                            if (this.file_selected_index < 0)
+                                return;
+
+                            // controllo che sia un numero
+                            if (typeof value !== "number")
+                                return;
+
+                            // controllo che il valore non sia minore di 1
+                            if (value < 1)
+                                return;
+
+                            // trasformo in int se necessario
+                            value = Math.round(value);
+
+                            this.files[this.file_selected_index].stretching = value;
+
+                            // mando i risultati al server
+                            this.send_file_properties_to_server();
+                        }
                     }
                 },
                 methods: {
@@ -541,9 +574,6 @@
             // collegato alla form per modificare offset e stretching del file
             file_propery_form = new Vue({
                 el: '#file_properties_form',
-                data: {
-                    stretching: 0
-                },
                 computed: {
                     offset: {
                         get: function () {
@@ -551,6 +581,14 @@
                         },
                         set: function (value) {
                             menu_files.selected_file_offset = value;
+                        }
+                    },
+                    stretching: {
+                        get: function () {
+                            return menu_files.selected_file_stretching;
+                        },
+                        set: function (value) {
+                            menu_files.selected_file_stretching = value;
                         }
                     }
                 }
