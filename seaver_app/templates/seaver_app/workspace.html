@@ -329,6 +329,31 @@
           </div>
         </div>
 
+          <!-- Show interval annotations -->
+          <div class="modal fade" id="show_interval_annotations_modal" tabindex="-1" role="dialog"
+               aria-labelledby="show_interval_annotations_modal">
+              <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                  aria-hidden="true">&times;</span></button>
+                          <h4 class="modal-title" id="delete_event_modal_label">Select interval annotation</h4>
+                      </div>
+                      <div class="modal-body">
+                          <ul id="select_interval_annotation_menu">
+                              <li v-for="(a, index) in annotations" v-on:click="create_event(index)">[[ a.name ]]</li>
+                          </ul>
+                      </div>
+                      <!--
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                      <button type="button" class="btn btn-primary" d="confirm_delete_event">Yes</button>
+                    </div>
+                    -->
+                  </div>
+              </div>
+          </div>
+
       </div>
     </div>
 
@@ -702,7 +727,6 @@
                 data: {
                     annotations: annotation_events.punctual,
                     start: undefined,
-                    stop: undefined,
                     punctual_event_url: '{% url "punctualannotationevent-list" %}'
                 },
                 methods: {
@@ -737,6 +761,47 @@
                 }
             });
 
+            select_interval_annotation_menu = new Vue({
+                el: '#select_interval_annotation_menu',
+                data: {
+                    annotations: annotation_events.interval,
+                    start: undefined,
+                    end: undefined,
+                    interval_event_url: '{% url "intervalannotationevent-list" %}'
+                },
+                methods: {
+                    create_event: function (annotation_index) {
+                        var annotation = this.annotations[annotation_index];
+
+                        $.ajax(this.interval_event_url, {
+                            'method': 'POST',
+                            'data': {
+                                'workspace': workspace.url,
+                                'annotation': annotation.url,
+                                'start': this.start,
+                                'stop': this.end
+                            }
+                        }).done(function (data) {
+                            // ottengo l'annotazione corrispondente
+                            data.annotation = annotations_by_url[data.annotation];
+
+                            // aggiungo l'evento a workspace
+                            var index = _.sortedIndexBy(workspace.intervals, data, 'start');
+                            workspace.intervals.splice(index, 0, data);
+
+                            // aggingo l'evento al grafico
+                            chart_manager.add_event(data);
+                            chart_manager.refresh_properties();
+                        }).error(function (data) {
+                            console.log(data);
+                        }).always(function () {
+                            // chiudo la finestra
+                            $('#show_interval_annotations_modal').modal('toggle');
+                        })
+                    }
+                }
+            });
+
             // ASSEGNO IL CHART AL MANAGER
             chart_manager = new ChartManager(chart);
             chart_manager.set_points_per_field(50);
@@ -757,6 +822,16 @@
                 select_puntual_annotation_menu.start = chart_manager.data[chart_manager.last_cursor_position].index;
                 // apro la finestra di selezione dell'annotazione
                 $('#show_punctual_annotations_modal').modal('toggle');
+            });
+            
+            // quando l'utente seleziona un area
+            this.chart.chartCursor.addListener('selected', function (e) {
+                // memorizzo l'indice di inzio e fine
+                select_interval_annotation_menu.start = chart_manager.data[e.start].index;
+                select_interval_annotation_menu.end = chart_manager.data[e.end].index;
+
+                // visualizza la selezione di un'annotazione di intervallo
+                $('#show_interval_annotations_modal').modal('toggle');
             })
         };
 
@@ -766,6 +841,7 @@
         var menu_punctual_events;
         var menu_interval_events;
         var select_puntual_annotation_menu;
+        var select_interval_annotation_menu;
         var chart_manager;
     </script>
   </body>
