@@ -8,7 +8,8 @@ function get_punctual_event(url) {
         // ottengo l'annotazione corrispondente
         data.annotation = annotations_by_url[data.annotation];
 
-        workspace.punctuals.push(data);
+        var index = _.sortedIndexBy(workspace.punctuals, data, 'start');
+        workspace.punctuals.splice(index, 0, data);
     }).always(function () {
         requests_watcher.remove('event');
     })
@@ -20,7 +21,8 @@ function get_interval_event(url) {
         // ottengo l'annotazione corrispondente
         data.annotation = annotations_by_url[data.annotation];
 
-        workspace.intervals.push(data);
+        var index = _.sortedIndexBy(workspace.intervals, data, 'start');
+        workspace.intervals.splice(index, 0, data);
     }).always(function () {
         requests_watcher.remove('event');
     })

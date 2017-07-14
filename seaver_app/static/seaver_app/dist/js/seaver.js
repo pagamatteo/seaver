@@ -121,6 +121,9 @@ function delete_file(index) {
         method: 'DELETE'
     }).done(function (data) {
         //location.reload();
+        // imposto nessun file selezionato nel menu di destra
+        menu_files.file_selected_index = -1;
+
         // elimino il file dal grafico
         chart_manager.delete_file(f);
         chart_manager.refresh();

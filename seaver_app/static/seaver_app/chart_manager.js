@@ -12,6 +12,8 @@ function ChartManager(chart) {
     this.chart = null;
     // 0 significa tutti
     this.points_per_field = 0;
+    // ultima posizione del cursore dopo aver eseguito il click
+    this.last_cursor_position = undefined;
     this.__get_index_increment = function (field_name) {
         if (this.points_per_field === 0)
         // tutti i punti
