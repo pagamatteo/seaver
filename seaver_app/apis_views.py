@@ -253,13 +253,13 @@ class AnalysisView(APIView):
         data = FileData.get_all_data_list(file_field)
 
         analysis_type = serializer.validated_data['type']
-        analysis_kargs = serializer.validated_data['kargs']
+        analysis_options = serializer.validated_data.get('options', {})
         try:
             if analysis_type == 'fft':
                 # Fast Fourie Transform
-                analysis_data = analysis.fft(data, analysis_kargs)
+                analysis_data = analysis.fft(data, analysis_options.get('fft', {}))
             elif analysis_type == 'ewma':
-                analysis_data = analysis.ewma(data, analysis_kargs)
+                analysis_data = analysis.ewma(data, analysis_options.get('ewma', {}))
             else:
                 logger.error('{} is not a valid analysis'.format(serializer.validated_data['analysis']))
                 return HttpResponseServerError()

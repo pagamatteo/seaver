@@ -129,13 +129,48 @@ class FieldDataSerializer(serializers.Serializer):
     field_data = serializers.ListField(serializers.FloatField())
 
 
+class FieldAnalysisFftOptionsSerializer(serializers.Serializer):
+    """
+    Campi opzionali per l'analisi FFT
+    """
+    n = serializers.IntegerField(required=False)
+    norm = serializers.ChoiceField(
+        ('ortho', None),
+        required=False
+    )
+
+
+class FieldAnalysisEwmaOptionsSerializer(serializers.Serializer):
+    """
+    Campi opzionali per l'analisi EWMA
+    """
+    com = serializers.FloatField(required=False)
+    span = serializers.FloatField(required=False)
+    halflife = serializers.FloatField(required=False)
+    min_periods = serializers.IntegerField(required=False)
+    freq = serializers.CharField(max_length=20, required=False)
+    adjust = serializers.BooleanField(required=False)
+    how = serializers.CharField(max_length=20, required=False)
+
+    def validate(self, attrs):
+        if ('com' not in attrs) and ('span' not in attrs) and ('halflife' not in attrs):
+            raise serializers.ValidationError('you must provide one of these: com, span or halflife')
+
+        return attrs
+
+
+class FieldAnalysisOptionsSerializer(serializers.Serializer):
+    """
+    opzioni per l'analisi
+    """
+    fft = FieldAnalysisFftOptionsSerializer(required=False)
+    ewma = FieldAnalysisEwmaOptionsSerializer(required=False)
+
+
 class FieldAnalysisRequestSerializer(serializers.Serializer):
     """
     Usata per richiedere la creazione di un'analisi
     """
-    # field = serializers.PrimaryKeyRelatedField(
-    #     queryset=FileFieldName.objects.all()
-    # )
     name = serializers.CharField(max_length=20)
 
     type = serializers.ChoiceField(
@@ -145,6 +180,8 @@ class FieldAnalysisRequestSerializer(serializers.Serializer):
         )
     )
 
-    kargs = serializers.DictField(
-        default={}
-    )
+    options = FieldAnalysisOptionsSerializer(required=False)
+
+    def validate(self, attrs):
+        if (attrs['type'] == 'ewma') and ('options' not in attrs):
+            serializers.ValidationError('with ewma you must provide options field')
