@@ -34,18 +34,26 @@ class FileSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class FileFieldSerializer(serializers.HyperlinkedModelSerializer):
-    # url to get field data
+    # url used to get field data
     field_data = serializers.SerializerMethodField()
+    # url used to create filed analysis
+    analysis_url = serializers.SerializerMethodField()
 
     class Meta:
         model = FileFieldName
-        fields = ('url', 'file', 'name', 'computed', 'active', 'field_data')
+        fields = ('url', 'file', 'name', 'computed', 'active', 'field_data', 'analysis_url')
 
     def get_field_data(self, obj):
         p = reverse('fielddata-detail', args=[obj.pk])
         field_data_url = self.context['request'].build_absolute_uri(p)
 
         return field_data_url
+
+    def get_analysis_url(self, obj):
+        p = reverse('analysis-detail', args=[obj.pk])
+        analysis_url = self.context['request'].build_absolute_uri(p)
+
+        return analysis_url
 
 
 class PunctualAnnotationSerializer(serializers.HyperlinkedModelSerializer):
@@ -133,10 +141,11 @@ class FieldAnalysisFftOptionsSerializer(serializers.Serializer):
     """
     Campi opzionali per l'analisi FFT
     """
-    n = serializers.IntegerField(required=False)
+    n = serializers.IntegerField(required=False, allow_null=True)
     norm = serializers.ChoiceField(
         ('ortho', None),
-        required=False
+        required=False,
+        allow_null=True
     )
 
 
@@ -144,13 +153,13 @@ class FieldAnalysisEwmaOptionsSerializer(serializers.Serializer):
     """
     Campi opzionali per l'analisi EWMA
     """
-    com = serializers.FloatField(required=False)
-    span = serializers.FloatField(required=False)
-    halflife = serializers.FloatField(required=False)
-    min_periods = serializers.IntegerField(required=False)
-    freq = serializers.CharField(max_length=20, required=False)
+    com = serializers.FloatField(required=False, allow_null=True)
+    span = serializers.FloatField(required=False, allow_null=True)
+    halflife = serializers.FloatField(required=False, allow_null=True)
+    min_periods = serializers.IntegerField(required=False, allow_null=True)
+    freq = serializers.CharField(max_length=20, required=False, allow_null=True)
     adjust = serializers.BooleanField(required=False)
-    how = serializers.CharField(max_length=20, required=False)
+    how = serializers.CharField(max_length=20, required=False, allow_null=True)
 
     def validate(self, attrs):
         if ('com' not in attrs) and ('span' not in attrs) and ('halflife' not in attrs):
@@ -184,4 +193,6 @@ class FieldAnalysisRequestSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         if (attrs['type'] == 'ewma') and ('options' not in attrs):
-            serializers.ValidationError('with ewma you must provide options field')
+            raise serializers.ValidationError('with ewma you must provide options field')
+
+        return attrs

@@ -209,13 +209,17 @@ function ChartManager(chart) {
     this.get_field_name = function (f, field) {
         return f.name + "_" + field.name;
     };
+    this.add_field_of_file = function (field, f) {
+        // aggiunge il campo relativo al file (molto legato alla logica del workspace)
+        var chart_field_name = this.get_field_name(f, field);
+        this.add_field_if_not_exists(chart_field_name, field.data, f.offset, f.stretching);
+
+        this.graphs[chart_field_name].hidden = !((f.active) && (field.active));
+    };
     this.add_file = function (f) {
         for (var i = 0; i < f.fields.length; i += 1) {
             var field = f.fields[i];
-            var chart_field_name = this.get_field_name(f, field);
-            this.add_field_if_not_exists(chart_field_name, field.data, f.offset, f.stretching);
-
-            this.graphs[chart_field_name].hidden = !((f.active) && (field.active));
+            this.add_field_of_file(field, f);
         }
     };
     this.delete_file = function (f) {

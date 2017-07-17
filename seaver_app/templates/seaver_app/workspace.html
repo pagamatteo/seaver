@@ -93,68 +93,92 @@
         </nav>
       </header>
       <!-- Left side column. contains the logo and sidebar -->
-      <aside class="main-sidebar">
-        <!-- sidebar: style can be found in sidebar.less -->
-        <section class="sidebar">
-          <!-- Sidebar user panel -->
-          <div class="user-panel">
-            <div class="pull-left image">
-              <img src="{% static 'seaver_app/dist/img/user2-160x160.jpg' %}" class="img-circle" alt="User Image" />
-            </div>
-            <div class="pull-left info">
-              <p>{{ username }}</p>
+        <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
+                <!-- Sidebar user panel -->
+                <div class="user-panel">
+                    <div class="pull-left image">
+                        <img src="{% static 'seaver_app/dist/img/user2-160x160.jpg' %}" class="img-circle"
+                             alt="User Image"/>
+                    </div>
+                    <div class="pull-left info">
+                        <p>{{ username }}</p>
 
-              <!--<a href="#"><i class="fa fa-circle text-success"></i> Online</a>-->
-            </div>
-          </div>
-          <!-- search form -->
-          <form action="#" method="get" class="sidebar-form">
-            <div class="input-group">
-              <input type="text" name="q" class="form-control" placeholder="Search..."/>
-              <span class="input-group-btn">
-                <button type='submit' name='search' id='search-btn' class="btn btn-flat"><i class="fa fa-search"></i></button>
+                        <!--<a href="#"><i class="fa fa-circle text-success"></i> Online</a>-->
+                    </div>
+                </div>
+                <!-- search form -->
+                <form action="#" method="get" class="sidebar-form">
+                    <div class="input-group">
+                        <input type="text" name="q" class="form-control" placeholder="Search..."/>
+                        <span class="input-group-btn">
+                <button type='submit' name='search' id='search-btn' class="btn btn-flat"><i
+                        class="fa fa-search"></i></button>
               </span>
-            </div>
-          </form>
-          <!-- /.search form -->
-          <!-- sidebar menu: : style can be found in sidebar.less -->
-          <ul class="sidebar-menu">
-            <li class="header">MAIN NAVIGATION</li>
-            <li class="active treeview">
-              <a href="#">
-                  <i class="fa fa-dashboard"></i> <span>Files</span><div class="box-tools pull-right"><button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#create_file_modal"><i class="fa fa-plus"></i></button></div>
-              </a>
-              <ul id="files_list" class="treeview-menu">
-                  <li v-for="(f, index) in files" class="active"><a href="#"><i class="fa fa-circle-o"></i>[[ f.name ]]<i class="fa fa-times pull-right" v-on:click="ask_delete_file_confirm(index)"></i></a></li>
-{#                  <li class="active"><a href="#"><i class="fa fa-circle-o"></i>File 2 <i class="fa fa-times pull-right" onclick="ask_delete_file_confirm(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>#}
-              </ul>
-                <a href="#">
-                  <i class="fa fa-dashboard"></i> <span>Punctual annotations</span><div class="box-tools pull-right"><button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#create_annotation_modal"><i class="fa fa-plus"></i></button></div>
-              </a>
-              <ul id="p_events_list" class="treeview-menu">
-                  <li v-for="(e, index) in events" class="active" v-on:mouseover="highlight_event(index)" v-on:mouseout="remove_highlight_event(index)"><a href="#"><i class="fa fa-circle-o"></i>[[ e.annotation.name ]]<i class="fa fa-times pull-right" v-on:click="ask_delete_confirm(index)"></i></a></li>
-{#                  <li class="active"><a href="#"><i class="fa fa-circle-o"></i>File 2 <i class="fa fa-times pull-right" onclick="ask_delete_file_confirm(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>#}
-              </ul>
-                <a href="#">
-                  <i class="fa fa-dashboard"></i> <span>Interval annotations</span><div class="box-tools pull-right"><button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#create_annotation_modal"><i class="fa fa-plus"></i></button></div>
-              </a>
-              <ul id="i_events_list" class="treeview-menu">
-                  <li v-for="(e, index) in events" class="active" v-on:mouseover="highlight_event(index)" v-on:mouseout="remove_highlight_event(index)"><a href="#"><i class="fa fa-circle-o"></i>[[ e.annotation.name ]]<i class="fa fa-times pull-right" v-on:click="ask_delete_confirm(index)"></i></a></li>
-{#                  <li class="active"><a href="#"><i class="fa fa-circle-o"></i>File 2 <i class="fa fa-times pull-right" onclick="ask_delete_file_confirm(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>#}
-              </ul>
-                    <a href="{% url "workspace_export" workspace.name %}" download target="_blank">
-                         <i class="fa fa-dashboard"></i><span>Export Workspace</span><div class="box-tools pull-right"></div>
-                    </a>
-              <!--{% for workspace in workspaces %}
-                <ul class="treeview-menu">
-                  <li class="active"><a href="{% url 'workspace' workspace.0 %}"><i class="fa fa-circle-o"></i> {{ workspace.0 }}</a></li>
+                    </div>
+                </form>
+                <!-- /.search form -->
+                <!-- sidebar menu: : style can be found in sidebar.less -->
+                <ul class="sidebar-menu">
+                    <li class="header">MAIN NAVIGATION</li>
+                    <li class="active treeview">
+                        <a href="#">
+                            <i class="fa fa-dashboard"></i> <span>Files</span>
+                            <div class="box-tools pull-right">
+                                <button class="btn btn-primary btn-sm" data-toggle="modal"
+                                        data-target="#create_file_modal"><i class="fa fa-plus"></i></button>
+                            </div>
+                        </a>
+                        <ul id="files_list" class="treeview-menu">
+                            <li v-for="(f, index) in files" class="active"><a href="#"><i class="fa fa-circle-o"></i>
+                                [[ f.name ]]
+                                <i class="fa fa-times pull-right"
+                                            v-on:click="ask_delete_file_confirm(index)"></i></a></li>
+                            {#                  <li class="active"><a href="#"><i class="fa fa-circle-o"></i>File 2 <i class="fa fa-times pull-right" onclick="ask_delete_file_confirm(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>#}
+                        </ul>
+                        <a href="#">
+                            <i class="fa fa-dashboard"></i> <span>Punctual annotations</span>
+                            <div class="box-tools pull-right">
+                                <button class="btn btn-primary btn-sm" data-toggle="modal"
+                                        data-target="#create_annotation_modal"><i class="fa fa-plus"></i></button>
+                            </div>
+                        </a>
+                        <ul id="p_events_list" class="treeview-menu">
+                            <li v-for="(e, index) in events" class="active" v-on:mouseover="highlight_event(index)"
+                                v-on:mouseout="remove_highlight_event(index)"><a href="#"><i class="fa fa-circle-o"></i>
+                                [[ e.annotation.name ]]
+                                <i class="fa fa-times pull-right"
+                                                       v-on:click="ask_delete_confirm(index)"></i></a></li>
+                            {#                  <li class="active"><a href="#"><i class="fa fa-circle-o"></i>File 2 <i class="fa fa-times pull-right" onclick="ask_delete_file_confirm(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>#}
+                        </ul>
+                        <a href="#">
+                            <i class="fa fa-dashboard"></i> <span>Interval annotations</span>
+                            <div class="box-tools pull-right">
+                                <button class="btn btn-primary btn-sm" data-toggle="modal"
+                                        data-target="#create_annotation_modal"><i class="fa fa-plus"></i></button>
+                            </div>
+                        </a>
+                        <ul id="i_events_list" class="treeview-menu">
+                            <li v-for="(e, index) in events" class="active" v-on:mouseover="highlight_event(index)"
+                                v-on:mouseout="remove_highlight_event(index)"><a href="#"><i class="fa fa-circle-o"></i>
+                                [[ e.annotation.name ]]
+                                <i class="fa fa-times pull-right"
+                                                       v-on:click="ask_delete_confirm(index)"></i></a></li>
+                            {#                  <li class="active"><a href="#"><i class="fa fa-circle-o"></i>File 2 <i class="fa fa-times pull-right" onclick="ask_delete_file_confirm(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>#}
+                        </ul>
+                        <a href="{% url "workspace_export" workspace.name %}" download target="_blank">
+                            <i class="fa fa-dashboard"></i><span>Export Workspace</span>
+                            <div class="box-tools pull-right"></div>
+                        </a>
+                        <ul>
+
+                        </ul>
+                    </li>
                 </ul>
-              {% endfor %}-->
-            </li>
-          </ul>
-        </section>
-        <!-- /.sidebar -->
-      </aside>
+            </section>
+            <!-- /.sidebar -->
+        </aside>
 
       <!-- Right side column. Contains the navbar and content of the page -->
       <div class="content-wrapper">
@@ -371,46 +395,105 @@
                       <div class="modal-body">
                           <div id="analysis_options_menu">
                               <div>Name</div>
-                              <input type="text" class="form-control" v-model="name" placeholder="Insert a name for the analysis">
+                              <input type="text" class="form-control" v-model="name"
+                                     placeholder="Insert a name for the analysis">
+                              <ul>
+                                  <li v-for="e in errors.name">
+                                      [[ e ]]
+                                  </li>
+                              </ul>
                               <div>Type</div>
                               <select class="form-control" v-model="type">
                                   <option disabled value="">Please select a type</option>
                                   <option v-for="t in analysis_types">[[ t ]]</option>
                               </select>
+                              <ul>
+                                  <li v-for="e in errors.type">
+                                      [[ e ]]
+                                  </li>
+                              </ul>
                               <div v-show="show_fft">
                                   <div>n</div>
                                   <input class="form-control" v-model.number="options['fft'].n">
+                                  <ul>
+                                      <li v-for="e in errors.options.fft.n">
+                                          [[ e ]]
+                                      </li>
+                                  </ul>
                                   <div>norm</div>
                                   <select class="form-control" v-model="options['fft'].norm">
-                                      <option selected>None</option>
+                                      <option selected></option>
                                       <option>ortho</option>
                                   </select>
+                                  <ul>
+                                      <li v-for="e in errors.options.fft.norm">
+                                          [[ e ]]
+                                      </li>
+                                  </ul>
                               </div>
                               <div v-show="show_ewma">
                                   <div>com</div>
                                   <input class="form-control" v-model.number="options['ewma'].com">
+                                  <ul>
+                                      <li v-for="e in errors.options.ewma.com">
+                                          [[ e ]]
+                                      </li>
+                                  </ul>
                                   <div>span</div>
                                   <input class="form-control" v-model.number="options['ewma'].span">
+                                  <ul>
+                                      <li v-for="e in errors.options.ewma.span">
+                                          [[ e ]]
+                                      </li>
+                                  </ul>
                                   <div>halflife</div>
                                   <input class="form-control" v-model.number="options['ewma'].halflife">
+                                  <ul>
+                                      <li v-for="e in errors.options.ewma.halflife">
+                                          [[ e ]]
+                                      </li>
+                                  </ul>
                                   <div>min_periods</div>
                                   <input class="form-control" v-model.number="options['ewma'].min_periods">
+                                  <ul>
+                                      <li v-for="e in errors.options.ewma.min_periods">
+                                          [[ e ]]
+                                      </li>
+                                  </ul>
                                   <div>freq</div>
-                                  <input class="form-control" v-model="options['ewma'].min_periods">
+                                  <input class="form-control" v-model="options['ewma'].freq">
+                                  <ul>
+                                      <li v-for="e in errors.options.ewma.freq">
+                                          [[ e ]]
+                                      </li>
+                                  </ul>
                                   <div class="checkbox">
                                       <label>
                                           <input type="checkbox" v-model="options['ewma'].adjust">
                                           adjust
                                       </label>
                                   </div>
+                                  <ul>
+                                      <li v-for="e in errors.options.ewma.adjust">
+                                          [[ e ]]
+                                      </li>
+                                  </ul>
                                   <div>how</div>
                                   <input class="form-control" v-model="options['ewma'].how">
                               </div>
+                              <ul>
+                                  <li v-for="e in errors.options.ewma.how">
+                                      [[ e ]]
+                                  </li>
+                              </ul>
                           </div>
                       </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-default" data-dismiss="modal">Cencel</button>
-                      <button type="button" class="btn btn-primary" id="create_analysis">Create</button>
+                      <button type="button" class="btn btn-primary" id="create_analysis"
+                              v-on:click="create_analysis()">
+                          Create
+                      </button>
                     </div>
                   </div>
               </div>
@@ -484,9 +567,6 @@
             interval_url = '{% url "intervalannotation-list" %}';
 
             // CREO GLI ELEMENTI VUE
-
-            // var file_selected_index = -1;
-            // var field_selected_index = -1;
 
             //gestisce la barra laterale dei file
             v_files = new Vue({
@@ -687,6 +767,8 @@
                         this.select_analysis_file_index = f_index;
                         this.select_analysis_field_index = ff_index;
 
+                        // cancello gli errori d'analisi
+                        analysis_options_menu.reset_errors();
                         // apro la finestra di selezione dell'analisi
                         $('#create_analysis_modal').modal('toggle');
                     }
@@ -877,24 +959,44 @@
             });
 
             analysis_options_menu = new Vue({
-                el: '#analysis_options_menu',
+                el: '#create_analysis_modal',
                 data: {
                     name: '',
                     type: '',
                     analysis_types: ['fft', 'ewma'],
                     options: {
                         'fft': {
-                            'n': '',
-                            'norm': 'None'
+                            'n': null,
+                            'norm': null
                         },
                         'ewma': {
-                            'com': '',
-                            'span': '',
-                            'halflif': '',
-                            'min_periods': '',
-                            'freq': '',
+                            'com': null,
+                            'span': null,
+                            'halflif': null,
+                            'min_periods': null,
+                            'freq': null,
                             'adjust': false,
-                            'how': ''
+                            'how': null
+                        }
+                    },
+                    errors: {
+                        'generic': [],
+                        'name': [],
+                        'type': [],
+                        'options': {
+                            'fft': {
+                                'n': [],
+                                'norm': []
+                            },
+                            'ewma': {
+                                'com': [],
+                                'span': [],
+                                'halflife': [],
+                                'min_periods': [],
+                                'freq': [],
+                                'adjust': [],
+                                'how': []
+                            }
                         }
                     }
                 },
@@ -907,8 +1009,85 @@
                     }
                 },
                 methods: {
+                    __reset_errors: function (errors) {
+                        for (var key in errors){
+                            if (errors.hasOwnProperty(key)) {
+                                var ek = errors[key];
+                                if (ek.constructor === Array) {
+                                    ek = []
+                                } else {
+                                    this.__reset_errors(ek);
+                                }
+                            }
+                        }
+                    },
+                    reset_errors: function () {
+                        this.__reset_errors(this.errors);
+                    },
                     create_analysis: function () {
+                        this.reset_errors();
+                        var t = this.type;
+                        // se non ho selezionato un type di analisi corretta
+                        if (_.findIndex(this.analysis_types, function (o) {
+                                return o === t;
+                            }) === -1){
+                            this.errors.type = 'you must select a valid type';
+                            return;
+                        }
 
+                        var file = menu_files.files[menu_files.select_analysis_file_index];
+                        var field = file.fields[menu_files.select_analysis_field_index];
+
+                        var options = {};
+                        options[this.type] = this.options[this.type];
+
+                        $.ajax(field.analysis_url,{
+                            method: 'POST',
+                            data: JSON.stringify({
+                                'name': this.name,
+                                'type': this.type,
+                                'options': options
+                            }),
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json"
+                        }).done(function (data) {
+                            add_field_to_file(data, file);
+                            chart_manager.add_field_of_file(data, file);
+
+                            // chiudo la finestra d'analisi
+                            $('#create_analysis_modal').modal('toggle');
+                        }).fail(function (data) {
+                            analysis_options_menu.reset_errors();
+
+                            var response = data.responseJSON;
+                            var errors = analysis_options_menu.errors;
+                            var set_error_function = function (errors, where_to_set) {
+                                for (var key in errors){
+                                    if (errors.hasOwnProperty(key)){
+                                        var ek = errors[key];
+                                        if (ek.constructor === Array){
+                                            where_to_set[key] = where_to_set[key].concat(ek);
+                                        } else {
+                                            set_error_function(ek, where_to_set[key]);
+                                        }
+                                    }
+                                }
+                            };
+
+                            set_error_function(response, analysis_options_menu.errors);
+{#                            for (var key in response){#}
+{#                                if (response.hasOwnProperty(key)) {#}
+{#                                    var error_key = 'generic';#}
+{#                                    if (key in errors) {#}
+{#                                        error_key = key;#}
+{#                                    }#}
+{##}
+{#                                    for (var i = 0; i < response[key].length; i += 1) {#}
+{#                                        errors[error_key] = errors[error_key].concat(response[key]);#}
+{#                                    }#}
+{#                                }#}
+{#                            }#}
+                        })
                     }
                 }
             });

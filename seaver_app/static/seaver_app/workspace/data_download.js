@@ -34,27 +34,33 @@ function get_field_data(field_data_url, field) {
     $.get(field_data_url).done(function (data) {
         field.data = data.field_data;
     }).fail(function (errors) {
-        alert("errore nel caricamento dei dati del campo: " + errors);
+        console.log(errors);
     }).always(function () {
         requests_watcher.remove('files');
     });
+}
+
+
+// aggiunge il campo al file
+function add_field_to_file(field, f) {
+    // aggiungo al data un campo che serve per il menù laterale
+    field.name_on_change = false;
+
+    // put in alphabetic order
+    var field_index = _.sortedIndexBy(f.fields, field, function (e) {
+        return e.name.toLowerCase();
+    });
+    f.fields.splice(field_index, 0, field);
+    get_field_data(field.field_data, field);
 }
 
 // ottiene il campo
 function get_field(field_url, f) {
     requests_watcher.add('files');
     $.get(field_url).done(function (data) {
-        // aggiungo al data un campo che serve per il menù laterale
-        data.name_on_change = false;
-
-        // put in alphabetic order
-        var field_index = _.sortedIndexBy(f.fields, data, function (e) {
-            return e.name.toLowerCase();
-        });
-        f.fields.splice(field_index, 0, data);
-        get_field_data(data.field_data, data);
+        add_field_to_file(data, f);
     }).fail(function (errors) {
-        alert("errore downloading field: " + errors);
+        console.log(errors);
     }).always(function () {
         requests_watcher.remove('files');
     })
@@ -74,7 +80,7 @@ function get_file(file_url) {
             get_field(field_url, data)
         });
     }).fail(function (errors) {
-        alert("errori nel caricamento del file: " + errors);
+        console.log(errors)
     }).always(function () {
         requests_watcher.remove('files');
     });
@@ -103,7 +109,7 @@ function get_workspace(workspace_url) {
             get_file(f_url);
         });
     }).fail(function (error) {
-        alert("error loading workspace: " + error);
+        console.log(error);
     }).always(function () {
         requests_watcher.remove('workspace');
     });
