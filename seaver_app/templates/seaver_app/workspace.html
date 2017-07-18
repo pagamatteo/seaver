@@ -233,7 +233,11 @@
                                           <i
                                                   v-bind:class="ff.active ? 'fa fa-check-square-o pull-right' : 'fa fa-square-o pull-right'"
                                                   v-on:click="activate_field(f_index, ff_index)"></i>
-                                            <i class="fa fa-plus-square pull-right" v-on:click="select_analysis(f_index, ff_index)"></i></a></li>
+                                          <i class="fa fa-plus-square pull-right"
+                                             v-on:click="select_analysis(f_index, ff_index)"></i>
+                                          <i class="fa fa-minus-square pull-right" v-if="ff.computed"
+                                             v-on:click="ask_delete_field(f_index, ff_index)"></i>
+                                      </a></li>
                                   </ul>
                               </li>
                             <!--<li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
@@ -334,6 +338,25 @@
           </div>
         </div>
 
+          <!-- Delete analysis modal -->
+        <div class="modal fade" id="delete_analysis_modal" tabindex="-1" role="dialog" aria-labelledby="delete_analysis_modal_label">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="delete_event_modal_label">Delete Analysis</h4>
+              </div>
+              <div class="modal-body">
+                Are you sure you want to delete the analysis ?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" id="confirm_delete_analysis">Yes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
           <!-- Show punctual annotations -->
           <div class="modal fade" id="show_punctual_annotations_modal" tabindex="-1" role="dialog" aria-labelledby="show_punctual_annotations_modal">
           <div class="modal-dialog" role="document">
@@ -422,7 +445,7 @@
                                   </ul>
                                   <div>norm</div>
                                   <select class="form-control" v-model="options['fft'].norm">
-                                      <option selected></option>
+                                      <option selected>None</option>
                                       <option>ortho</option>
                                   </select>
                                   <ul>
@@ -480,12 +503,17 @@
                                   </ul>
                                   <div>how</div>
                                   <input class="form-control" v-model="options['ewma'].how">
+                                  <ul>
+                                      <li v-for="e in errors.options.ewma.how">
+                                          [[ e ]]
+                                      </li>
+                                  </ul>
+                                  <ul>
+                                      <li v-for="e in errors.options.ewma.non_field_errors">
+                                          [[ e ]]
+                                      </li>
+                                  </ul>
                               </div>
-                              <ul>
-                                  <li v-for="e in errors.options.ewma.how">
-                                      [[ e ]]
-                                  </li>
-                              </ul>
                           </div>
                       </div>
                     <div class="modal-footer">
@@ -771,6 +799,33 @@
                         analysis_options_menu.reset_errors();
                         // apro la finestra di selezione dell'analisi
                         $('#create_analysis_modal').modal('toggle');
+                    },
+                    ask_delete_field: function (f_index, ff_index) {
+                        $('#delete_analysis_modal').modal('toggle');
+                        $('#confirm_delete_analysis').on("click", function(){
+                            menu_files.delete_field(f_index, ff_index);
+                        });
+                    },
+                    delete_field: function (f_index, ff_index) {
+                        var file = this.files[f_index];
+                        var field = file.fields[ff_index];
+
+                        $.ajax(field.url, {
+                            method: 'DELETE'
+                        }).done(function () {
+                            // cancello il campo dal grafico
+                            var chart_field_name = chart_manager.get_field_name(file, field);
+                            chart_manager.delete_field(chart_field_name);
+                            chart_manager.refresh();
+
+                            // cancello il campo dal menù
+                            file.fields.splice(ff_index, 1);
+
+                            // chiudo la finestra
+                            $('#delete_analysis_modal').modal('toggle');
+                        }).fail(function (data) {
+                            console.log(data);
+                        })
                     }
                 }
             });
@@ -966,17 +1021,17 @@
                     analysis_types: ['fft', 'ewma'],
                     options: {
                         'fft': {
-                            'n': null,
-                            'norm': null
+                            'n': '',
+                            'norm': 'None'
                         },
                         'ewma': {
-                            'com': null,
-                            'span': null,
-                            'halflif': null,
-                            'min_periods': null,
-                            'freq': null,
-                            'adjust': false,
-                            'how': null
+                            'com': '',
+                            'span': '',
+                            'halflif': '',
+                            'min_periods': '',
+                            'freq': '',
+                            'adjust': '',
+                            'how': ''
                         }
                     },
                     errors: {
@@ -995,7 +1050,8 @@
                                 'min_periods': [],
                                 'freq': [],
                                 'adjust': [],
-                                'how': []
+                                'how': [],
+                                'non_field_errors': []
                             }
                         }
                     }
@@ -1014,7 +1070,7 @@
                             if (errors.hasOwnProperty(key)) {
                                 var ek = errors[key];
                                 if (ek.constructor === Array) {
-                                    ek = []
+                                    errors[key] = [];
                                 } else {
                                     this.__reset_errors(ek);
                                 }
@@ -1024,35 +1080,77 @@
                     reset_errors: function () {
                         this.__reset_errors(this.errors);
                     },
-                    create_analysis: function () {
-                        this.reset_errors();
+                    check_errors: function () {
+                        var data = {
+                            'options': {}
+                        };
+                        var errors = false;
+                        if (this.name === ''){
+                            this.errors.name.push('Can not be blank');
+                            errors = true;
+                        } else {
+                            data.name = this.name;
+                        }
+
                         var t = this.type;
-                        // se non ho selezionato un type di analisi corretta
                         if (_.findIndex(this.analysis_types, function (o) {
                                 return o === t;
-                            }) === -1){
-                            this.errors.type = 'you must select a valid type';
-                            return;
+                            }) !== -1) {
+                            data.type = this.type;
+                            var options = this.options[this.type];
+                            var data_options = {};
+
+                            for (var key in options){
+                                if (options.hasOwnProperty(key)){
+                                    var o = options[key];
+
+                                    // caso particolare
+                                    if ((this.type === 'fft') && (key === 'norm')) {
+                                        if (o !== 'None') {
+                                            data_options.key = o;
+                                        }
+                                    } else {
+                                        if (o !== '') {
+                                            data_options.key = o;
+                                        }
+                                    }
+                                }
+                            }
+
+                            data.options[this.type] = data_options;
+                        } else {
+                            this.errors.type.push('Not a valid type');
+                            errors = true;
                         }
+
+                        if (errors)
+                            return null;
+
+                        return data;
+                    },
+                    create_analysis: function () {
+                        // todo da ricontrollare per ewma
+                        this.reset_errors();
+                        var request_data = this.check_errors();
 
                         var file = menu_files.files[menu_files.select_analysis_file_index];
                         var field = file.fields[menu_files.select_analysis_field_index];
 
-                        var options = {};
-                        options[this.type] = this.options[this.type];
+                        if (request_data === null)
+                            return;
 
                         $.ajax(field.analysis_url,{
                             method: 'POST',
-                            data: JSON.stringify({
-                                'name': this.name,
-                                'type': this.type,
-                                'options': options
-                            }),
+                            data: JSON.stringify(request_data),
                             contentType: "application/json; charset=utf-8",
                             dataType: "json"
                         }).done(function (data) {
                             add_field_to_file(data, file);
-                            chart_manager.add_field_of_file(data, file);
+                            var request_pk = requests_watcher.add_listener('files', function () {
+                                chart_manager.add_field_of_file(data, file);
+                                chart_manager.refresh();
+                                requests_watcher.remove_listener('files', request_pk);
+                            });
 
                             // chiudo la finestra d'analisi
                             $('#create_analysis_modal').modal('toggle');
@@ -1075,18 +1173,6 @@
                             };
 
                             set_error_function(response, analysis_options_menu.errors);
-{#                            for (var key in response){#}
-{#                                if (response.hasOwnProperty(key)) {#}
-{#                                    var error_key = 'generic';#}
-{#                                    if (key in errors) {#}
-{#                                        error_key = key;#}
-{#                                    }#}
-{##}
-{#                                    for (var i = 0; i < response[key].length; i += 1) {#}
-{#                                        errors[error_key] = errors[error_key].concat(response[key]);#}
-{#                                    }#}
-{#                                }#}
-{#                            }#}
                         })
                     }
                 }

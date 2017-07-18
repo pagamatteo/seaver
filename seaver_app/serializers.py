@@ -141,7 +141,7 @@ class FieldAnalysisFftOptionsSerializer(serializers.Serializer):
     """
     Campi opzionali per l'analisi FFT
     """
-    n = serializers.IntegerField(required=False, allow_null=True)
+    n = serializers.IntegerField(required=False)
     norm = serializers.ChoiceField(
         ('ortho', None),
         required=False,
@@ -153,13 +153,13 @@ class FieldAnalysisEwmaOptionsSerializer(serializers.Serializer):
     """
     Campi opzionali per l'analisi EWMA
     """
-    com = serializers.FloatField(required=False, allow_null=True)
-    span = serializers.FloatField(required=False, allow_null=True)
-    halflife = serializers.FloatField(required=False, allow_null=True)
-    min_periods = serializers.IntegerField(required=False, allow_null=True)
-    freq = serializers.CharField(max_length=20, required=False, allow_null=True)
+    com = serializers.FloatField(required=False)
+    span = serializers.FloatField(required=False)
+    halflife = serializers.FloatField(required=False)
+    min_periods = serializers.IntegerField(required=False)
+    freq = serializers.CharField(max_length=20, required=False)
     adjust = serializers.BooleanField(required=False)
-    how = serializers.CharField(max_length=20, required=False, allow_null=True)
+    how = serializers.CharField(max_length=20, required=False)
 
     def validate(self, attrs):
         if ('com' not in attrs) and ('span' not in attrs) and ('halflife' not in attrs):

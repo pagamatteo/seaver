@@ -29,10 +29,10 @@ function get_interval_event(url) {
 }
 
 // ottine i dati del campo
-function get_field_data(field_data_url, field) {
+function get_field_data(field) {
     requests_watcher.add('files');
-    $.get(field_data_url).done(function (data) {
-        field.data = data.field_data;
+    $.get(field.field_data).done(function (data) {
+        field['data'] = data.field_data;
     }).fail(function (errors) {
         console.log(errors);
     }).always(function () {
@@ -48,10 +48,14 @@ function add_field_to_file(field, f) {
 
     // put in alphabetic order
     var field_index = _.sortedIndexBy(f.fields, field, function (e) {
-        return e.name.toLowerCase();
+        var name = e.name;
+        // i nomi delle analisi vanno dopo
+        if (!(e.computed))
+            name = 0 + name;
+        return name.toLowerCase();
     });
+    get_field_data(field);
     f.fields.splice(field_index, 0, field);
-    get_field_data(field.field_data, field);
 }
 
 // ottiene il campo
