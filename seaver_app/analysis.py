@@ -20,9 +20,8 @@ def series_to_filedata(s):
 
 def fft(data, kargs):
     s = fielddata_to_series(data)
-    s = s.transpose(**kargs)
-    s = np.log(s)
-    s = s.dropna()
+    s = fielddata_to_series(np.fft.fft(s, **kargs))
+    s = s.apply(np.log)
     return series_to_filedata(s)
 
 

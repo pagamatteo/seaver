@@ -140,8 +140,10 @@
                         <a href="#">
                             <i class="fa fa-dashboard"></i> <span>Punctual annotations</span>
                             <div class="box-tools pull-right">
+                                <!--
                                 <button class="btn btn-primary btn-sm" data-toggle="modal"
                                         data-target="#create_annotation_modal"><i class="fa fa-plus"></i></button>
+                                        -->
                             </div>
                         </a>
                         <ul id="p_events_list" class="treeview-menu">
@@ -155,8 +157,10 @@
                         <a href="#">
                             <i class="fa fa-dashboard"></i> <span>Interval annotations</span>
                             <div class="box-tools pull-right">
+                                <!--
                                 <button class="btn btn-primary btn-sm" data-toggle="modal"
                                         data-target="#create_annotation_modal"><i class="fa fa-plus"></i></button>
+                                        -->
                             </div>
                         </a>
                         <ul id="i_events_list" class="treeview-menu">
@@ -450,6 +454,11 @@
                                   </select>
                                   <ul>
                                       <li v-for="e in errors.options.fft.norm">
+                                          [[ e ]]
+                                      </li>
+                                  </ul>
+                                  <ul>
+                                      <li v-for="e in errors.options.fft.non_field_errors">
                                           [[ e ]]
                                       </li>
                                   </ul>
@@ -1041,7 +1050,8 @@
                         'options': {
                             'fft': {
                                 'n': [],
-                                'norm': []
+                                'norm': [],
+                                'non_field_errors': []
                             },
                             'ewma': {
                                 'com': [],
@@ -1107,11 +1117,11 @@
                                     // caso particolare
                                     if ((this.type === 'fft') && (key === 'norm')) {
                                         if (o !== 'None') {
-                                            data_options.key = o;
+                                            data_options[key] = o;
                                         }
                                     } else {
                                         if (o !== '') {
-                                            data_options.key = o;
+                                            data_options[key] = o;
                                         }
                                     }
                                 }
@@ -1129,7 +1139,6 @@
                         return data;
                     },
                     create_analysis: function () {
-                        // todo da ricontrollare per ewma
                         this.reset_errors();
                         var request_data = this.check_errors();
 

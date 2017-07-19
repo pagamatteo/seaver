@@ -265,7 +265,15 @@ class AnalysisView(APIView):
                 return HttpResponseServerError()
         except Exception as e:
             analysis_field.delete()
-            raise e
+            logger.warning(e)
+            return Response({
+                'options': {
+                    analysis_type: {
+                        'non_field_errors': list(e.args)
+                    }
+                }
+            },
+                status=status.HTTP_400_BAD_REQUEST)
 
         # salvo i nuovi dati
         FileData.save_data(analysis_field, analysis_data)
