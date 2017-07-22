@@ -121,9 +121,6 @@ function delete_file(index) {
         method: 'DELETE'
     }).done(function (data) {
         //location.reload();
-        // imposto nessun file selezionato nel menu di destra
-        menu_files.file_selected_index = -1;
-
         // elimino il file dal grafico
         chart_manager.delete_file(f);
         chart_manager.refresh();
@@ -224,89 +221,129 @@ function ask_delete_file_confirm(event, url) {
 //   } ]
 // } );
 
-// var chart_data = [
-// 						{
-// 							"column-1": 8,
-// 							"column-2": 5,
-// 							"index": "category 1"
-// 						},
-// 						{
-// 							"column-1": 6,
-// 							"column-2": 7,
-// 							"index": "category 2"
-// 						},
-// 						{
-// 							"column-1": 2,
-// 							"column-2": 3,
-// 							"index": "category 3"
-// 						},
-// 						{
-// 							"column-1": 1,
-// 							"column-2": 3,
-// 							"index": "category 4"
-// 						},
-// 						{
-// 							"column-1": 2,
-// 							"column-2": 1,
-// 							"index": "category 5"
-// 						},
-// 						{
-// 							"column-1": 3,
-// 							"column-2": 2,
-// 							"index": "category 6"
-// 						},
-// 						{
-// 							"column-1": 6,
-// 							"column-2": 8,
-// 							"index": "category 7"
-// 						}
-// 					];
-var chart_data = [];
+var chart_data = [
+						{
+							"column-1": 8,
+							"column-2": 5,
+							"index": "category 1"
+						},
+						{
+							"column-1": 6,
+							"column-2": 7,
+							"index": "category 2"
+						},
+						{
+							"column-1": 2,
+							"column-2": 3,
+							"index": "category 3"
+						},
+						{
+							"column-1": 1,
+							"column-2": 3,
+							"index": "category 4"
+						},
+						{
+							"column-1": 2,
+							"column-2": 1,
+							"index": "category 5"
+						},
+						{
+							"column-1": 3,
+							"column-2": 2,
+							"index": "category 6"
+						},
+						{
+							"column-1": 6,
+							"column-2": 8,
+							"index": "category 7"
+						}
+					];
 
 var chart = AmCharts.makeChart("chartdiv",
-    {
-        "type": "serial",
-        "categoryField": "index",
-        "mouseWheelScrollEnabled": true,
-        "mouseWheelZoomEnabled": true,
-        "startDuration": 1,
-        "categoryAxis": {
-            "startOnAxis": true,
-            "axisColor": "#DADADA",
-            "gridAlpha": 0.07,
-            "title": "Index",
-            "guides": []
-        },
-        "chartCursor": {
-            "enabled": true,
-            "selectWithoutZooming": true
-        },
-        "chartScrollbar": {
-            "enabled": true
-        },
-        "trendLines": [],
-        "graphs": [],
-        "guides": [],
-        "valueAxes": [
-            {
-                "id": "ValueAxis-1",
-                "title": "Value"
-            }
-        ],
-        "allLabels": [],
-        "balloon": {},
-        "legend": {
-            "enabled": false,
-            "position": "left",
-            "useGraphSettings": true
-        },
-        "titles": [
-            {
-                "id": "Title-1",
-                "size": 15,
-                "text": "Data plot"
-            }
-        ],
-        "dataProvider": chart_data
+				{
+					"type": "serial",
+					"categoryField": "index",
+					"mouseWheelScrollEnabled": true,
+					"mouseWheelZoomEnabled": true,
+					"startDuration": 1,
+					"categoryAxis": {
+						"gridPosition": "start"
+					},
+					"chartCursor": {
+						"enabled": true,
+						"selectWithoutZooming": true
+					},
+					"chartScrollbar": {
+						"enabled": true
+					},
+					"trendLines": [],
+					"graphs": [
+						{
+							"balloonText": "[[title]] of [[category]]:[[value]]",
+							"bullet": "round",
+							"id": "AmGraph-1",
+							"title": "graph 1",
+							"valueField": "column-1"
+						},
+						{
+							"balloonText": "[[title]] of [[category]]:[[value]]",
+							"bullet": "square",
+							"id": "AmGraph-2",
+							"title": "graph 2",
+							"valueField": "column-2"
+						}
+					],
+					"guides": [],
+					"valueAxes": [
+						{
+							"id": "ValueAxis-1",
+							"title": "Axis title"
+						}
+					],
+					"allLabels": [],
+					"balloon": {},
+					"legend": {
+						"enabled": false,
+						"position": "left",
+						"useGraphSettings": true
+					},
+					"titles": [
+						{
+							"id": "Title-1",
+							"size": 15,
+							"text": "Chart Title"
+						}
+					],
+					"dataProvider": chart_data
+				}
+			);
+
+AmCharts.ready(function() {
+    // SET UP CLICK EVENTS
+
+    AmCharts.doSingleClick = function (event) {
+      var clicked_index = event.index;
+      var data_clicked = chart_manager.data[clicked_index];
+      // fixme: if file name contains "_" ?
+      for (data in data_clicked) {
+        if (data != "index") {
+          var field_value = data_clicked[data];
+          var file_name = data.split("_")[0];
+          var field_name = data.split("_")[1];
+          console.log(field_value);
+          console.log(file_name);
+          console.log(field_name);
+        }
+      }
+      $('#annotation_modal').modal('toggle');
     }
-);
+
+    // create click handler
+    AmCharts.myClickHandler = function (event) {
+          AmCharts.doSingleClick(event);
+    }
+
+    // add handler to the chart
+    chart.addListener("clickGraphItem", AmCharts.myClickHandler);
+});
+

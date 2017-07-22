@@ -18,7 +18,7 @@
          folder instead of downloading all of them to reduce the load. -->
     <link href="{% static 'seaver_app/dist/css/skins/_all-skins.min.css' %}" rel="stylesheet" type="text/css" />
     <!-- iCheck -->
-    <!-- <link href="{% static 'seaver_app/plugins/iCheck/flat/blue.css' %}" rel="stylesheet" type="text/css" /> -->
+    <link href="{% static 'seaver_app/plugins/iCheck/flat/blue.css' %}" rel="stylesheet" type="text/css" />
     <!-- Morris chart -->
     <link href="{% static 'seaver_app/plugins/morris/morris.css' %}" rel="stylesheet" type="text/css" />
     <!-- jvectormap -->
@@ -39,6 +39,7 @@
       <script src="{% static 'seaver_app/js-cookie.js' %}"></script>
       <!-- loadash -->
       <script src="{% static 'seaver_app/lodash.min.js' %}"></script>
+
 
     <script src="{% static 'seaver_app/dist/js/seaver.js' %}"></script>
 
@@ -93,96 +94,51 @@
         </nav>
       </header>
       <!-- Left side column. contains the logo and sidebar -->
-        <aside class="main-sidebar">
-            <!-- sidebar: style can be found in sidebar.less -->
-            <section class="sidebar">
-                <!-- Sidebar user panel -->
-                <div class="user-panel">
-                    <div class="pull-left image">
-                        <img src="{% static 'seaver_app/dist/img/user2-160x160.jpg' %}" class="img-circle"
-                             alt="User Image"/>
-                    </div>
-                    <div class="pull-left info">
-                        <p>{{ username }}</p>
+      <aside class="main-sidebar">
+        <!-- sidebar: style can be found in sidebar.less -->
+        <section class="sidebar">
+          <!-- Sidebar user panel -->
+          <div class="user-panel">
+            <div class="pull-left image">
+              <img src="{% static 'seaver_app/dist/img/user2-160x160.jpg' %}" class="img-circle" alt="User Image" />
+            </div>
+            <div class="pull-left info">
+              <p>{{ username }}</p>
 
-                        <!--<a href="#"><i class="fa fa-circle text-success"></i> Online</a>-->
-                    </div>
-                </div>
-                <!-- search form -->
-                <form action="#" method="get" class="sidebar-form">
-                    <div class="input-group">
-                        <input type="text" name="q" class="form-control" placeholder="Search..."/>
-                        <span class="input-group-btn">
-                <button type='submit' name='search' id='search-btn' class="btn btn-flat"><i
-                        class="fa fa-search"></i></button>
+              <!--<a href="#"><i class="fa fa-circle text-success"></i> Online</a>-->
+            </div>
+          </div>
+          <!-- search form -->
+          <form action="#" method="get" class="sidebar-form">
+            <div class="input-group">
+              <input type="text" name="q" class="form-control" placeholder="Search..."/>
+              <span class="input-group-btn">
+                <button type='submit' name='search' id='search-btn' class="btn btn-flat"><i class="fa fa-search"></i></button>
               </span>
-                    </div>
-                </form>
-                <!-- /.search form -->
-                <!-- sidebar menu: : style can be found in sidebar.less -->
-                <ul class="sidebar-menu">
-                    <li class="header">MAIN NAVIGATION</li>
-                    <li class="active treeview">
-                        <a href="#">
-                            <i class="fa fa-dashboard"></i> <span>Files</span>
-                            <div class="box-tools pull-right">
-                                <button class="btn btn-primary btn-sm" data-toggle="modal"
-                                        data-target="#create_file_modal"><i class="fa fa-plus"></i></button>
-                            </div>
-                        </a>
-                        <ul id="files_list" class="treeview-menu">
-                            <li v-for="(f, index) in files" class="active"><a href="#"><i class="fa fa-circle-o"></i>
-                                [[ f.name ]]
-                                <i class="fa fa-times pull-right"
-                                            v-on:click="ask_delete_file_confirm(index)"></i></a></li>
-                            {#                  <li class="active"><a href="#"><i class="fa fa-circle-o"></i>File 2 <i class="fa fa-times pull-right" onclick="ask_delete_file_confirm(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>#}
-                        </ul>
-                        <a href="#">
-                            <i class="fa fa-dashboard"></i> <span>Punctual annotations</span>
-                            <div class="box-tools pull-right">
-                                <!--
-                                <button class="btn btn-primary btn-sm" data-toggle="modal"
-                                        data-target="#create_annotation_modal"><i class="fa fa-plus"></i></button>
-                                        -->
-                            </div>
-                        </a>
-                        <ul id="p_events_list" class="treeview-menu">
-                            <li v-for="(e, index) in events" class="active" v-on:mouseover="highlight_event(index)"
-                                v-on:mouseout="remove_highlight_event(index)"><a href="#"><i class="fa fa-circle-o"></i>
-                                [[ e.annotation.name ]]
-                                <i class="fa fa-times pull-right"
-                                                       v-on:click="ask_delete_confirm(index)"></i></a></li>
-                            {#                  <li class="active"><a href="#"><i class="fa fa-circle-o"></i>File 2 <i class="fa fa-times pull-right" onclick="ask_delete_file_confirm(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>#}
-                        </ul>
-                        <a href="#">
-                            <i class="fa fa-dashboard"></i> <span>Interval annotations</span>
-                            <div class="box-tools pull-right">
-                                <!--
-                                <button class="btn btn-primary btn-sm" data-toggle="modal"
-                                        data-target="#create_annotation_modal"><i class="fa fa-plus"></i></button>
-                                        -->
-                            </div>
-                        </a>
-                        <ul id="i_events_list" class="treeview-menu">
-                            <li v-for="(e, index) in events" class="active" v-on:mouseover="highlight_event(index)"
-                                v-on:mouseout="remove_highlight_event(index)"><a href="#"><i class="fa fa-circle-o"></i>
-                                [[ e.annotation.name ]]
-                                <i class="fa fa-times pull-right"
-                                                       v-on:click="ask_delete_confirm(index)"></i></a></li>
-                            {#                  <li class="active"><a href="#"><i class="fa fa-circle-o"></i>File 2 <i class="fa fa-times pull-right" onclick="ask_delete_file_confirm(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>#}
-                        </ul>
-                        <a href="{% url "workspace_export" workspace.name %}" download target="_blank">
-                            <i class="fa fa-dashboard"></i><span>Export Workspace</span>
-                            <div class="box-tools pull-right"></div>
-                        </a>
-                        <ul>
-
-                        </ul>
-                    </li>
+            </div>
+          </form>
+          <!-- /.search form -->
+          <!-- sidebar menu: : style can be found in sidebar.less -->
+          <ul class="sidebar-menu">
+            <li class="header">MAIN NAVIGATION</li>
+            <li class="active treeview">
+              <a href="#">
+                  <i class="fa fa-dashboard"></i> <span>Files</span><div class="box-tools pull-right"><button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#create_file_modal"><i class="fa fa-plus"></i></button></div>
+              </a>
+              <ul id="files_list" class="treeview-menu">
+                  <li v-for="(f, index) in files" class="active"><a href="#"><i class="fa fa-circle-o"></i>[[ f.name ]]<i class="fa fa-times pull-right" v-on:click="ask_delete_file_confirm(index)"></i></a></li>
+{#                  <li class="active"><a href="#"><i class="fa fa-circle-o"></i>File 2 <i class="fa fa-times pull-right" onclick="ask_delete_file_confirm(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>#}
+              </ul>
+              <!--{% for workspace in workspaces %}
+                <ul class="treeview-menu">
+                  <li class="active"><a href="{% url 'workspace' workspace.0 %}"><i class="fa fa-circle-o"></i> {{ workspace.0 }}</a></li>
                 </ul>
-            </section>
-            <!-- /.sidebar -->
-        </aside>
+              {% endfor %}-->
+            </li>
+          </ul>
+        </section>
+        <!-- /.sidebar -->
+      </aside>
 
       <!-- Right side column. Contains the navbar and content of the page -->
       <div class="content-wrapper">
@@ -201,101 +157,55 @@
         <!-- Main content -->
         <section class="content">
           <!-- CONTENUTO PARTE CENTRALE DELLA PAGINA -->
-            <div class="row">
-                <div class="col-md-9">
-                    <div class="box">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">Plot</h3>
-                        </div>
-                        <div class="box-body">
-                            <div class="chart">
-                                <div id="chartdiv" style="height: 400px;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <section class="sidebar">
-                        <ul class="sidebar-menu">
-                            <li class="active treeview">
-                                <a href="#">
-                                    <i class="fa fa-list-ul"></i> <span>Select files or fields ...</span>
-                                    <i class="fa fa-angle-left pull-right"></i>
-                                </a>
-                                <ul class="treeview-menu" id="menu_files_list">
-                                    {#                            <li v-for="(f, f_index) in files" class="active"><a href="#"><i class="fa fa-circle-o"></i>[[ f.name ]]<i v-bind:class="classObject" v-on:click="activate_file(f_index)"></i></a>#}
-                                    {#                              <ul v-for="ff in f.fields" class="treeview-menu">#}
-                                    {#                                <li><a href="#"><i class="fa fa-circle-o"></i>[[ ff.name ]]<i class="fa fa-square-o pull-right" onclick="active_field(event, [[f.url]])"></i></a></li>#}
-                                    {#                              </ul>#}
-                                    {#                            </li>#}
-                                    <li v-for="(f, f_index) in files" class="active"><a href="#">
-                                        <i
-                                                v-on:click="select_file(f_index)"
-                                                v-bind:class="(f_index === file_selected_index) ? 'fa fa-dot-circle-o' : 'fa fa-circle-o'"></i>
-                                        <span v-on:click="select_file(f_index)">[[ f.name ]]</span><i
-                                            v-bind:class="f.active ? 'fa fa-check-square-o pull-right' : 'fa fa-square-o pull-right'"
-                                            v-on:click="activate_file(f_index)"></i></a>
-                                        <ul v-for="(ff, ff_index) in f.fields" class="treeview-menu">
-                                            <li><a href="#"><i class="fa fa-circle-o"></i>
-                                                <span
-                                                        v-show="ff.name_on_change ? false : true"
-                                                        v-on:click="show_change_name_box(f_index, ff_index)">[[ ff.name ]]</span>
-                                                <input class="form-control input-sm" type="text" v-model="ff.name"
-                                                       v-show="ff.name_on_change ? true : false"
-                                                       v-on:keyup.enter="change_name(f_index, ff_index)">
-                                                <i
-                                                        v-bind:class="ff.active ? 'fa fa-check-square-o pull-right' : 'fa fa-square-o pull-right'"
-                                                        v-on:click="activate_field(f_index, ff_index)"></i>
-                                                <i class="fa fa-plus-square pull-right"
-                                                   v-on:click="select_analysis(f_index, ff_index)"></i>
-                                                <i class="fa fa-minus-square pull-right" v-if="ff.computed"
-                                                   v-on:click="ask_delete_field(f_index, ff_index)"></i>
-                                            </a></li>
-                                        </ul>
-                                    </li>
-                                    <!--<li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
-                                    <li>
-                                      <a href="#"><i class="fa fa-circle-o"></i> Level One <i class="fa fa-angle-left pull-right"></i></a>
-                                      <ul class="treeview-menu">
-                                        <li><a href="#"><i class="fa fa-circle-o"></i> Level Two</a></li>
-                                        <li>
-                                          <a href="#"><i class="fa fa-circle-o"></i> Level Two <i class="fa fa-angle-left pull-right"></i></a>
-                                          <ul class="treeview-menu">
-                                            <li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
-                                            <li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
-                                          </ul>
-                                        </li>
-                                      </ul>
-                                    </li>
-                                    <li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>-->
-                                </ul>
+          <div class="row">
+              <div class="col-md-9">
+                  <div id="chartdiv" style="width: 640px; height: 400px;"></div>
+              </div>
+              <div class="col-md-3">
+                  <section class="sidebar">
+                      <ul class="sidebar-menu">
+                        <li class="active treeview">
+                          <a href="#">
+                            <i class="fa fa-list-ul"></i> <span>Select files or fields ...</span>
+                            <i class="fa fa-angle-left pull-right"></i>
+                          </a>
+                          <ul class="treeview-menu" id="menu_files_list">
+{#                            <li v-for="(f, f_index) in files" class="active"><a href="#"><i class="fa fa-circle-o"></i>[[ f.name ]]<i v-bind:class="classObject" v-on:click="activate_file(f_index)"></i></a>#}
+{#                              <ul v-for="ff in f.fields" class="treeview-menu">#}
+{#                                <li><a href="#"><i class="fa fa-circle-o"></i>[[ ff.name ]]<i class="fa fa-square-o pull-right" onclick="active_field(event, [[f.url]])"></i></a></li>#}
+{#                              </ul>#}
+{#                            </li>#}
+                              <li v-for="(f, f_index) in files" class="active"><a href="#"><i
+                                      class="fa fa-circle-o"></i>[[ f.name ]]<i v-bind:class="f.active ? 'fa fa-check-square-o pull-right' : 'fa fa-square-o pull-right'"
+                                                                                v-on:click="activate_file(f_index)"></i></a>
+                                  <ul v-for="(ff, ff_index) in f.fields" class="treeview-menu">
+                                      <li><a href="#"><i class="fa fa-circle-o"></i>[[ ff.name ]]<i
+                                              v-bind:class="ff.active ? 'fa fa-check-square-o pull-right' : 'fa fa-square-o pull-right'"
+                                              v-on:click="activate_field(f_index, ff_index)"></i></a></li>
+                                  </ul>
+                              </li>
+                            <!--<li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
+                            <li>
+                              <a href="#"><i class="fa fa-circle-o"></i> Level One <i class="fa fa-angle-left pull-right"></i></a>
+                              <ul class="treeview-menu">
+                                <li><a href="#"><i class="fa fa-circle-o"></i> Level Two</a></li>
+                                <li>
+                                  <a href="#"><i class="fa fa-circle-o"></i> Level Two <i class="fa fa-angle-left pull-right"></i></a>
+                                  <ul class="treeview-menu">
+                                    <li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
+                                    <li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
+                                  </ul>
+                                </li>
+                              </ul>
                             </li>
-                        </ul>
-                    </section>
-                    <comp1>
-                        <comp2></comp2>
-                    </comp1>
+                            <li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>-->
+                          </ul>
+                        </li>
+                      </ul>
+                  </section>
 
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="box">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">File properties controll panel</h3>
-                        </div>
-                        <div class="box-body">
-                            <div id="file_properties_form">
-                                <strong>Offset</strong>
-                                <input class="form-control" v-model.number="offset">
-                                <strong>Stretching</strong>
-                                <input class="form-control" v-model.number="stretching">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+              </div>
+          </div>
         </section><!-- /.content -->
         <!-- Create file modal -->
         <div class="modal fade" id="create_file_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -339,219 +249,43 @@
           </div>
         </div>
 
-          <!-- Delete event modal -->
-        <div class="modal fade" id="delete_event_modal" tabindex="-1" role="dialog" aria-labelledby="delete_event_modal_label">
+        <!-- Create workspace modal -->
+        <div class="modal fade" id="annotation_modal" tabindex="-1" role="dialog" aria-labelledby="annotation_modal_label">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
               <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="delete_event_modal_label">Delete Event</h4>
+                <h4 class="modal-title" id="annotation_modal_label">Create new annotation</h4>
               </div>
               <div class="modal-body">
-                Are you sure you want to delete the event ?
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-                <button type="button" class="btn btn-primary" id="confirm_delete_event">Yes</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-          <!-- Delete analysis modal -->
-        <div class="modal fade" id="delete_analysis_modal" tabindex="-1" role="dialog" aria-labelledby="delete_analysis_modal_label">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="delete_event_modal_label">Delete Analysis</h4>
-              </div>
-              <div class="modal-body">
-                Are you sure you want to delete the analysis ?
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-                <button type="button" class="btn btn-primary" id="confirm_delete_analysis">Yes</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-          <!-- Show punctual annotations -->
-          <div class="modal fade" id="show_punctual_annotations_modal" tabindex="-1" role="dialog" aria-labelledby="show_punctual_annotations_modal">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="delete_event_modal_label">Select puntual annotation</h4>
-              </div>
-              <div class="modal-body">
-                <ul id="select_puntual_annotation_menu">
-                    <li v-for="(a, index) in annotations" v-on:click="create_event(index)">[[ a.name ]]</li>
-                </ul>
-              </div>
-                <!--
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-                <button type="button" class="btn btn-primary" d="confirm_delete_event">Yes</button>
-              </div>
-              -->
-            </div>
-          </div>
-        </div>
-
-          <!-- Show interval annotations -->
-          <div class="modal fade" id="show_interval_annotations_modal" tabindex="-1" role="dialog"
-               aria-labelledby="show_interval_annotations_modal">
-              <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                      <div class="modal-header">
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                  aria-hidden="true">&times;</span></button>
-                          <h4 class="modal-title" id="delete_event_modal_label">Select interval annotation</h4>
-                      </div>
-                      <div class="modal-body">
-                          <ul id="select_interval_annotation_menu">
-                              <li v-for="(a, index) in annotations" v-on:click="create_event(index)">[[ a.name ]]</li>
-                          </ul>
-                      </div>
-                      <!--
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-                      <button type="button" class="btn btn-primary" d="confirm_delete_event">Yes</button>
+                <!-- form start -->
+                <form role="form" id="create_annotation_form" onsubmit="return false" data-validate-url="{% url 'create_workspace' %}">
+                  <div id="create_workspace_form_errors"></div>
+                  <div class="box-body">
+                    <!-- text input -->
+                    <div class="form-group">
+                      <label>Name</label>
+                      <input type="text" class="form-control" name="workspace_name" id="id_workspace_name" placeholder="Enter ..."/>
                     </div>
-                    -->
-                  </div>
-              </div>
-          </div>
-
-          <!-- creazione di un'analisi -->
-          <div class="modal fade" id="create_analysis_modal" tabindex="-1" role="dialog"
-               aria-labelledby="create_analysis_modal">
-              <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                      <div class="modal-header">
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                  aria-hidden="true">&times;</span></button>
-                          <h4 class="modal-title" id="create_analysis_modal_label">Analysis creation</h4>
-                      </div>
-                      <div class="modal-body">
-                          <div id="analysis_options_menu">
-                              <div>Name</div>
-                              <input type="text" class="form-control" v-model="name"
-                                     placeholder="Insert a name for the analysis">
-                              <ul>
-                                  <li v-for="e in errors.name">
-                                      [[ e ]]
-                                  </li>
-                              </ul>
-                              <div>Type</div>
-                              <select class="form-control" v-model="type">
-                                  <option disabled value="">Please select a type</option>
-                                  <option v-for="t in analysis_types">[[ t ]]</option>
-                              </select>
-                              <ul>
-                                  <li v-for="e in errors.type">
-                                      [[ e ]]
-                                  </li>
-                              </ul>
-                              <div v-show="show_fft">
-                                  <div>n</div>
-                                  <input class="form-control" v-model.number="options['fft'].n">
-                                  <ul>
-                                      <li v-for="e in errors.options.fft.n">
-                                          [[ e ]]
-                                      </li>
-                                  </ul>
-                                  <div>norm</div>
-                                  <select class="form-control" v-model="options['fft'].norm">
-                                      <option selected>None</option>
-                                      <option>ortho</option>
-                                  </select>
-                                  <ul>
-                                      <li v-for="e in errors.options.fft.norm">
-                                          [[ e ]]
-                                      </li>
-                                  </ul>
-                                  <ul>
-                                      <li v-for="e in errors.options.fft.non_field_errors">
-                                          [[ e ]]
-                                      </li>
-                                  </ul>
-                              </div>
-                              <div v-show="show_ewma">
-                                  <div>com</div>
-                                  <input class="form-control" v-model.number="options['ewma'].com">
-                                  <ul>
-                                      <li v-for="e in errors.options.ewma.com">
-                                          [[ e ]]
-                                      </li>
-                                  </ul>
-                                  <div>span</div>
-                                  <input class="form-control" v-model.number="options['ewma'].span">
-                                  <ul>
-                                      <li v-for="e in errors.options.ewma.span">
-                                          [[ e ]]
-                                      </li>
-                                  </ul>
-                                  <div>halflife</div>
-                                  <input class="form-control" v-model.number="options['ewma'].halflife">
-                                  <ul>
-                                      <li v-for="e in errors.options.ewma.halflife">
-                                          [[ e ]]
-                                      </li>
-                                  </ul>
-                                  <div>min_periods</div>
-                                  <input class="form-control" v-model.number="options['ewma'].min_periods">
-                                  <ul>
-                                      <li v-for="e in errors.options.ewma.min_periods">
-                                          [[ e ]]
-                                      </li>
-                                  </ul>
-                                  <div>freq</div>
-                                  <input class="form-control" v-model="options['ewma'].freq">
-                                  <ul>
-                                      <li v-for="e in errors.options.ewma.freq">
-                                          [[ e ]]
-                                      </li>
-                                  </ul>
-                                  <div class="checkbox">
-                                      <label>
-                                          <input type="checkbox" v-model="options['ewma'].adjust">
-                                          adjust
-                                      </label>
-                                  </div>
-                                  <ul>
-                                      <li v-for="e in errors.options.ewma.adjust">
-                                          [[ e ]]
-                                      </li>
-                                  </ul>
-                                  <div>how</div>
-                                  <input class="form-control" v-model="options['ewma'].how">
-                                  <ul>
-                                      <li v-for="e in errors.options.ewma.how">
-                                          [[ e ]]
-                                      </li>
-                                  </ul>
-                                  <ul>
-                                      <li v-for="e in errors.options.ewma.non_field_errors">
-                                          [[ e ]]
-                                      </li>
-                                  </ul>
-                              </div>
-                          </div>
-                      </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-default" data-dismiss="modal">Cencel</button>
-                      <button type="button" class="btn btn-primary" id="create_analysis"
-                              v-on:click="create_analysis()">
-                          Create
-                      </button>
+                    <!-- textarea -->
+                    <div class="form-group">
+                      <label>Description</label>
+                      <textarea class="form-control" rows="3" name="workspace_descr" placeholder="Enter ..."></textarea>
                     </div>
-                  </div>
-              </div>
-          </div>
+                  </div><!-- /.box-body -->
 
+                  <div class="box-footer">
+                    <button type="submit" class="btn btn-primary" onclick="create_workspace()">Create</button>
+                  </div>
+                </form>
+              </div>
+              <!--<div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Ok</button>
+              </div>-->
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -582,7 +316,7 @@
     <!-- Bootstrap WYSIHTML5 -->
     <script src="{% static 'seaver_app/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js' %}" type="text/javascript"></script>
     <!-- iCheck -->
-    <!-- <script src="{% static 'seaver_app/plugins/iCheck/icheck.min.js' %}" type="text/javascript"></script> -->
+    <script src="{% static 'seaver_app/plugins/iCheck/icheck.min.js' %}" type="text/javascript"></script>
     <!-- Slimscroll -->
     <script src="{% static 'seaver_app/plugins/slimScroll/jquery.slimscroll.min.js' %}" type="text/javascript"></script>
     <!-- FastClick -->
@@ -596,32 +330,158 @@
     <!-- AdminLTE for demo purposes -->
     <script src="{% static 'seaver_app/dist/js/demo.js' %}" type="text/javascript"></script>
 
-    <!-- seaver app -->
-    <script src="{% static "seaver_app/csrftoken.js" %}"></script>
-    <script src="{% static "seaver_app/chart_manager.js" %}"></script>
-    <script src="{% static "seaver_app/request_watcher.js" %}"></script>
-    <script src="{% static "seaver_app/workspace/data_download.js" %}"></script>
-    <script src="{% static "seaver_app/workspace/request_watcher.js" %}"></script>
-
-
     <!-- init -->
     <script>
-        // cambio i delimitatori di Vue
         Vue.options.delimiters = ['[[', ']]'];
 
-        // ottengo il token per le richieste non safe (es post, put, ...)
-        var csrftoken = Cookies.get('csrftoken');
 
+            {# from https://docs.djangoproject.com/en/1.11/ref/csrf/#ajax #}
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+
+            var csrftoken = Cookies.get('csrftoken');
+    </script>
+
+    <!-- load data -->
+    <script>
+        {# utilita' che controlla lo stato di completamento delle richieste  #}
+        var requests_watcher = {
+            requests: 0,
+            responses: 0,
+            success: function () {
+                alert("loading compleated");
+                after_loaded();
+            },
+            add: function (n) {
+                this.requests += n;
+            },
+            remove: function (n) {
+                this.responses += n;
+                if (this.responses >= this.requests) {
+                    this.success()
+                }
+            }
+        };
+
+{#        ottine i dati del campo #}
+        function get_field_data(field_data_url, field) {
+            requests_watcher.add(1);
+            $.get(field_data_url).done(function (data) {
+                field.data = data.field_data;
+            }).fail(function (errors) {
+               alert("errore nel caricamento dei dati del campo: " + errors);
+            }).always(function () {
+                requests_watcher.remove(1);
+            });
+        }
+
+{#        ottiene il campo #}
+        function get_field(field_url, f) {
+            requests_watcher.add(1);
+            $.get(field_url).done(function (data) {
+{#                put in alphabetic order #}
+                var field_index = _.sortedIndexBy(f.fields, data, function (e) {
+                    return e.name.toLowerCase();
+                });
+                f.fields.splice(field_index, 0, data);
+                get_field_data(data.field_data, data);
+            }).fail(function (errors) {
+                alert("errore downloading field: " + errors);
+            }).always(function () {
+                requests_watcher.remove(1);
+            })
+        }
+
+        function get_file(file_url) {
+            requests_watcher.add(1);
+            $.get(file_url).done(function (data) {
+                data.fields = [];
+{#                put in alphabetic order #}
+                var file_index = _.sortedIndexBy(workspace.files, data, function (e) {
+                    return e.name.toLowerCase();
+                });
+                workspace.files.splice(file_index, 0, data);
+{#                carica il nome del file nella barra laterale #}
+{#                v_files.files.push(data);#}
+{#                menu_files.files.push(data);#}
+                console.log(menu_files);
+                data.field_names.forEach(function (field_url) {
+                    get_field(field_url, data)
+                });
+            }).fail(function (errors) {
+               alert("errori nel caricamento del file: " + errors);
+            }).always(function () {
+                requests_watcher.remove(1);
+            });
+        }
+
+        function get_workspace(workspace_url) {
+            $.get(workspace_url).done(function (data) {
+                workspace = data;
+                var fs = data.files;
+                workspace.files = [];
+                v_files.files = workspace.files;
+                menu_files.files = workspace.files;
+                fs.forEach(function (f_url) {
+                    get_file(f_url);
+                });
+            }).fail(function (error) {
+                alert("error loading workspace: " + error);
+            })
+        }
+
+        function after_loaded() {
+            {#  v_files.files = workspace.files;#}
+
+            chart_manager.set_chart(chart);
+
+            workspace.files.forEach(function (f) {
+                chart_manager.add_file(f);
+            });
+
+            chart_manager.refresh();
+        }
+
+{#            workspace.files.forEach(function (f) {#}
+{#                manage_file_in_chart(f);#}
+{#            });#}
+{##}
+{#            chart.dataProvider = chart_manager.data;#}
+{##}
+{#            graphs = [];#}
+{#            for (field_name in chart_manager.fields){#}
+{#                graphs.push({#}
+{#                    "balloonText": "[[title]] of [[category]]:[[value]]",#}
+{#                    "bullet": "round",#}
+{#                    "id": field_name,#}
+{#                    "title": field_name,#}
+{#                    "valueField": field_name#}
+{#                })#}
+{#            }#}
+{#            chart.graphs = graphs;#}
+{##}
+{#            chart.validateData();#}
+{#        }#}
+
+        var workspace;
+        var v_files;
+        var menu_files;
+
+        var workspace_url = '{% url 'workspace-detail' workspace.pk %}';
+        //get_workspace(workspace_url);
 
         window.onload = function (){
-
-            workspace_url = '{% url 'workspace-detail' workspace.pk %}';
-            punctual_url = '{% url "punctualannotation-list" %}';
-            interval_url = '{% url "intervalannotation-list" %}';
-
-            // CREO GLI ELEMENTI VUE
-
-            //gestisce la barra laterale dei file
+{#            gestisce la barra laterale dei file #}
             v_files = new Vue({
                 el: '#files_list',
                 data: {
@@ -638,72 +498,7 @@
             menu_files = new Vue({
                 el: '#menu_files_list',
                 data: {
-                    files: [],
-                    file_selected_index: -1,
-                    select_analysis_file_index: undefined,
-                    select_analysis_field_index: undefined
-                },
-                computed: {
-                    selected_file_offset: {
-                        get: function () {
-                            // se nessun file è stato selezionato
-                            if (this.file_selected_index < 0)
-                                return 0;
-
-                            return this.files[this.file_selected_index].offset;
-                        },
-                        set: function (value) {
-                            // se nessun file è stato selezionato esco
-                            if (this.file_selected_index < 0)
-                                return;
-
-                            // controllo che sia un numero
-                            if (typeof value !== "number")
-                                return;
-
-                            // controllo che il valore non sia minore di 0
-                            if (value < 0)
-                                return;
-
-                            // trasformo in int se necessario
-                            value = Math.round(value);
-
-                            this.files[this.file_selected_index].offset = value;
-
-                            // mando i risultati al server
-                            this.send_file_properties_to_server();
-                        }
-                    },
-                    selected_file_stretching: {
-                        get: function () {
-                            // se nessun file è stato selezionato
-                            if (this.file_selected_index < 0)
-                                return 1;
-
-                            return this.files[this.file_selected_index].stretching;
-                        },
-                        set: function (value) {
-                            // se nessun file è stato selezionato esco
-                            if (this.file_selected_index < 0)
-                                return;
-
-                            // controllo che sia un numero
-                            if (typeof value !== "number")
-                                return;
-
-                            // controllo che il valore non sia minore di 1
-                            if (value < 1)
-                                return;
-
-                            // trasformo in int se necessario
-                            value = Math.round(value);
-
-                            this.files[this.file_selected_index].stretching = value;
-
-                            // mando i risultati al server
-                            this.send_file_properties_to_server();
-                        }
-                    }
+                    files: []
                 },
                 methods: {
                     activate_file: function (index){
@@ -717,14 +512,14 @@
                             }
                         });
 
-                        // attivo / disattivo i file
+{#                      attivo / disattivo i file  #}
                         chart_manager.show_hide_file(f);
                     },
                     activate_field: function (file_index, field_index) {
                         var f = this.files[file_index];
                         var field = f.fields[field_index];
 
-                        // cambio il valore di active e lo salvo nel db
+{#                        cambio il valore di active e lo salvo nel db #}
                         field.active = ! field.active;
                         $.ajax(field.url,{
                             method: "PATCH",
@@ -733,518 +528,269 @@
                             }
                         });
 
-                      // visualizzo / nascondo il campo
+{#                    visualizzo / nascondo il campo #}
                         var chart_field_name = chart_manager.get_field_name(f, field);
                         if (f.active && field.active)
                             chart_manager.show_graph(chart_field_name);
                         else
                             chart_manager.hide_graph(chart_field_name);
-                    },
-                    show_change_name_box: function (f_index, ff_index) {
-                        // mostra il box dove è possibile cambiare il nome del campo
-
-                        var field = this.files[f_index].fields[ff_index];
-
-                        // creo una copia deep
-                        field.previous_name = field.name.substr(0);
-
-                        field.name_on_change = true;
-                    },
-                    change_name: function (f_index, ff_index) {
-                        // prova ad aggiornare il nome del campo
-                        var f = this.files[f_index];
-                        var field = f.fields[ff_index];
-
-                        // salvo il risultato nel db
-                        $.ajax(field.url, {
-                            method: 'PATCH',
-                            data: {
-                                'name': field.name
-                            }
-                        }).done(function () {
-                            // cambio il nome nel grafico
-                            var previous_graph_name = f.name + '_' + field.previous_name;
-                            var current_graph_name = chart_manager.get_field_name(f, field);
-
-                            chart_manager.rename_field(previous_graph_name, current_graph_name);
-                            chart_manager.refresh();
-                        }).fail(function () {
-                            // rimetto il nome precedente
-                            field.name = field.previous_name;
-                        }).always(function () {
-                            field.name_on_change = false;
-                        })
-                    },
-                    select_file: function (f_index) {
-                        // funzione che si attiva quando selezioni il file
-
-                        // salvo gli indici del campo selezionato
-                        this.file_selected_index = f_index;
-                    },
-                    send_file_properties_to_server: _.debounce(function () {
-                        // mando il nuovo offset e stretching al server
-
-                        // se nessun file è stato selezionato allora esco
-                        if (this.file_selected_index < 0)
-                            return;
-
-                        // recupero il file selezionato
-                        var f = this.files[this.file_selected_index];
-
-                        // salvo le nuove proprietà sul server
-                        $.ajax(f.url, {
-                            method: 'PATCH',
-                            data: {
-                                'offset': f.offset,
-                                'stretching': f.stretching
-                            }
-                        }).done(function () {
-                            // aggiorno il grafico
-                            // chart_manager.delete_file(f);
-                            // chart_manager.add_file(f);
-                            for (var i = 0; i < f.fields.length; i += 1)
-                            {
-                                var chart_field_name = chart_manager.get_field_name(f, f.fields[i]);
-                                chart_manager.set_offset(chart_field_name, f.offset);
-                                chart_manager.set_stretching(chart_field_name, f.stretching);
-                            }
-                            chart_manager.refresh();
-                        })
-                    },
-                        // esegui l'operazione ogni tot secondi
-                    1500),
-                    select_analysis: function(f_index, ff_index){
-                        // apre la finestra di creazione di un'analisi per il field specificato
-
-                        // memorizzo il field selezionato
-                        this.select_analysis_file_index = f_index;
-                        this.select_analysis_field_index = ff_index;
-
-                        // cancello gli errori d'analisi
-                        analysis_options_menu.reset_errors();
-                        // apro la finestra di selezione dell'analisi
-                        $('#create_analysis_modal').modal('toggle');
-                    },
-                    ask_delete_field: function (f_index, ff_index) {
-                        $('#delete_analysis_modal').modal('toggle');
-                        $('#confirm_delete_analysis').on("click", function(){
-                            menu_files.delete_field(f_index, ff_index);
-                        });
-                    },
-                    delete_field: function (f_index, ff_index) {
-                        var file = this.files[f_index];
-                        var field = file.fields[ff_index];
-
-                        $.ajax(field.url, {
-                            method: 'DELETE'
-                        }).done(function () {
-                            // cancello il campo dal grafico
-                            var chart_field_name = chart_manager.get_field_name(file, field);
-                            chart_manager.delete_field(chart_field_name);
-                            chart_manager.refresh();
-
-                            // cancello il campo dal menù
-                            file.fields.splice(ff_index, 1);
-
-                            // chiudo la finestra
-                            $('#delete_analysis_modal').modal('toggle');
-                        }).fail(function (data) {
-                            console.log(data);
-                        })
                     }
                 }
             });
-
-            // collegato alla form per modificare offset e stretching del file
-            file_propery_form = new Vue({
-                el: '#file_properties_form',
-                computed: {
-                    offset: {
-                        get: function () {
-                            return menu_files.selected_file_offset;
-                        },
-                        set: function (value) {
-                            menu_files.selected_file_offset = value;
-                        }
-                    },
-                    stretching: {
-                        get: function () {
-                            return menu_files.selected_file_stretching;
-                        },
-                        set: function (value) {
-                            menu_files.selected_file_stretching = value;
-                        }
-                    }
-                }
-            });
-            
-            menu_punctual_events = new Vue({
-                el: "#p_events_list",
-                data: {
-                    events: [],
-                    default_color_event: '#CC0000',
-                    highlight_color_event: '#00cc03'
-                },
-                methods: {
-                    ask_delete_confirm: function (index) {
-                        $('#delete_event_modal').modal('toggle');
-                        $('#confirm_delete_event').on("click", function(){ menu_punctual_events.delete_event(index) });
-                    },
-                    delete_event: function (index) {
-                        // cancello l'evento nel server
-                        var e = this.events[index];
-                        $.ajax(e.url, {
-                            method: 'DELETE'
-                        }).done(function () {
-                            // cancello l'evento dalla lista
-                            menu_punctual_events.events.splice(index, 1);
-
-                            // cancello l'evento dal grafico
-                            chart_manager.remove_event(e);
-                            chart_manager.refresh_properties();
-
-                            // esco dalla finestra di cancellazione
-                            $('#delete_event_modal').modal('toggle');
-                        })
-                    },
-                    highlight_event: function (index) {
-                        chart_manager.color_event(this.events[index], this.highlight_color_event);
-                        chart_manager.refresh_properties();
-                    },
-                    remove_highlight_event: function (index) {
-                        chart_manager.color_event(this.events[index], this.default_color_event);
-                        chart_manager.refresh_properties();
-                    }
-                }
-            });
-
-            menu_interval_events = new Vue({
-                el: "#i_events_list",
-                data: {
-                    events: [],
-                    default_color_event: '#CC0000',
-                    highlight_color_event: '#00cc03'
-                },
-                methods: {
-                    ask_delete_confirm: function (index) {
-                        $('#delete_event_modal').modal('toggle');
-                        $('#confirm_delete_event').on("click", function(){ menu_interval_events.delete_event(index) });
-                    },
-                    delete_event: function (index) {
-                        // cancello l'evento nel server
-                        var e = this.events[index];
-                        $.ajax(e.url, {
-                            method: 'DELETE'
-                        }).done(function () {
-                            // cancello l'evento dalla lista
-                            menu_interval_events.events.splice(index, 1);
-
-                            // cancello l'evento dal grafico
-                            chart_manager.remove_event(e);
-                            chart_manager.refresh_properties();
-
-                            // esco dalla finestra di cancellazione
-                            $('#delete_event_modal').modal('toggle');
-                        })
-                    },
-                    highlight_event: function (index) {
-                        chart_manager.color_event(this.events[index], this.highlight_color_event);
-                        chart_manager.refresh_properties();
-                    },
-                    remove_highlight_event: function (index) {
-                        chart_manager.color_event(this.events[index], this.default_color_event);
-                        chart_manager.refresh_properties();
-                    }
-                }
-            });
-
-            select_puntual_annotation_menu = new Vue({
-                el: '#select_puntual_annotation_menu',
-                data: {
-                    annotations: annotation_events.punctual,
-                    start: undefined,
-                    punctual_event_url: '{% url "punctualannotationevent-list" %}'
-                },
-                methods: {
-                    create_event: function (annotation_index) {
-                        var annotation = this.annotations[annotation_index];
-
-                        $.ajax(this.punctual_event_url, {
-                            'method': 'POST',
-                            'data': {
-                                'workspace': workspace.url,
-                                'annotation': annotation.url,
-                                'start': this.start
-                            }
-                        }).done(function (data) {
-                            // ottengo l'annotazione corrispondente
-                            data.annotation = annotations_by_url[data.annotation];
-
-                            // aggiungo l'evento a workspace
-                            var index = _.sortedIndexBy(workspace.punctuals, data, 'start');
-                            workspace.punctuals.splice(index, 0, data);
-
-                            // aggingo l'evento al grafico
-                            chart_manager.add_event(data);
-                            chart_manager.refresh_properties();
-                        }).error(function (data) {
-                            console.log(data);
-                        }).always(function () {
-                            // chiudo la finestra
-                            $('#show_punctual_annotations_modal').modal('toggle');
-                        })
-                    }
-                }
-            });
-
-            select_interval_annotation_menu = new Vue({
-                el: '#select_interval_annotation_menu',
-                data: {
-                    annotations: annotation_events.interval,
-                    start: undefined,
-                    end: undefined,
-                    interval_event_url: '{% url "intervalannotationevent-list" %}'
-                },
-                methods: {
-                    create_event: function (annotation_index) {
-                        var annotation = this.annotations[annotation_index];
-
-                        $.ajax(this.interval_event_url, {
-                            'method': 'POST',
-                            'data': {
-                                'workspace': workspace.url,
-                                'annotation': annotation.url,
-                                'start': this.start,
-                                'stop': this.end
-                            }
-                        }).done(function (data) {
-                            // ottengo l'annotazione corrispondente
-                            data.annotation = annotations_by_url[data.annotation];
-
-                            // aggiungo l'evento a workspace
-                            var index = _.sortedIndexBy(workspace.intervals, data, 'start');
-                            workspace.intervals.splice(index, 0, data);
-
-                            // aggingo l'evento al grafico
-                            chart_manager.add_event(data);
-                            chart_manager.refresh_properties();
-                        }).error(function (data) {
-                            console.log(data);
-                        }).always(function () {
-                            // chiudo la finestra
-                            $('#show_interval_annotations_modal').modal('toggle');
-                        })
-                    }
-                }
-            });
-
-            analysis_options_menu = new Vue({
-                el: '#create_analysis_modal',
-                data: {
-                    name: '',
-                    type: '',
-                    analysis_types: ['fft', 'ewma'],
-                    options: {
-                        'fft': {
-                            'n': '',
-                            'norm': 'None'
-                        },
-                        'ewma': {
-                            'com': '',
-                            'span': '',
-                            'halflif': '',
-                            'min_periods': '',
-                            'freq': '',
-                            'adjust': '',
-                            'how': ''
-                        }
-                    },
-                    errors: {
-                        'generic': [],
-                        'name': [],
-                        'type': [],
-                        'options': {
-                            'fft': {
-                                'n': [],
-                                'norm': [],
-                                'non_field_errors': []
-                            },
-                            'ewma': {
-                                'com': [],
-                                'span': [],
-                                'halflife': [],
-                                'min_periods': [],
-                                'freq': [],
-                                'adjust': [],
-                                'how': [],
-                                'non_field_errors': []
-                            }
-                        }
-                    }
-                },
-                computed: {
-                    show_fft: function () {
-                        return this.type === 'fft';
-                    },
-                    show_ewma: function () {
-                        return this.type === 'ewma';
-                    }
-                },
-                methods: {
-                    __reset_errors: function (errors) {
-                        for (var key in errors){
-                            if (errors.hasOwnProperty(key)) {
-                                var ek = errors[key];
-                                if (ek.constructor === Array) {
-                                    errors[key] = [];
-                                } else {
-                                    this.__reset_errors(ek);
-                                }
-                            }
-                        }
-                    },
-                    reset_errors: function () {
-                        this.__reset_errors(this.errors);
-                    },
-                    check_errors: function () {
-                        var data = {
-                            'options': {}
-                        };
-                        var errors = false;
-                        if (this.name === ''){
-                            this.errors.name.push('Can not be blank');
-                            errors = true;
-                        } else {
-                            data.name = this.name;
-                        }
-
-                        var t = this.type;
-                        if (_.findIndex(this.analysis_types, function (o) {
-                                return o === t;
-                            }) !== -1) {
-                            data.type = this.type;
-                            var options = this.options[this.type];
-                            var data_options = {};
-
-                            for (var key in options){
-                                if (options.hasOwnProperty(key)){
-                                    var o = options[key];
-
-                                    // caso particolare
-                                    if ((this.type === 'fft') && (key === 'norm')) {
-                                        if (o !== 'None') {
-                                            data_options[key] = o;
-                                        }
-                                    } else {
-                                        if (o !== '') {
-                                            data_options[key] = o;
-                                        }
-                                    }
-                                }
-                            }
-
-                            data.options[this.type] = data_options;
-                        } else {
-                            this.errors.type.push('Not a valid type');
-                            errors = true;
-                        }
-
-                        if (errors)
-                            return null;
-
-                        return data;
-                    },
-                    create_analysis: function () {
-                        this.reset_errors();
-                        var request_data = this.check_errors();
-
-                        var file = menu_files.files[menu_files.select_analysis_file_index];
-                        var field = file.fields[menu_files.select_analysis_field_index];
-
-                        if (request_data === null)
-                            return;
-
-                        $.ajax(field.analysis_url,{
-                            method: 'POST',
-                            data: JSON.stringify(request_data),
-                            contentType: "application/json; charset=utf-8",
-                            dataType: "json"
-                        }).done(function (data) {
-                            add_field_to_file(data, file);
-                            var request_pk = requests_watcher.add_listener('files', function () {
-                                chart_manager.add_field_of_file(data, file);
-                                chart_manager.refresh();
-                                requests_watcher.remove_listener('files', request_pk);
-                            });
-
-                            // chiudo la finestra d'analisi
-                            $('#create_analysis_modal').modal('toggle');
-                        }).fail(function (data) {
-                            analysis_options_menu.reset_errors();
-
-                            var response = data.responseJSON;
-                            var errors = analysis_options_menu.errors;
-                            var set_error_function = function (errors, where_to_set) {
-                                for (var key in errors){
-                                    if (errors.hasOwnProperty(key)){
-                                        var ek = errors[key];
-                                        if (ek.constructor === Array){
-                                            where_to_set[key] = where_to_set[key].concat(ek);
-                                        } else {
-                                            set_error_function(ek, where_to_set[key]);
-                                        }
-                                    }
-                                }
-                            };
-
-                            set_error_function(response, analysis_options_menu.errors);
-                        })
-                    }
-                }
-            });
-
-            // ASSEGNO IL CHART AL MANAGER
-            chart_manager = new ChartManager(chart);
-            chart_manager.set_points_per_field(50);
-
-
-            // OTTENGO LE ANNOTAZIONI DISPONIBILI
-            get_annotations(punctual_url, interval_url);
-
-            // CREO GLI EVENTI DEL GRAFICO
-            // aggiungo un listener all'evento change che memorizza l'ultima posizione del mouse
-            this.chart.addListener('changed', function (e) {
-                chart_manager.last_cursor_position = e.index;
-            });
-
-            // quando l'utente fa click apro il menù di selezione di un punctual annotation
-            this.chart.addListener('clickGraph', function (e) {
-                // memorizzo l'indice relativo al'ultima posizione del mouse
-                select_puntual_annotation_menu.start = chart_manager.data[chart_manager.last_cursor_position].index;
-                // apro la finestra di selezione dell'annotazione
-                $('#show_punctual_annotations_modal').modal('toggle');
-            });
-            
-            // quando l'utente seleziona un area
-            this.chart.chartCursor.addListener('selected', function (e) {
-                // memorizzo l'indice di inzio e fine
-                select_interval_annotation_menu.start = chart_manager.data[e.start].index;
-                select_interval_annotation_menu.end = chart_manager.data[e.end].index;
-
-                // visualizza la selezione di un'annotazione di intervallo
-                $('#show_interval_annotations_modal').modal('toggle');
-            })
         };
+        get_workspace(workspace_url);
+        console.log(menu_files);
 
 
-        var v_files;
-        var menu_files;
-        var menu_punctual_events;
-        var menu_interval_events;
-        var select_puntual_annotation_menu;
-        var select_interval_annotation_menu;
-        var analysis_options_menu;
-        var chart_manager;
+
+{#        function activate_file(event, url) {#}
+{#            var file_to_activate = $(event.target);#}
+{#            console.log(file_to_activate);#}
+{#            console.log(url);#}
+{#            file_to_activate.toggleClass('fa-square-o fa-check-square-o');#}
+{#            var current_active_status =#}
+{#            console.log(current_active_status);#}
+{#        }#}
+
+        
+    </script>
+
+    <script>
+{#        todo da testare #}
+        var chart_manager = {
+            fields: {},
+            data: [],
+            {# come avviene la visualizzazione di un field #}
+            graphs: {},
+            chart: null,
+            {# 0 significa tutti #}
+            points_per_field: 0,
+            __get_index_increment: function (field_name) {
+{#                restituisce di quanto deve crescere l'indice della serie #}
+                var index_increment = Math.floor(this.fields[field_name].data.length / this.points_per_field);
+                if (index_increment < 1)
+                    index_increment = 1;
+
+                return index_increment;
+            },
+            __create_graph: function (field_name) {
+                if (field_name in this.graphs)
+                    return;
+
+                this.graphs[field_name] = {
+                    "balloonText": "[[title]] of [[category]]:[[value]]",
+                    "bullet": "round",
+                    "id": field_name,
+                    "title": field_name,
+                    "valueField": field_name,
+                    "hidden": false
+                };
+            },
+            __delete_graph: function (field_name) {
+                if (field_name in this.graphs) {
+                    delete this.graphs[field_name];
+                }
+            },
+            __create_field_data: function (field_name) {
+                var field = this.fields[field_name];
+{#                var field_length = field.data.length * field.stretching + field.offset;#}
+{#                if (field_length > this.data.length) {#}
+{#                    var previous_length = this.data.length;#}
+{#                    for (var i = previous_length; i < field_length; i += 1) {#}
+{#                        this.data[i] = {index: i};#}
+{#                    }#}
+{#                }#}
+
+                var index_increment = this.__get_index_increment(field_name);
+
+                for (i = 0; i < field.data.length; i += index_increment) {
+                    var point_index = i * field.stretching + field.offset;
+                    var point_data = {'index': point_index};
+{#                    in che posizione di data inserire il nuovo punto #}
+                    var data_index = _.sortedIndexBy(this.data, point_data, 'index');
+                    if ((data_index < this.data.length) && (this.data[data_index].index === point_index)){
+{#                        se l'elemento esiste già #}
+                        this.data[data_index][field_name] = field.data[i];
+                    }
+                    else {
+                        point_data[field_name] = field.data[i];
+                        this.data.splice(data_index, 0, point_data);
+                    }
+{#                    this.data[i * field.stretching + field.offset][field_name] = field.data[i];#}
+                }
+            },
+            __delete_field_data: function (field_name) {
+                var field = this.fields[field_name];
+
+                var index_increment = this.__get_index_increment(field_name);
+
+                for (var i = 0; i < field.data.length; i += index_increment) {
+                    var point_index = i * field.stretching + field.offset;
+                    var point_data = {'index': point_index};
+{#                    in che posizione di data inserire il nuovo punto #}
+                    var data_index = _.sortedIndexBy(this.data, point_data, 'index');
+
+                    delete this.data[data_index][field_name];
+
+{#                    se l'elemento contiene solo index lo elimino dall'array #}
+                    if (Object.keys(this.data[data_index]).length === 1) {
+                        this.data.splice(data_index, 1);
+                        i -= 1;
+                    }
+
+                }
+            },
+            __update_field_data: function (field_name) {
+                this.__delete_field_data(field_name);
+                this.__create_field_data(field_name);
+            },
+            set_chart: function (chart) {
+                this.chart = chart;
+            },
+            set_points_per_field: function (points_per_field) {
+                for (field_name in this.fields){
+                    if (this.fields.hasOwnProperty(field_name)){
+                        this.__delete_field_data(field_name);
+                    }
+                }
+
+                this.points_per_field = points_per_field;
+
+                for (field_name in this.fields){
+                    if (this.fields.hasOwnProperty(field_name)){
+                        this.__delete_field_data(field_name);
+                    }
+                }
+            },
+            show_graph: function (field_name) {
+                this.chart.showGraph(this.graphs[field_name]);
+            },
+            hide_graph: function (field_name) {
+                this.chart.hideGraph(this.graphs[field_name]);
+            },
+            add_field: function (field_name, data, offset, stretching) {
+                if (field_name in this.fields) {
+                    this.__delete_field_data(field_name);
+                }
+
+                this.fields[field_name] = {};
+                this.fields[field_name].data = data;
+                this.fields[field_name].offset = offset;
+                this.fields[field_name].stretching = stretching;
+
+                this.__create_field_data(field_name);
+
+                this.__create_graph(field_name)
+            },
+            add_field_if_not_exists: function (field_name, data, offset, stretching) {
+                if (field_name in this.fields)
+                    return;
+
+                this.add_field(field_name, data, offset, stretching);
+            },
+            delete_field: function (field_name) {
+                if (!(field_name in this.fields))
+                    return;
+
+                this.__delete_field_data(field_name);
+                delete this.fields[field_name];
+
+                this.__delete_graph(field_name);
+            },
+            set_offset: function (field_name, offset) {
+                if (this.fields[field_name].offset !== offset){
+                    this.__delete_field_data(field_name);
+                    this.fields[field_name].offset = offset;
+                    this.__create_field_data(field_name);
+                }
+            },
+            set_stretching: function (field_name, stretching) {
+                if (this.fields[field_name].stretching !== stretching){
+                    this.__delete_field_data(field_name);
+                    this.fields[field_name].stretching = stretching;
+                    this.__create_field_data(field_name);
+                }
+            },
+            refresh: function () {
+                var graphs = [];
+                for (key in this.graphs){
+                    if (this.graphs.hasOwnProperty(key))
+                    {
+                        graphs.push(this.graphs[key]);
+                    }
+                }
+                this.chart.graphs = graphs;
+                this.chart.dataProvider = this.data;
+                this.chart.validateData();
+{#                this.chart.validateNow();#}
+            },
+            rename_field: function (previous_name, current_name) {
+                if (previous_name !== current_name){
+                    var previous_field = this.fields[previous_name];
+                    this.delete_field(previous_field);
+                    this.add_field(current_name, previous_field.data, previous_field.offset,
+                        previous_field.stretching);
+                }
+            },
+            {#  file method #}
+            get_field_name: function (f, field) {
+                return f.name + "_" + field.name;
+            },
+            add_file: function (f) {
+                for (var i = 0; i < f.fields.length; i += 1) {
+                    var field = f.fields[i];
+                    var  chart_field_name = this.get_field_name(f, field);
+                    this.add_field_if_not_exists(chart_field_name, field.data, f.offset, f.stretching);
+
+                    this.graphs[chart_field_name].hidden = !((f.active) && (field.active));
+                }
+            },
+            delete_file: function (f) {
+                for (var i = 0; i < f.fields.length; i += 1) {
+                    var field = f.fields[i];
+                    var chart_field_name = this.get_field_name(f, field);
+                    this.delete_field(chart_field_name);
+                }
+            },
+            show_hide_file: function (f) {
+                for (var i = 0; i < f.fields.length; i += 1) {
+                    var field = f.fields[i];
+                    var chart_field_name = this.get_field_name(f, field);
+                    if (f.active && field.active)
+                        this.show_graph(chart_field_name);
+                    else
+                        this.hide_graph(chart_field_name)
+                }
+            }
+        };
+        chart_manager.set_points_per_field(50);
+
+
+        function add_field_to_chart(f, field){
+            {# f: file            #}
+          var  chart_field_name = f.name + "_" + field.name;
+
+          chart_manager.add_field(chart_field_name, field.data, f.offset, f.stretching);
+        }
+
+        function manage_file_in_chart(f) {
+            if (f.active) {
+                f.fields.forEach(function (field) {
+                    var chart_field_name = f.name + "_" + field.name;
+                    if (field.active) {
+                        chart_manager.add_field_if_not_exists(chart_field_name,
+                            field.data, f.offset, f.stretching);
+                    } else {
+                        chart_manager.delete_field(chart_field_name);
+                    }
+                });
+            } else {
+                f.fields.forEach(function (field) {
+                    var chart_field_name = f.name + "_" + field.name;
+                    chart_manager.delete_field(chart_field_name);
+                })
+            }
+        }
     </script>
   </body>
 </html>
