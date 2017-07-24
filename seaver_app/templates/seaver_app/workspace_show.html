@@ -32,6 +32,13 @@
 
     <script src="{% static 'seaver_app/dist/js/seaver.js' %}"></script>
 
+    <!-- vue -->
+      <script src="{% static 'seaver_app/vue.js' %}"></script>
+      <!-- token -->
+      <script src="{% static 'seaver_app/js-cookie.js' %}"></script>
+      <!-- loadash -->
+      <script src="{% static 'seaver_app/lodash.min.js' %}"></script>
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -126,11 +133,11 @@
               <a href="#">
                 <i class="fa fa-dashboard"></i> <span>Workspace</span> <i class="fa fa-angle-left pull-right"></i>
               </a>
-              {% for workspace in workspaces %}
-                <ul class="treeview-menu">
-                  <li class="active"><a href="{% url 'workspace' workspace.0 %}"><i class="fa fa-circle-o"></i> {{ workspace.0 }}</a></li>
-                </ul>
-              {% endfor %}
+              <ul class="treeview-menu" id="workspaces_lateral_menu">
+                  <li v-for="workspace in workspaces_list" class="active">
+                    <a href="#"><i class="fa fa-circle-o"></i>[[workspace.workspace_name]]</a>
+                  </li>
+              </ul>
             </li>
           </ul>
         </section>
@@ -150,39 +157,34 @@
             <li class="active">Dashboard</li>
           </ol>-->
         </section>
-
         <!-- Main content -->
         <section class="content">
-          <!-- Small boxes (Stat box) -->
-          <div class="row workspace_box_row">
-            {% for workspace in workspaces %}
-              <div class="col-md-4 workspace_box_col">
-                <!-- Primary box -->
-                <div class="box box-solid box-primary workspace_box">
+          <div class="row" id="row_workspaces_box">
+            <template v-for="workspace_box in workspaces_box_list">
+              <div class="col-md-4">
+                <div class="box box-solid box-primary">
                   <div class="box-header">
-                    <i class="fa fa-fw fa-folder"></i><h3 class="box-title">{{ workspace.0 }}</h3>
+                    <i class="fa fa-fw fa-folder"></i><h3 class="box-title">[[ workspace_box.workspace_name ]]</h3>
                     <div class="box-tools pull-right">
-                      <button class="btn btn-primary btn-sm" onclick="ask_delete_workspace_confirm(event, '{% url 'delete_workspace' 'workspace_name' %}')"><i class="glyphicon glyphicon-trash"></i></button>
+                      <button class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-trash"></i></button>
                       <button class="btn btn-primary btn-sm" data-widget="collapse"><i class="fa fa-minus"></i></button>
                       <!--<button class="btn btn-primary btn-sm" data-widget="remove"><i class="fa fa-times"></i></button>-->
                     </div>
                   </div>
                   <div class="box-body">
-                    <p><i class="fa fa-fw fa-file-text"></i> File 1</p>
-                    <p><i class="fa fa-fw fa-file-text"></i> File 2</p>
-                    <!--<div class=".box.box-solid.bg-light-blue">-->
+                    <p v-for="work_file in workspace_box.workspace_files"><i class="fa fa-fw fa-file-text"></i>[[ work_file ]]</p>
                     <center>
-                      <a href="{% url 'workspace' workspace.0 %}" class="small-box-footer">
+                      <a href="#" class="small-box-footer">
                         Go to workspace <i class="fa fa-arrow-circle-right"></i>
                       </a>
                     </center>
                     <!--</div>-->
-                  </div><!-- /.box-body -->
+                  </div><!-- /.box-body-->
+                </div><!-- /.box-->
+              </div><!-- /.col-->
+            </template>
 
-                </div><!-- /.box -->
-              </div><!-- /.col -->
-            {% endfor %}
-          </div><!-- /.row (main row) -->
+          </div>
           <!--<a class="btn-floating btn-large waves-effect waves-light blue"><i class="material-icons">+</i></a>-->
           <a href="#" class="add_float" style="position:fixed; width:60px; height:60px; bottom:40px; right:40px;
           background-color:#0277bd; color:#FFF; border-radius:50px; text-align:center; box-shadow: 2px 2px 3px #999;"
@@ -296,5 +298,68 @@
 
     <!-- AdminLTE for demo purposes -->
     <script src="{% static 'seaver_app/dist/js/demo.js' %}" type="text/javascript"></script>
+
+    <!-- init -->
+    <script>
+        Vue.options.delimiters = ['[[', ']]'];
+
+
+            {# from https://docs.djangoproject.com/en/1.11/ref/csrf/#ajax #}
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+
+            var csrftoken = Cookies.get('csrftoken');
+    </script>
+
+    <script>
+
+      //var v_workspaces;
+      //var v_workspaces_box;
+
+      window.onload = function (){
+          var workspaces_prova = {{ workspaces|safe }};
+          console.log(workspaces_prova);
+
+          var v_workspaces = new Vue({
+              el: '#workspaces_lateral_menu',
+              data: {
+                  workspaces_list: {{ workspaces|safe }}
+              },
+              methods: {
+                  ask_delete_file_confirm: function (index) {
+                      console.log();
+                  }
+              }
+          });
+
+          var v_workspaces_box = new Vue({
+              el: '#row_workspaces_box',
+              data: {
+                  workspaces_box_list: {{ workspaces|safe }}
+              },
+              methods: {
+                  ask_delete_file_confirm: function (index) {
+                      console.log();
+                  }
+              }
+          });
+
+
+          console.log(v_workspaces);
+          console.log(v_workspaces_box);
+
+      };
+
+     </script>
   </body>
 </html>

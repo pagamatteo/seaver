@@ -28,6 +28,15 @@
       </div><!-- /.login-logo -->
       <div class="login-box-body">
         <p class="login-box-msg">Login in to start your session</p>
+        {% if form.errors %}
+
+          {% for error_field, error_message in form.errors.items %}
+            <div class="alert alert-danger"><strong>
+              <p>{{ error_message.0 }}</p>
+            </strong></div>
+          {% endfor %}
+
+        {% endif %}
         <form action="." method="post">
           {% csrf_token %}
           <div class="form-group has-feedback">

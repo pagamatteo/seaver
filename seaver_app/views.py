@@ -14,6 +14,7 @@ from django.http import JsonResponse, Http404, HttpResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from . import workspace_export
 import csv
+import json
 
 
 @login_required()
@@ -28,11 +29,17 @@ def show_workspaces(request):
     q = Workspace.all_ordered_by_date(user)
 
     workspaces = []
+    print(q)
     for e in q:
-        workspaces.append((e.name, path.join(request.path, e.name)))
+        #workspaces.append((e.name, path.join(request.path, e.name)))
+        files = FileModel.objects.filter(workspace=e)
+        files = [file.name for file in files]
+        #print(files)
+        workspaces.append({"workspace_name": e.name, "workspace_files": files})
 
+    print(workspaces)
     context = {'workspaces': workspaces, 'username':user.username}
-    print(context)
+    #print(context)
 
     return render(request, 'seaver_app/workspace_show.html', context)
 

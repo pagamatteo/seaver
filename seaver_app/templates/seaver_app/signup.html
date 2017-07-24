@@ -29,6 +29,15 @@
 
       <div class="register-box-body">
         <p class="login-box-msg">Register a new user</p>
+        {% if form.errors %}
+
+          {% for error_field, error_message in form.errors.items %}
+            <div class="alert alert-danger"><strong>
+              <p>{{ error_message.0 }}</p>
+            </strong></div>
+          {% endfor %}
+
+        {% endif %}
         <form action="." method="post">
           {% csrf_token %}
           <div class="form-group has-feedback">
@@ -67,7 +76,7 @@
           <a href="#" class="btn btn-block btn-social btn-google-plus btn-flat"><i class="fa fa-google-plus"></i> Sign up using Google+</a>
         </div>-->
 
-        <a href="login.html" class="text-center">I already have a membership</a>
+        <a href="{% url 'login' %}" class="text-center">I already have a membership</a>
       </div><!-- /.form-box -->
     </div><!-- /.register-box -->
 
