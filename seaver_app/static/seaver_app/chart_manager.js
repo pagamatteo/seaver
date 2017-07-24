@@ -115,7 +115,7 @@ function ChartManager(chart) {
         chart.categoryAxis.guides = this.guides;
     };
     this.set_points_per_field = function (points_per_field) {
-        for (field_name in this.fields) {
+        for (var field_name in this.fields) {
             if (this.fields.hasOwnProperty(field_name)) {
                 this.__delete_field_data(field_name);
             }
@@ -123,9 +123,9 @@ function ChartManager(chart) {
 
         this.points_per_field = points_per_field;
 
-        for (field_name in this.fields) {
+        for (var field_name in this.fields) {
             if (this.fields.hasOwnProperty(field_name)) {
-                this.__delete_field_data(field_name);
+                this.__create_field_data(field_name);
             }
         }
     };
