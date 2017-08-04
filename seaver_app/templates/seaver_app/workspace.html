@@ -9,7 +9,7 @@
     <link href="{% static 'seaver_app/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
     <!-- FontAwesome 4.3.0 -->
     <link href="{% static 'seaver_app/dist/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css" />
-    <!--<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css" />-->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css" />
     <!-- Ionicons 2.0.0 -->
     <link href="http://code.ionicframework.com/ionicons/2.0.0/css/ionicons.min.css" rel="stylesheet" type="text/css" />
     <!-- Theme style -->
@@ -33,12 +33,14 @@
     <script src="{% static 'seaver_app/amcharts/amcharts.js' %}"></script>
     <script src="{% static 'seaver_app/amcharts/serial.js' %}"></script>
 
-      <!-- vue -->
-      <script src="{% static 'seaver_app/vue.js' %}"></script>
-      <!-- token -->
-      <script src="{% static 'seaver_app/js-cookie.js' %}"></script>
-      <!-- loadash -->
-      <script src="{% static 'seaver_app/lodash.min.js' %}"></script>
+    <!-- vue -->
+    <script src="{% static 'seaver_app/vue.js' %}"></script>
+    <!-- token -->
+    <script src="{% static 'seaver_app/js-cookie.js' %}"></script>
+    <!-- loadash -->
+    <script src="{% static 'seaver_app/lodash.min.js' %}"></script>
+    <!-- JQUERY FORM PLUGIN -->
+    <script src="http://malsup.github.com/jquery.form.js"></script>
 
     <script src="{% static 'seaver_app/dist/js/seaver.js' %}"></script>
 
@@ -61,18 +63,19 @@
           <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
             <span class="sr-only">Toggle navigation</span>
           </a>
+
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
               <!-- User Account: style can be found in dropdown.less -->
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <img src="{% static 'seaver_app/dist/img/user2-160x160.jpg' %}" class="user-image" alt="User Image"/>
+                  <img src="{% static 'seaver_app/dist/img/icon-account1.png' %}" class="user-image" alt="User Image"/>
                   <span class="hidden-xs">{{ username }}</span>
                 </a>
                 <ul class="dropdown-menu">
                   <!-- User image -->
                   <li class="user-header">
-                    <img src="{% static 'seaver_app/dist/img/user2-160x160.jpg' %}" class="img-circle" alt="User Image" />
+                    <img src="{% static 'seaver_app/dist/img/icon-account1.png' %}" class="img-circle" alt="User Image" />
                     <p>
                       {{ username }}
                     </p>
@@ -99,7 +102,7 @@
                 <!-- Sidebar user panel -->
                 <div class="user-panel">
                     <div class="pull-left image">
-                        <img src="{% static 'seaver_app/dist/img/user2-160x160.jpg' %}" class="img-circle"
+                        <img src="{% static 'seaver_app/dist/img/icon-account1.png' %}" class="img-circle"
                              alt="User Image"/>
                     </div>
                     <div class="pull-left info">
@@ -109,7 +112,7 @@
                     </div>
                 </div>
                 <!-- search form -->
-                <form action="#" method="get" class="sidebar-form">
+                <!--<form action="#" method="get" class="sidebar-form">
                     <div class="input-group">
                         <input type="text" name="q" class="form-control" placeholder="Search..."/>
                         <span class="input-group-btn">
@@ -117,7 +120,7 @@
                         class="fa fa-search"></i></button>
               </span>
                     </div>
-                </form>
+                </form>-->
                 <!-- /.search form -->
                 <!-- sidebar menu: : style can be found in sidebar.less -->
                 <ul class="sidebar-menu">
@@ -135,8 +138,45 @@
                                 [[ f.name ]]
                                 <i class="fa fa-times pull-right"
                                             v-on:click="ask_delete_file_confirm(index)"></i></a></li>
-                            {#                  <li class="active"><a href="#"><i class="fa fa-circle-o"></i>File 2 <i class="fa fa-times pull-right" onclick="ask_delete_file_confirm(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>#}
                         </ul>
+                    </li>
+                    <li class="treeview active">
+                        <a href="#">
+                            <i class="fa fa-dashboard"></i><span>Annotation type</span>
+                            <div class="box-tools pull-right">
+                                <button class="btn btn-primary btn-sm" data-toggle="modal"
+                                        data-target="#create_annotation_type_modal"><i class="fa fa-plus"></i></button>
+                            </div>
+                        </a>
+                        <!--<ul class="treeview-menu">
+                            <li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
+                            <li>
+                              <a href="#"><i class="fa fa-circle-o"></i> Level One <i class="fa fa-angle-left pull-right"></i></a>
+                              <ul class="treeview-menu">
+                                <li><a href="#"><i class="fa fa-circle-o"></i> Level Two</a></li>
+                                <li>
+                                  <a href="#"><i class="fa fa-circle-o"></i> Level Two <i class="fa fa-angle-left pull-right"></i></a>
+                                  <ul class="treeview-menu">
+                                    <li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
+                                    <li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
+                                  </ul>
+                                </li>
+                              </ul>
+                            </li>
+                            <li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
+                          </ul>-->
+                        <ul id="annotation_type" class="treeview-menu">
+                            <li v-for="(anns, ann_type, index) in anns" class="active">
+                                <a href="#"><i class="fa fa-circle-o"></i> [[ ann_type ]]</a>
+                                <ul class="treeview-menu">
+                                    <li v-for="(a, index) in anns" class="active"><a href="#"><i class="fa fa-circle-o"></i> [[ a.name ]]<i class="fa fa-times pull-right"
+                                            v-on:click="ask_delete_annotation_type_confirm(ann_type, index)"></i></a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="header">DATA ON CHART</li>
+                    <li class="treeview">
                         <a href="#">
                             <i class="fa fa-dashboard"></i> <span>Punctual annotations</span>
                             <div class="box-tools pull-right">
@@ -151,9 +191,10 @@
                                 v-on:mouseout="remove_highlight_event(index)"><a href="#"><i class="fa fa-circle-o"></i>
                                 [[ e.annotation.name ]]
                                 <i class="fa fa-times pull-right"
-                                                       v-on:click="ask_delete_confirm(index)"></i></a></li>
-                            {#                  <li class="active"><a href="#"><i class="fa fa-circle-o"></i>File 2 <i class="fa fa-times pull-right" onclick="ask_delete_file_confirm(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>#}
+                                                       v-on:click="ask_delete_punctual_confirm(index)"></i></a></li>
                         </ul>
+                    </li>
+                    <li class="treeview">
                         <a href="#">
                             <i class="fa fa-dashboard"></i> <span>Interval annotations</span>
                             <div class="box-tools pull-right">
@@ -169,14 +210,6 @@
                                 [[ e.annotation.name ]]
                                 <i class="fa fa-times pull-right"
                                                        v-on:click="ask_delete_confirm(index)"></i></a></li>
-                            {#                  <li class="active"><a href="#"><i class="fa fa-circle-o"></i>File 2 <i class="fa fa-times pull-right" onclick="ask_delete_file_confirm(event, '{% url 'delete_file' wname 'file_name'%}')"></i></a></li>#}
-                        </ul>
-                        <a href="{% url "workspace_export" workspace.name %}" download target="_blank">
-                            <i class="fa fa-dashboard"></i><span>Export Workspace</span>
-                            <div class="box-tools pull-right"></div>
-                        </a>
-                        <ul>
-
                         </ul>
                     </li>
                 </ul>
@@ -206,7 +239,12 @@
                     <div class="box">
                         <div class="box-header with-border">
                             <h3 class="box-title">Plot</h3>
+                            <div class="box-tools pull-right">
+                                <button class="btn btn-primary btn-sm" data-toggle="modal"
+                                        data-target="#export_file_modal"><i class="fa fa-download" aria-hidden="true" style="font-size: 2.0em;"></i></button>
+                            </div>
                         </div>
+
                         <div class="box-body">
                             <div class="chart">
                                 <div id="chartdiv" style="height: 400px;"></div>
@@ -218,7 +256,7 @@
                     <section class="sidebar">
                         <ul class="sidebar-menu">
                             <li class="active treeview">
-                                <a href="#">
+                                <a>
                                     <i class="fa fa-list-ul"></i> <span>Select files or fields ...</span>
                                     <i class="fa fa-angle-left pull-right"></i>
                                 </a>
@@ -272,9 +310,6 @@
                             </li>
                         </ul>
                     </section>
-                    <comp1>
-                        <comp2></comp2>
-                    </comp1>
 
                 </div>
             </div>
@@ -282,7 +317,7 @@
                 <div class="col-md-4">
                     <div class="box">
                         <div class="box-header with-border">
-                            <h3 class="box-title">File properties controll panel</h3>
+                            <h3 class="box-title">File properties control panel</h3>
                         </div>
                         <div class="box-body">
                             <div id="file_properties_form">
@@ -316,23 +351,101 @@
             </div>
 
         </section><!-- /.content -->
+
+
+        <!-- LOADING FILE MODAL -->
+        <div class="modal fade" id="loading_file_modal" tabindex="-1" role="dialog" aria-labelledby="loading_file_modal_label">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="loading_file_modal_label">Loading files ...</h4>
+              </div>
+              <div class="modal-body">
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                        0%
+                    </div>
+                </div>
+              </div>
+              <!--<div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="finish_file_loading" disabled>Done</button>
+              </div>-->
+            </div>
+          </div>
+        </div>
+
         <!-- Create file modal -->
         <div class="modal fade" id="create_file_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
               <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Workspace {{ wname }} - Upload new file</h4>
+                <h4 class="modal-title" id="myModalLabel">{{ wname }} - Upload new file</h4>
               </div>
               <div class="modal-body">
                 <!-- form -->
-                <form role="form" enctype="multipart/form-data" id="create_file_form" action="{{ form_action }}" method="post">
+                <form role="form" enctype="multipart/form-data" id="create_file_form" action="{{ form_action }}" method="post" onsubmit="return false">
                     <div id="create_file_form_errors"></div>
                     {% csrf_token %}
                     {{ file_upload_form }}
+                    <div id="spinner" style="width: 100%; height: 100%; background-color: rgba(0,0,0,.5); -webkit-transition: all .5s ease; z-index: 1000;"></div>
+                    <!--<div class="progress">
+                        <div class="bar"></div >
+                        <div class="percent">0%</div >
+                    </div>
+
+                    <div id="status"></div>-->
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Create</button>
-                  </div>
+                        <button type="submit" class="btn btn-primary" id="upload_file_button">Upload</button>
+                    </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Create annotation type modal -->
+        <div class="modal fade" id="create_annotation_type_modal" tabindex="-1" role="dialog" aria-labelledby="create_annotation_type_modal_label">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="create_annotation_type_modal_label">Create new annotation type</h4>
+              </div>
+              <div class="modal-body">
+                <!-- form -->
+                <form role="form" id="create_annotation_type_form" method="post" onsubmit="return false">
+                    <div id="create_annotation_type_form_errors"></div>
+
+                    <div>
+                        <fieldset class="module aligned ">
+                            <p><label class="required" for="select_ann_type">Annotation type:</label></p>
+                            <select class="form-control" id="select_ann_type">
+                                <option>Punctual</option>
+                                <option>Interval</option>
+                            </select>
+                            <br>
+                            <div class="form-row field-name">
+                                <div>
+                                    <p><label class="required" for="ann_type_name">Name:</label></p>
+                                         <input type="text" name="name" maxlength="20" id="ann_type_name" required class="vTextField" />
+                                </div>
+                            </div>
+                            <br>
+                            <div class="form-row field-description">
+                                <div>
+                                    <p><label class="required" for="ann_type_description">Description:</label></p>
+                                        <textarea name="description" id="ann_type_description" required cols="78" class="vLargeTextField" rows="3">
+                                        </textarea>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" id="create_annotation_type_button">Create</button>
+                    </div>
                 </form>
               </div>
             </div>
@@ -358,20 +471,98 @@
           </div>
         </div>
 
-          <!-- Delete event modal -->
-        <div class="modal fade" id="delete_event_modal" tabindex="-1" role="dialog" aria-labelledby="delete_event_modal_label">
+        <!-- Delete annotation type modal -->
+        <div class="modal fade" id="delete_annotation_type_modal" tabindex="-1" role="dialog" aria-labelledby="delete_annotation_type_modal_label">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
               <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="delete_event_modal_label">Delete Event</h4>
+                <h4 class="modal-title" id="delete_annotation_type_modal_label">Delete annotation type</h4>
+              </div>
+              <div class="modal-body">
+                  <h4>Are you sure you want to delete the annotation type ?</h4>
+                  <h8 style="color: red;"><strong>All the annotations' events of this type will be removed!</strong></h8>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" id="confirm_delete_annotation_type">Yes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Export file modal -->
+        <div class="modal fade" id="export_file_modal" tabindex="-1" role="dialog" aria-labelledby="export_file_modal_label">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="export_file_modal_label">Export workspace</h4>
+              </div>
+              <div class="modal-body">
+                Do you want to export the current workspace ?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                <a href="{% url 'workspace_export' workspace.name %}" download target="_blank" id="export_confirm_button"><button type="button" class="btn btn-primary">Yes</button></a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+         <!-- Data processing modal -->
+        <div class="modal fade" id="data_processing_modal" tabindex="-1" role="dialog" aria-labelledby="data_processing_modal_label">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="data_processing_modal_label">Data processing ...</h4>
+              </div>
+              <div class="modal-body">
+                <center>
+                    <img src="{% static 'seaver_app/dist/img/spinner.gif' %}">
+                    <h4>Please wait, we are processing data...</h4>
+                </center>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delete punctual event modal -->
+        <div class="modal fade" id="delete_punctual_event_modal" tabindex="-1" role="dialog" aria-labelledby="delete_punctual_event_modal_label">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="delete_punctual_event_modal_label">Delete Event</h4>
               </div>
               <div class="modal-body">
                 Are you sure you want to delete the event ?
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-                <button type="button" class="btn btn-primary" id="confirm_delete_event">Yes</button>
+                <button type="button" class="btn btn-primary" id="confirm_delete_punctual_event">Yes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Delete interval event modal -->
+        <div class="modal fade" id="delete_interval_event_modal" tabindex="-1" role="dialog" aria-labelledby="delete_interval_event_modal_label">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="delete_interval_event_modal_label">Delete Event</h4>
+              </div>
+              <div class="modal-body">
+                Are you sure you want to delete the event ?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" id="confirm_delete_interval_event">Yes</button>
               </div>
             </div>
           </div>
@@ -383,7 +574,7 @@
             <div class="modal-content">
               <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="delete_event_modal_label">Delete Analysis</h4>
+                <h4 class="modal-title" id="delete_analysis_modal_label">Delete Analysis</h4>
               </div>
               <div class="modal-body">
                 Are you sure you want to delete the analysis ?
@@ -406,16 +597,24 @@
                                   aria-hidden="true">&times;</span></button>
                           <h4 class="modal-title" id="delete_event_modal_label">Select puntual annotation</h4>
                       </div>
-                      <div id="select_puntual_annotation_menu" class="modal-body">
-                          <div class="box"
-                               v-for="(a, index) in annotations">
-                              <div class="box-header with-border">
-                                  <h3 class="box-title" style="cursor: pointer;" v-on:click="create_event(index)">[[ a.name ]]</h3>
-                                  <div class="box-tools pull-right">
+                      <div class="pre-scrollable">
+                          <div id="select_puntual_annotation_menu" class="modal-body">
+                              <div class="box"
+                                   v-for="(a, index) in annotations">
+                                  <div style="cursor: pointer;" v-on:click="create_event(index)" onmouseover="this.style.background='#f4f4f4';" onmouseout="this.style.background='white';">
+                                      <div class="box-header with-border">
+                                          <h3 class="box-title">[[ a.name ]]</h3>
+                                          <div class="box-tools pull-right">
+                                          </div>
+                                      </div>
+
+                                      <div class="box-body">
+                                          [[ a.description ]]
+                                      </div>
                                   </div>
                               </div>
-                              <div class="box-body">
-                                  [[ a.description ]]
+                              <div class="box-footer clearfix no-border">
+                                  <button class="btn btn-default pull-right" onclick="add_punctual_type_ann()"><i class="fa fa-plus"></i> Add annotation type</button>
                               </div>
                           </div>
                       </div>
@@ -439,16 +638,23 @@
                                   aria-hidden="true">&times;</span></button>
                           <h4 class="modal-title" id="delete_event_modal_label">Select interval annotation</h4>
                       </div>
-                      <div id="select_interval_annotation_menu" class="modal-body">
-                          <div class="box"
-                               v-for="(a, index) in annotations">
-                              <div class="box-header with-border">
-                                  <h3 class="box-title" style="cursor: pointer;" v-on:click="create_event(index)">[[ a.name ]]</h3>
-                                  <div class="box-tools pull-right">
+                      <div class="pre-scrollable">
+                          <div id="select_interval_annotation_menu" class="modal-body">
+                              <div class="box"
+                                   v-for="(a, index) in annotations">
+                                  <div style="cursor: pointer;" v-on:click="create_event(index)" onmouseover="this.style.background='#f4f4f4';" onmouseout="this.style.background='white';">
+                                      <div class="box-header with-border">
+                                          <h3 class="box-title">[[ a.name ]]</h3>
+                                          <div class="box-tools pull-right">
+                                          </div>
+                                      </div>
+                                      <div class="box-body">
+                                          [[ a.description ]]
+                                      </div>
                                   </div>
                               </div>
-                              <div class="box-body">
-                                  [[ a.description ]]
+                              <div class="box-footer clearfix no-border">
+                                  <button class="btn btn-default pull-right" onclick="add_interval_type_ann()"><i class="fa fa-plus"></i> Add annotation type</button>
                               </div>
                           </div>
                       </div>
@@ -473,113 +679,115 @@
                           <h4 class="modal-title" id="create_analysis_modal_label">Analysis creation</h4>
                       </div>
                       <div class="modal-body">
-                          <div id="analysis_options_menu">
-                              <div>Name</div>
-                              <input type="text" class="form-control" v-model="name"
-                                     placeholder="Insert a name for the analysis">
-                              <ul>
-                                  <li v-for="e in errors.name">
-                                      [[ e ]]
-                                  </li>
-                              </ul>
-                              <div>Type</div>
-                              <select class="form-control" v-model="type">
-                                  <option disabled value="">Please select a type</option>
-                                  <option v-for="t in analysis_types">[[ t ]]</option>
-                              </select>
-                              <ul>
-                                  <li v-for="e in errors.type">
-                                      [[ e ]]
-                                  </li>
-                              </ul>
-                              <div v-show="show_fft">
-                                  <div>n</div>
-                                  <input class="form-control" v-model.number="options['fft'].n">
+                          <div class="pre-scrollable">
+                              <div id="analysis_options_menu">
                                   <ul>
-                                      <li v-for="e in errors.options.fft.n">
+                                      <strong><p v-for="e in errors.options.ewma.non_field_errors" style="color:red;">
                                           [[ e ]]
-                                      </li>
+                                      </p></strong>
                                   </ul>
-                                  <div>norm</div>
-                                  <select class="form-control" v-model="options['fft'].norm">
-                                      <option selected>None</option>
-                                      <option>ortho</option>
+                                  <div>Name</div>
+                                  <input type="text" class="form-control" v-model="name"
+                                         placeholder="Insert a name for the analysis">
+                                  <ul>
+                                      <strong><p v-for="e in errors.name" style="color:red;">
+                                          [[ e ]]
+                                      </p></strong>
+                                  </ul>
+                                  <div>Type</div>
+                                  <select class="form-control" v-model="type">
+                                      <option disabled value="">Please select a type</option>
+                                      <option v-for="t in analysis_types">[[ t ]]</option>
                                   </select>
                                   <ul>
-                                      <li v-for="e in errors.options.fft.norm">
+                                      <strong><p v-for="e in errors.type" style="color:red;">
                                           [[ e ]]
-                                      </li>
+                                      </p></strong>
                                   </ul>
-                                  <ul>
-                                      <li v-for="e in errors.options.fft.non_field_errors">
-                                          [[ e ]]
-                                      </li>
-                                  </ul>
-                              </div>
-                              <div v-show="show_ewma">
-                                  <div>com</div>
-                                  <input class="form-control" v-model.number="options['ewma'].com">
-                                  <ul>
-                                      <li v-for="e in errors.options.ewma.com">
-                                          [[ e ]]
-                                      </li>
-                                  </ul>
-                                  <div>span</div>
-                                  <input class="form-control" v-model.number="options['ewma'].span">
-                                  <ul>
-                                      <li v-for="e in errors.options.ewma.span">
-                                          [[ e ]]
-                                      </li>
-                                  </ul>
-                                  <div>halflife</div>
-                                  <input class="form-control" v-model.number="options['ewma'].halflife">
-                                  <ul>
-                                      <li v-for="e in errors.options.ewma.halflife">
-                                          [[ e ]]
-                                      </li>
-                                  </ul>
-                                  <div>min_periods</div>
-                                  <input class="form-control" v-model.number="options['ewma'].min_periods">
-                                  <ul>
-                                      <li v-for="e in errors.options.ewma.min_periods">
-                                          [[ e ]]
-                                      </li>
-                                  </ul>
-                                  <div>freq</div>
-                                  <input class="form-control" v-model="options['ewma'].freq">
-                                  <ul>
-                                      <li v-for="e in errors.options.ewma.freq">
-                                          [[ e ]]
-                                      </li>
-                                  </ul>
-                                  <div class="checkbox">
-                                      <label>
-                                          <input type="checkbox" v-model="options['ewma'].adjust">
-                                          adjust
-                                      </label>
+                                  <div v-show="show_fft">
+                                      <div>Number of points</div>
+                                      <input class="form-control" v-model.number="options['fft'].n">
+                                      <ul>
+                                          <strong><p v-for="e in errors.options.fft.n" style="color:red;">
+                                              [[ e ]]
+                                          </p></strong>
+                                      </ul>
+                                      <div>Normalization mode</div>
+                                      <select class="form-control" v-model="options['fft'].norm">
+                                          <option selected>None</option>
+                                          <option>Ortho</option>
+                                      </select>
+                                      <ul>
+                                          <strong><p v-for="e in errors.options.fft.norm" style="color:red;">
+                                              [[ e ]]
+                                          </p></strong>
+                                      </ul>
+                                      <ul>
+                                          <strong><p v-for="e in errors.options.fft.non_field_errors" style="color:red;">
+                                              [[ e ]]
+                                          </p></strong>
+                                      </ul>
                                   </div>
-                                  <ul>
-                                      <li v-for="e in errors.options.ewma.adjust">
-                                          [[ e ]]
-                                      </li>
-                                  </ul>
-                                  <div>how</div>
-                                  <input class="form-control" v-model="options['ewma'].how">
-                                  <ul>
-                                      <li v-for="e in errors.options.ewma.how">
-                                          [[ e ]]
-                                      </li>
-                                  </ul>
-                                  <ul>
-                                      <li v-for="e in errors.options.ewma.non_field_errors">
-                                          [[ e ]]
-                                      </li>
-                                  </ul>
+                                  <div v-show="show_ewma">
+                                      <div>Center of mass (COM)</div>
+                                      <input class="form-control" v-model.number="options['ewma'].com">
+                                      <ul>
+                                          <strong><p v-for="e in errors.options.ewma.com" style="color:red;">
+                                              [[ e ]]
+                                          </p></strong>
+                                      </ul>
+                                      <div>Decay (in span)</div>
+                                      <input class="form-control" v-model.number="options['ewma'].span">
+                                      <ul>
+                                          <strong><p v-for="e in errors.options.ewma.span" style="color:red;">
+                                              [[ e ]]
+                                          </p></strong>
+                                      </ul>
+                                      <div>Decay (in halflife)</div>
+                                      <input class="form-control" v-model.number="options['ewma'].halflife">
+                                      <ul>
+                                          <strong><p v-for="e in errors.options.ewma.halflife" style="color:red;">
+                                              [[ e ]]
+                                          </p></strong>
+                                      </ul>
+                                      <div>Minimum number of observations</div>
+                                      <input class="form-control" v-model.number="options['ewma'].min_periods">
+                                      <ul>
+                                          <strong><p v-for="e in errors.options.ewma.min_periods" style="color:red;">
+                                              [[ e ]]
+                                          </p></strong>
+                                      </ul>
+                                      <div>Frequency</div>
+                                      <input class="form-control" v-model="options['ewma'].freq">
+                                      <ul>
+                                          <strong><p v-for="e in errors.options.ewma.freq" style="color:red;">
+                                              [[ e ]]
+                                          </p></strong>
+                                      </ul>
+                                      <div class="checkbox">
+                                          <label>
+                                              <input type="checkbox" v-model="options['ewma'].adjust">
+                                              Decaying adjustment factor
+                                          </label>
+                                      </div>
+                                      <ul>
+                                          <strong><p v-for="e in errors.options.ewma.adjust" style="color:red;">
+                                              [[ e ]]
+                                          </p></strong>
+                                      </ul>
+                                      <div>Method for down- or re-sampling</div>
+                                      <input class="form-control" v-model="options['ewma'].how">
+                                      <ul>
+                                          <strong><p v-for="e in errors.options.ewma.how" style="color:red;">
+                                              [[ e ]]
+                                          </p></strong>
+                                      </ul>
+                                  </div>
                               </div>
                           </div>
                       </div>
                     <div class="modal-footer">
-                      <button type="button" class="btn btn-default" data-dismiss="modal">Cencel</button>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                       <button type="button" class="btn btn-primary" id="create_analysis"
                               v-on:click="create_analysis()">
                           Create
@@ -594,6 +802,7 @@
 
     <!-- jQuery 2.1.3 -->
     <script src="{% static 'seaver_app/plugins/jQuery/jQuery-2.1.3.min.js' %}"></script>
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>-->
     <!-- jQuery UI 1.11.2 -->
     <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.min.js" type="text/javascript"></script>
     <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
@@ -634,11 +843,11 @@
     <script src="{% static 'seaver_app/dist/js/demo.js' %}" type="text/javascript"></script>
 
     <!-- seaver app -->
-    <script src="{% static "seaver_app/csrftoken.js" %}"></script>
-    <script src="{% static "seaver_app/chart_manager.js" %}"></script>
-    <script src="{% static "seaver_app/request_watcher.js" %}"></script>
-    <script src="{% static "seaver_app/workspace/data_download.js" %}"></script>
-    <script src="{% static "seaver_app/workspace/request_watcher.js" %}"></script>
+    <script src="{% static 'seaver_app/csrftoken.js' %}"></script>
+    <script src="{% static 'seaver_app/chart_manager.js' %}"></script>
+    <script src="{% static 'seaver_app/request_watcher.js' %}"></script>
+    <script src="{% static 'seaver_app/workspace/data_download.js' %}"></script>
+    <script src="{% static 'seaver_app/workspace/request_watcher.js' %}"></script>
 
 
     <!-- init -->
@@ -649,6 +858,15 @@
         // ottengo il token per le richieste non safe (es post, put, ...)
         var csrftoken = Cookies.get('csrftoken');
 
+        function add_punctual_type_ann() {
+            $("#create_annotation_type_modal").modal('toggle');
+            $("#show_punctual_annotations_modal").modal('toggle');
+        }
+
+        function add_interval_type_ann() {
+            $("#create_annotation_type_modal").modal('toggle');
+            $("#show_interval_annotations_modal").modal('toggle');
+        }
 
         window.onload = function (){
 
@@ -658,19 +876,24 @@
 
             // CREO GLI ELEMENTI VUE
 
+            $('#confirm_delete_file').on("click", function(){ delete_file(); });
+
             //gestisce la barra laterale dei file
             v_files = new Vue({
                 el: '#files_list',
                 data: {
-                    files: []
+                    files: [],
+                    index_to_delete: -1
                 },
                 methods: {
                     ask_delete_file_confirm: function (index) {
                         $('#delete_file_modal').modal('toggle');
-                        $('#confirm_delete_file').on("click", function(){ delete_file(index); });
+                        this.index_to_delete = index;
                     }
                 }
             });
+
+            $('#confirm_delete_analysis').on("click", function(){ menu_files.delete_field(); });
 
             menu_files = new Vue({
                 el: '#menu_files_list',
@@ -678,7 +901,9 @@
                     files: [],
                     file_selected_index: -1,
                     select_analysis_file_index: undefined,
-                    select_analysis_field_index: undefined
+                    select_analysis_field_index: undefined,
+                    f_index_to_delete: -1,
+                    ff_index_to_delete: -1
                 },
                 computed: {
                     selected_file_offset: {
@@ -864,11 +1089,12 @@
                     },
                     ask_delete_field: function (f_index, ff_index) {
                         $('#delete_analysis_modal').modal('toggle');
-                        $('#confirm_delete_analysis').on("click", function(){
-                            menu_files.delete_field(f_index, ff_index);
-                        });
+                        this.f_index_to_delete = f_index;
+                        this.ff_index_to_delete = ff_index;
                     },
-                    delete_field: function (f_index, ff_index) {
+                    delete_field: function () {
+                        var f_index = this.f_index_to_delete;
+                        var ff_index = this.ff_index_to_delete;
                         var file = this.files[f_index];
                         var field = file.fields[ff_index];
 
@@ -948,22 +1174,32 @@
                     500)
                 }
             });
+
+            $('#confirm_delete_punctual_event').on("click", function(){ menu_punctual_events.delete_event() });
             
             menu_punctual_events = new Vue({
                 el: "#p_events_list",
                 data: {
                     events: [],
                     default_color_event: '#CC0000',
-                    highlight_color_event: '#00cc03'
+                    highlight_color_event: '#00cc03',
+                    index_to_delete: -1
                 },
                 methods: {
-                    ask_delete_confirm: function (index) {
-                        $('#delete_event_modal').modal('toggle');
-                        $('#confirm_delete_event').on("click", function(){ menu_punctual_events.delete_event(index) });
+                    ask_delete_punctual_confirm: function (index) {
+                        this.index_to_delete = index;
+                        $('#delete_punctual_event_modal').modal('toggle');
+
                     },
-                    delete_event: function (index) {
+                    delete_event: function () {
+                        var index = menu_punctual_events.index_to_delete;
+
+                        // esco dalla finestra di cancellazione
+                        $('#delete_punctual_event_modal').modal('toggle');
+
                         // cancello l'evento nel server
                         var e = this.events[index];
+                        //console.log(e);
                         $.ajax(e.url, {
                             method: 'DELETE'
                         }).done(function () {
@@ -973,10 +1209,27 @@
                             // cancello l'evento dal grafico
                             chart_manager.remove_event(e);
                             chart_manager.refresh_properties();
-
-                            // esco dalla finestra di cancellazione
-                            $('#delete_event_modal').modal('toggle');
                         })
+                    },
+                    delete_events_by_name: function (event_name) {
+                        remaining_events = [];
+                        events_to_delete = [];
+                        for (var i=0; i<this.events.length; i++) {
+                            var event = this.events[i];
+                            if (event.annotation.name == event_name)
+                                events_to_delete.push(event);
+                            else
+                                remaining_events.push(event);
+                        }
+                        this.events = remaining_events;
+
+                        for (var i=0; i<events_to_delete.length; i++) {
+                            var ev = events_to_delete[i];
+                            // cancello l'evento dal grafico
+                            chart_manager.remove_event(ev);
+                            chart_manager.refresh_properties();
+                        }
+
                     },
                     highlight_event: function (index) {
                         chart_manager.color_event(this.events[index], this.highlight_color_event);
@@ -989,19 +1242,24 @@
                 }
             });
 
+            $('#delete_interval_event_modal').on("click", function(){ menu_interval_events.delete_event() });
+
             menu_interval_events = new Vue({
                 el: "#i_events_list",
                 data: {
                     events: [],
                     default_color_event: '#CC0000',
-                    highlight_color_event: '#00cc03'
+                    highlight_color_event: '#00cc03',
+                    index_to_delete: -1
                 },
                 methods: {
                     ask_delete_confirm: function (index) {
-                        $('#delete_event_modal').modal('toggle');
-                        $('#confirm_delete_event').on("click", function(){ menu_interval_events.delete_event(index) });
+                        this.index_to_delete = index;
+                        $('#delete_interval_event_modal').modal('toggle');
                     },
-                    delete_event: function (index) {
+                    delete_event: function () {
+                        var index = menu_interval_events.index_to_delete;
+
                         // cancello l'evento nel server
                         var e = this.events[index];
                         $.ajax(e.url, {
@@ -1015,8 +1273,28 @@
                             chart_manager.refresh_properties();
 
                             // esco dalla finestra di cancellazione
-                            $('#delete_event_modal').modal('toggle');
+                            $('#delete_interval_event_modal').modal('toggle');
+
                         })
+                    },
+                    delete_events_by_name: function (event_name) {
+                        remaining_events = [];
+                        events_to_delete = [];
+                        for (var i=0; i<this.events.length; i++) {
+                            var event = this.events[i];
+                            if (event.annotation.name == event_name)
+                                events_to_delete.push(event);
+                            else
+                                remaining_events.push(event);
+                        }
+                        this.events = remaining_events;
+
+                        for (var i=0; i<events_to_delete.length; i++) {
+                            var ev = events_to_delete[i];
+                            // cancello l'evento dal grafico
+                            chart_manager.remove_event(ev);
+                            chart_manager.refresh_properties();
+                        }
                     },
                     highlight_event: function (index) {
                         chart_manager.color_event(this.events[index], this.highlight_color_event);
@@ -1025,6 +1303,53 @@
                     remove_highlight_event: function (index) {
                         chart_manager.color_event(this.events[index], this.default_color_event);
                         chart_manager.refresh_properties();
+                    }
+                }
+            });
+
+            $('#confirm_delete_annotation_type').on("click", function(){ annotation_type.delete_annotation_type(); });
+
+            annotation_type = new Vue({
+                el: '#annotation_type',
+                data: {
+                    anns: annotation_events,
+                    ann_type_to_delete: "",
+                    index_to_delete: -1
+                },
+                methods: {
+                    ask_delete_annotation_type_confirm: function (ann_type, index) {
+                        console.log(ann_type);
+                        console.log(index);
+                        this.ann_type_to_delete = ann_type;
+                        this.index_to_delete = index;
+                        $('#delete_annotation_type_modal').modal('toggle');
+                    },
+                    delete_annotation_type: function () {
+                        var ann_type = annotation_type.ann_type_to_delete;
+                        var index = annotation_type.index_to_delete;
+                        // esco dalla finestra di cancellazione
+                        $('#delete_annotation_type_modal').modal('toggle');
+                        // cancello l'evento nel server
+                        var e = this.anns[ann_type][index];
+
+                        $.ajax(e.url, {
+                            method: 'DELETE'
+                        }).done(function () {
+                            // cancello l'evento dalla lista
+                            annotation_type.anns[ann_type].splice(index, 1);
+
+                            var menu_events;
+                            if (ann_type == "punctual")
+                                menu_events = menu_punctual_events;
+                            else
+                                menu_events = menu_interval_events;
+
+                            menu_events.delete_events_by_name(e.name);
+
+                            // cancello l'evento dal grafico
+                            //chart_manager.remove_event(e);
+                            //chart_manager.refresh_properties();
+                        })
                     }
                 }
             });
@@ -1038,8 +1363,10 @@
                 },
                 methods: {
                     create_event: function (annotation_index) {
+                        console.log("create_puntcual_annotation");
+                        console.log(annotation_index);
                         var annotation = this.annotations[annotation_index];
-
+                        console.log(annotation);
                         $.ajax(this.punctual_event_url, {
                             'method': 'POST',
                             'data': {
@@ -1047,16 +1374,19 @@
                                 'annotation': annotation.url,
                                 'start': this.start
                             }
-                        }).done(function (data) {
+                        }).done(function (res) {
+                            //console.log("res");
+                            //console.log(res);
                             // ottengo l'annotazione corrispondente
-                            data.annotation = annotations_by_url[data.annotation];
+                            res.annotation = annotations_by_url[res.annotation];
 
                             // aggiungo l'evento a workspace
-                            var index = _.sortedIndexBy(workspace.punctuals, data, 'start');
-                            workspace.punctuals.splice(index, 0, data);
+                            var index = _.sortedIndexBy(workspace.punctuals, res, 'start');
+                            workspace.punctuals.splice(index, 0, res);
+                            //select_puntual_annotation_menu.annotations.push(res);
 
                             // aggingo l'evento al grafico
-                            chart_manager.add_event(data);
+                            chart_manager.add_event(res);
                             chart_manager.refresh_properties();
                         }).error(function (data) {
                             console.log(data);
@@ -1078,6 +1408,8 @@
                 },
                 methods: {
                     create_event: function (annotation_index) {
+                        console.log("create_interval_annotation");
+                        console.log(annotation_index);
                         var annotation = this.annotations[annotation_index];
 
                         $.ajax(this.interval_event_url, {
@@ -1096,6 +1428,7 @@
                             var index = _.sortedIndexBy(workspace.intervals, data, 'start');
                             workspace.intervals.splice(index, 0, data);
 
+                            console.log(data);
                             // aggingo l'evento al grafico
                             chart_manager.add_event(data);
                             chart_manager.refresh_properties();
@@ -1307,7 +1640,6 @@
             })
         };
 
-
         var v_files;
         var menu_files;
         var points_per_field;
@@ -1317,6 +1649,148 @@
         var select_interval_annotation_menu;
         var analysis_options_menu;
         var chart_manager;
+        var annotation_type;
+        var punctual_ann_url;
+        var interval_ann_url;
+
+        $('#create_annotation_type_form').submit(function() {
+
+            punctual_ann_url = '{% url "punctualannotation-list" %}';
+            interval_ann_url = '{% url "intervalannotation-list" %}';
+
+            var ann_type = $("#select_ann_type").val();
+            var url;
+            if (ann_type == "Punctual")
+                url = punctual_ann_url;
+            else
+                url = interval_ann_url;
+
+            // creo "manualmente" il form contenente il nome e la descrizione della nuova categoria di annotazione
+            var fd = new FormData();
+
+            fd.append($("#ann_type_name").attr("name"), $("#ann_type_name").val());
+            fd.append($("#ann_type_description").attr("name"), $("#ann_type_description").val());
+
+            /*var it = fd.entries();
+            var current = {};
+            while ( ! current.done ) {
+                current = it.next();
+                console.info( current )
+            }*/
+
+            // invio la richiesta di caricamento del file al server
+            $.ajax({
+              url: url,
+              data: fd,
+              type: "POST",
+              cache:false,
+              processData:false,
+              contentType:false,
+              success: function(results) {
+                $("#create_annotation_type_modal").modal('toggle');
+                var ann = ann_type.charAt(0).toLowerCase() + ann_type.slice(1);
+                annotation_type.anns[ann].push(results);
+                annotations_by_url[results.url] = results;
+              },
+              error: function (errormessage) {
+
+                var errors = errormessage.responseJSON.name;
+                console.log(errors);
+                var error_message = "";
+                for (error_index in errors) {
+                    error_message += '<div class="alert alert-danger"><strong><p>';
+                    error_message += errors[error_index];
+                    error_message += "</p></strong></div>";
+                }
+                $("#create_annotation_type_form_errors").html(error_message);
+
+              }
+             });
+        });
+
+        // funzione che viene eseguita alla sottomissione della form contenente il file da caricare sul server
+        // l'upload del file viene eseguito via AJAX in modo da evitare di ricaricare tutte le volte tutta la pagina
+        // (e con essa tutti i file) e in modo da conoscere quanto tempo ci impiega l'elaborazione lato server
+        // durante questo periodo di attesa viene visualizzato all'utente uno spinner
+        $('#create_file_form').submit(function() {
+            var file_url_structure = '{% url 'file-detail' 'file_pk' %}';
+
+            // creo "manualmente" il form contenente il file da caricare sul server
+            var fd = new FormData();
+            $("#create_file_form :input").each(function(){
+
+                if(this.type != 'submit') {
+                  var val;
+                  var name = this.name;
+
+                  if (this.type == 'file') {
+                        val = this.files[0];
+                  }
+                  else {
+                        val = this.value;
+                  }
+                  //data[name]=val;
+                  fd.append(name,val);
+                }
+            });
+
+            /*var it = fd.entries();
+            var current = {};
+            while ( ! current.done ) {
+                current = it.next();
+                console.info( current )
+            }*/
+
+            // visualizzo il modal contenente lo spinner
+            $("#data_processing_modal").modal('toggle');
+
+            // invio la richiesta di caricamento del file al server
+            $.ajax({
+              xhr: function() {
+                var xhr = new window.XMLHttpRequest();
+
+                xhr.upload.addEventListener("progress", function(evt) {
+                  if (evt.lengthComputable) {
+                    var percentComplete = evt.loaded / evt.total;
+                    percentComplete = parseInt(percentComplete * 100);
+                    console.log(percentComplete);
+
+                    if (percentComplete === 100) {
+                        console.log("Upload terminato");
+                    }
+
+                  }
+                }, false);
+
+                return xhr;
+              },
+              url: "{{ form_action }}",
+              data: fd,
+              type: "POST",
+              cache:false,
+              processData:false,
+              contentType:false,
+              success: function(result) {
+                var request_files_id = requests_watcher.add_listener('files', file_listener);
+                $("#loading_file_modal").modal('toggle');
+                var file_url = file_url_structure.replace("file_pk", result['results']['file_pk']);
+                get_file(file_url);
+                $("#data_processing_modal").modal('toggle');
+              }
+            });
+
+            return false; // return false to cancel form action
+        });
+
+        // alla pressione del tasto upload file il modal viene nascosto
+        $("#upload_file_button").click(function () {
+            $("#create_file_modal").modal('toggle');
+        });
+
+        $("#export_confirm_button").click( function () {
+            $("#export_file_modal").modal("hide");
+        });
+
     </script>
   </body>
 </html>

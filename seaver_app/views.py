@@ -50,7 +50,7 @@ def open_workspace(request, name):
     """
     Apre o crea il workspace selezionato
     :param request:
-    :param name:
+    :param name: nome del workspace
     :return:
     """
     user = request.user
@@ -69,10 +69,10 @@ def open_workspace(request, name):
     workspace.save()
 
     file_upload_form = FileUploadForm()
+    annotation_type_form = AnnotationTypeForm()
 
     files = FileModel.objects.filter(workspace=workspace)
-
-
+    files = [file.name for file in files]
 
     if request.method == 'POST':
         file_upload_form = FileUploadForm(request.POST, request.FILES)
@@ -118,13 +118,20 @@ def open_workspace(request, name):
                 file_model.delete()
                 raise e
 
-    contex = {'wname': workspace.name,
-              'form_action': request.path,
-              'file_upload_form': file_upload_form,
-              'files': files,
-              'workspace': workspace}
+            response = {'errors': False, 'results': {"file_pk": file_model.pk}}
+            return JsonResponse(response)
+    else:
 
-    return render(request, 'seaver_app/workspace.html', contex)
+        contex = {'wname': workspace.name,
+                  'form_action': request.path,
+                  'file_upload_form': file_upload_form,
+                  'files': files,
+                  'workspace': workspace,
+                  'username': user.username,
+                  'annotation_type_form': annotation_type_form,
+                  }
+
+        return render(request, 'seaver_app/workspace.html', contex)
 
 
 @login_required()
@@ -144,7 +151,7 @@ def workspace_export_view(request, name):
     response['content_type'] = 'txt/csv'
     response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(workspace.name)
 
-    # creo il writr
+    # creo il writer
     csv_writer = csv.writer(response)
 
     # output columns names

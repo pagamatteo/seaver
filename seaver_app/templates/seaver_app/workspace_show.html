@@ -63,13 +63,13 @@
               <!-- User Account: style can be found in dropdown.less -->
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <img src="{% static 'seaver_app/dist/img/user2-160x160.jpg' %}" class="user-image" alt="User Image"/>
+                  <img src="{% static 'seaver_app/dist/img/icon-account1.png' %}" class="user-image" alt="User Image"/>
                   <span class="hidden-xs">{{ username }}</span>
                 </a>
                 <ul class="dropdown-menu">
                   <!-- User image -->
                   <li class="user-header">
-                    <img src="{% static 'seaver_app/dist/img/user2-160x160.jpg' %}" class="img-circle" alt="User Image" />
+                    <img src="{% static 'seaver_app/dist/img/icon-account1.png' %}" class="img-circle" alt="User Image" />
                     <p>
                       {{ username }}
                     </p>
@@ -108,7 +108,7 @@
           <!-- Sidebar user panel -->
           <div class="user-panel">
             <div class="pull-left image">
-              <img src="{% static 'seaver_app/dist/img/user2-160x160.jpg' %}" class="img-circle" alt="User Image" />
+              <img src="{% static 'seaver_app/dist/img/icon-account1.png' %}" class="img-circle" alt="User Image" />
             </div>
             <div class="pull-left info">
               <p>{{ username }}</p>
@@ -117,14 +117,14 @@
             </div>
           </div>
           <!-- search form -->
-          <form action="#" method="get" class="sidebar-form">
+          <!--<form action="#" method="get" class="sidebar-form">
             <div class="input-group">
               <input type="text" name="q" class="form-control" placeholder="Search..."/>
               <span class="input-group-btn">
                 <button type='submit' name='search' id='search-btn' class="btn btn-flat"><i class="fa fa-search"></i></button>
               </span>
             </div>
-          </form>
+          </form>--
           <!-- /.search form -->
           <!-- sidebar menu: : style can be found in sidebar.less -->
           <ul class="sidebar-menu">
@@ -135,7 +135,7 @@
               </a>
               <ul class="treeview-menu" id="workspaces_lateral_menu">
                   <li v-for="workspace in workspaces_list" class="active">
-                    <a href="#"><i class="fa fa-circle-o"></i>[[workspace.workspace_name]]</a>
+                    <a href="#" v-on:click="redirect_to_workspace_home(workspace.workspace_name)"><i class="fa fa-circle-o"></i>[[workspace.workspace_name]]</a>
                   </li>
               </ul>
             </li>
@@ -160,24 +160,32 @@
         <!-- Main content -->
         <section class="content">
           <div class="row" id="row_workspaces_box">
-            <template v-for="workspace_box in workspaces_box_list">
+            <template v-for="(workspace_box, index) in workspaces_box_list">
               <div class="col-md-4">
                 <div class="box box-solid box-primary">
                   <div class="box-header">
                     <i class="fa fa-fw fa-folder"></i><h3 class="box-title">[[ workspace_box.workspace_name ]]</h3>
                     <div class="box-tools pull-right">
-                      <button class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-trash"></i></button>
+                      <button class="btn btn-primary btn-sm" v-on:click="ask_delete_workspace_confirm(workspace_box.workspace_name, index, '{% url 'delete_workspace' 'workspace_name' %}')"><i class="glyphicon glyphicon-trash"></i></button>
                       <button class="btn btn-primary btn-sm" data-widget="collapse"><i class="fa fa-minus"></i></button>
                       <!--<button class="btn btn-primary btn-sm" data-widget="remove"><i class="fa fa-times"></i></button>-->
                     </div>
                   </div>
                   <div class="box-body">
-                    <p v-for="work_file in workspace_box.workspace_files"><i class="fa fa-fw fa-file-text"></i>[[ work_file ]]</p>
-                    <center>
-                      <a href="#" class="small-box-footer">
-                        Go to workspace <i class="fa fa-arrow-circle-right"></i>
-                      </a>
-                    </center>
+                    <div class="row">
+                      <div class="col-md-10">
+                        <p v-for="work_file in workspace_box.workspace_files"><i class="fa fa-fw fa-file-text"></i>[[ work_file ]]</p>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-16">
+                        <center>
+                          <a href="#" v-on:click="redirect_to_workspace_home(workspace_box.workspace_name)" class="small-box-footer">
+                            Go to workspace <i class="fa fa-arrow-circle-right"></i>
+                          </a>
+                        </center>
+                      </div>
+                    </div>
                     <!--</div>-->
                   </div><!-- /.box-body-->
                 </div><!-- /.box-->
@@ -211,10 +219,10 @@
                       <input type="text" class="form-control" name="workspace_name" id="id_workspace_name" placeholder="Enter ..."/>
                     </div>
                     <!-- textarea -->
-                    <div class="form-group">
+                    <!--<div class="form-group">
                       <label>Description</label>
                       <textarea class="form-control" rows="3" name="workspace_descr" placeholder="Enter ..."></textarea>
-                    </div>
+                    </div>-->
                   </div><!-- /.box-body -->
 
                   <div class="box-footer">
@@ -323,33 +331,156 @@
 
     <script>
 
-      //var v_workspaces;
-      //var v_workspaces_box;
+      var v_workspaces;
+      var v_workspaces_box;
+
+      function manage_delete_workspace_response(index){
+          $('#delete_workspace_modal').modal('toggle');
+          v_workspaces_box.delete_workspace(index);
+          v_workspaces.delete_workspace(index);
+      }
+
+      /*
+      Funzione che cancella un workspace.
+      */
+      function delete_workspace(workspace_name, index, url_structure) {
+          var url = url_structure.replace("workspace_name", workspace_name);
+
+          $.ajax({
+              url: url,
+              success: function (response) {
+                  if (response["errors"] == false)
+                      manage_delete_workspace_response(index);
+              }
+            });
+      }
+
+      /*
+      Funzione che gestisce la risposta restituita dal server in seguito alla validazione del form relativo alla
+      creazione di un nuovo workspace.
+      */
+      function manage_create_workspace_response(response) {
+          if (response['errors'] == false) {                // form compilato correttamente
+
+              var workspace_data = response['results'];
+
+              console.log(v_workspaces_box);
+
+              v_workspaces_box.add_workspace(workspace_data);
+              v_workspaces.add_workspace(workspace_data);
+
+              // nascondo la finestra contenente il for
+              $('#myModal').modal('toggle');
+
+              /*// dato che il form è compilato correttamente visualizzo il nuovo workspace creato
+              var results = response['results'];
+
+              // nascondo la finestra contenente il for
+              $('#myModal').modal('toggle');
+
+              // copio dal sorgente HTML un div workspace_box_col e un div workspace_box
+              workspace_box_col = $(".workspace_box_col:first").clone();
+              workspace_box = $(".workspace_box:first").clone(true);
+
+              // rimuovo dal div workspace_box_col tutti i div workspace_box in esso contenuti
+              workspace_box_col.find(".workspace_box").remove();
+
+              // popolo con i dati ricevuti dal server il div workspace_box recuperato
+              workspace_box.find(".box-title").text(results['workspace_name']);
+              workspace_box.find("p").remove();
+
+              // appendo al div workspace_box_col quello workspace_box appena modificato
+              workspace_box_col.append( workspace_box );
+
+              // prependo il div workspace_box_col appena aggiornato al div workspace_box_row
+              $(".workspace_box_row").prepend( workspace_box_col );
+
+              console.log(workspace_box_col);*/
+
+          }
+          else {                                                  // form compilato in maniera errata
+              // visualizzo i messaggi di errore
+              var errors = response['results'];
+              console.log(errors);
+              var error_string = "";
+              for (error_field in errors) {
+                  var clean_error_field = error_field.match(/(.*)_(.*)/)[2];
+                  clean_error_field = clean_error_field.charAt(0).toUpperCase() + clean_error_field.slice(1);
+                  error_messages = errors[error_field];
+                  error_string += '<div class="alert alert-danger">' + '<strong>';
+                  for (var i = 0; i < error_messages.length; i++) {
+                      error_message = error_messages[i];
+                      error_string += '<p>' + clean_error_field + ': ' + error_message + '</p>';
+                  }
+                  error_string += '</strong></div>';
+              }
+              var errors_div = $("#create_workspace_form_errors");
+              errors_div.html(error_string);
+          }
+      }
+
+      /*
+      Funzione che recupera i campi del form relativo alla creazione di un nuovo workspace e contatta il server
+      per creare il nuovo workspace.
+      */
+      function create_workspace() {
+          var form = $("#create_workspace_form");
+          console.log("Create workspace...");
+
+          $.ajax({
+              url: form.attr("data-validate-url"),
+              data: form.serialize(),
+              dataType: 'json',
+              success: function (response) {
+                manage_create_workspace_response(response);
+              }
+            });
+      }
 
       window.onload = function (){
-          var workspaces_prova = {{ workspaces|safe }};
-          console.log(workspaces_prova);
 
-          var v_workspaces = new Vue({
+          v_workspaces = new Vue({
               el: '#workspaces_lateral_menu',
               data: {
-                  workspaces_list: {{ workspaces|safe }}
+                  workspaces_list: {{ workspaces|safe }},
+                  url_structure: "{% url 'workspace' 'workspace_name' %}"
               },
               methods: {
-                  ask_delete_file_confirm: function (index) {
-                      console.log();
+                  add_workspace: function (workspace_data) {
+                      this.workspaces_list.unshift(workspace_data);
+                  },
+                  delete_workspace: function (index) {
+                      this.workspaces_list.splice(index, 1);
+                  },
+                  redirect_to_workspace_home: function(workspace_data) {
+                      var url_structure = this.url_structure;
+                      window.location = url_structure.replace("workspace_name", workspace_data);
+                      return false;
                   }
               }
           });
 
-          var v_workspaces_box = new Vue({
+          v_workspaces_box = new Vue({
               el: '#row_workspaces_box',
               data: {
-                  workspaces_box_list: {{ workspaces|safe }}
+                  workspaces_box_list: {{ workspaces|safe }},
+                  url_structure: "{% url 'workspace' 'workspace_name' %}"
               },
               methods: {
-                  ask_delete_file_confirm: function (index) {
-                      console.log();
+                  add_workspace: function (workspace_data) {
+                      this.workspaces_box_list.unshift(workspace_data);
+                  },
+                  delete_workspace: function (index) {
+                      this.workspaces_box_list.splice(index, 1);
+                  },
+                  ask_delete_workspace_confirm: function(workspace_name, index, url) {
+                      $('#delete_workspace_modal').modal('toggle');
+                      $('#confirm_delete_workspace').on("click", function(){ delete_workspace(workspace_name, index, url); });
+                  },
+                  redirect_to_workspace_home: function(workspace_data) {
+                      var url_structure = this.url_structure;
+                      window.location = url_structure.replace("workspace_name", workspace_data);
+                      return false;
                   }
               }
           });
@@ -357,6 +488,21 @@
 
           console.log(v_workspaces);
           console.log(v_workspaces_box);
+
+          $("[data-widget='collapse']").click(function() {
+            //Find the box parent........
+            var box = $(this).parents(".box").first();
+            //Find the body and the footer
+            var bf = box.find(".box-body, .box-footer");
+            if (!$(this).children().hasClass("fa-plus")) {
+                $(this).children(".fa-minus").removeClass("fa-minus").addClass("fa-plus");
+                bf.slideUp();
+            } else {
+                //Convert plus into minus
+                $(this).children(".fa-plus").removeClass("fa-plus").addClass("fa-minus");
+                bf.slideDown();
+            }
+        });
 
       };
 

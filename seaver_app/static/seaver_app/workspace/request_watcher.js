@@ -15,9 +15,11 @@ var request_workspace_id = requests_watcher.add_listener('workspace', function (
     requests_watcher.remove_listener('workspace', request_workspace_id);
 });
 
-// creo l'osservatore per la terminazione del download dei file
-var request_files_id = requests_watcher.add_listener('files', function () {
-    alert("files loading compleated");
+var file_listener = function () {
+    //alert("files loading compleated");
+    requests_watcher.progressBar.css("width", 100 + '%').attr("aria-valuenow", 100 + '%').text(100 + '%');
+    $("#loading_file_modal").modal('toggle');
+    //$('#finish_file_loading').prop('disabled', false);
 
     // aggiungo i file al chart manager
     workspace.files.forEach(function (f) {
@@ -29,7 +31,10 @@ var request_files_id = requests_watcher.add_listener('files', function () {
 
     // rimuovo il listener
     requests_watcher.remove_listener('files', request_files_id);
-});
+}
+
+// creo l'osservatore per la terminazione del download dei file
+var request_files_id = requests_watcher.add_listener('files', file_listener);
 
 var request_annotation_id = requests_watcher.add_listener('ann', function () {
     // ottengo i dati del workspace

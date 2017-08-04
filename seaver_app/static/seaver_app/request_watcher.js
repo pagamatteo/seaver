@@ -4,6 +4,8 @@
 
 // osservatore di richieste
 function RequestWatcher() {
+    this.progressBar = $('.progress-bar');
+    this.progress = 0;
     // gruppi di richieste
     this.groups = {};
     // listeners di eventy
@@ -40,6 +42,12 @@ function RequestWatcher() {
                         l();
                     }
                 })
+            }
+        }
+        else {
+            if (group_name == "files") {
+                this.progress = parseInt((this.groups[group_name].responses / this.groups[group_name].requests)*100);
+                this.progressBar.css("width", this.progress+ '%').attr("aria-valuenow", this.progress+ '%').text(this.progress+ '%');
             }
         }
     };

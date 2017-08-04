@@ -73,6 +73,9 @@ function get_field(field_url, f) {
 function get_file(file_url) {
     requests_watcher.add('files');
     $.get(file_url).done(function (data) {
+
+        //console.log(requests_watcher);
+
         data.fields = [];
         // put in alphabetic order
         var file_index = _.sortedIndexBy(workspace.files, data, function (e) {
@@ -108,6 +111,8 @@ function get_workspace(workspace_url) {
         });
 
         var fs = data.files;
+        if (fs.length > 0)
+            $("#loading_file_modal").modal('toggle');
         workspace.files = [];
         fs.forEach(function (f_url) {
             get_file(f_url);

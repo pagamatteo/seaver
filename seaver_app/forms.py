@@ -2,6 +2,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from .models import PunctualAnnotation, IntervalAnnotation
 
 
 class SignUpForm(UserCreationForm):
@@ -24,3 +25,6 @@ class FileUploadForm(forms.Form):
 class WorkspaceForm(forms.Form):
     workspace_name = forms.CharField(max_length=50, required=True)
 
+class AnnotationTypeForm(forms.Form):
+    name = forms.CharField(max_length=50, required=True, label="Name")
+    description = forms.CharField(widget=forms.Textarea, label="Description")
