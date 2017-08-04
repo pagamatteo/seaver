@@ -14,7 +14,6 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url, include
-from rest_framework import routers
 from . import views, apis_views
 from django.contrib.auth import views as auth_views
 
@@ -27,12 +26,8 @@ urlpatterns = [
     url(r'^signup/$', views.signup, name='signup'),
     url(r'^login/$', auth_views.login, {'template_name': 'seaver_app/login.html'}, name='login'),
     url(r'^$',  auth_views.login, {'template_name': 'seaver_app/login.html'}),
-    #url(r'^logout/$', auth_views.logout, {'template_name': 'seaver_app/login.html'}, name='logout'),
     url(r'^logout/$', auth_views.logout, name='logout'),
     url(r'^apis/', include(apis_views.router.urls)),
-    url(r'^apis/file-upload/$', apis_views.FileUploadedView.as_view()),
     url(r'^apis/field-data/(?P<pk>[0-9]+)/$', apis_views.FieldDataView.as_view(), name='fielddata-detail'),
     url(r'^apis/analysis/(?P<pk>[0-9]+)/$', apis_views.AnalysisView.as_view(), name='analysis-detail'),
-    #url(r'workspace/(?P<name>\w+( \w+)*)/create_file/$', views.create_empty_workspace, name='create_file'),
-    url(r'^workspace/(?P<workspace_name>\w+( \w+)*)/delete_file/(?P<file_name>.+)/$', views.delete_file, name='delete_file'),
 ]

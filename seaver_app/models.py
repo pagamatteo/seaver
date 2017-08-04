@@ -258,11 +258,6 @@ class PunctualAnnotationEvent(models.Model):
     def __str__(self):
         return '{}, {}, {}'.format(self.annotation.name, self.workspace.name, self.start)
 
-    # class Meta:
-    #     # unique_together = ('workspace', 'index')
-    #     # index_together = [['workspace', 'index']]
-    #     index_together = [['workspace']]
-
 
 class IntervalAnnotation(models.Model):
     """
@@ -294,11 +289,6 @@ class IntervalAnnotationEvent(models.Model):
 
     def __str__(self):
         return '{}, {}, {}, {}'.format(self.annotation.name, self.workspace.name, self.start, self.stop)
-
-    # class Meta:
-    #     unique_together = ('workspace', 'index')
-    #     index_together = [['workspace', 'index']]
-    #     index_together = [['workspace']]
 
     def clean(self):
         """

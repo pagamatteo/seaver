@@ -82,9 +82,6 @@
                   </li>
                   <!-- Menu Footer-->
                   <li class="user-footer">
-                    <!--<div class="pull-left">
-                      <a href="#" class="btn btn-default btn-flat">Profile</a>
-                    </div>-->
                     <div class="text-center">
                       <a href="{% url 'logout' %}" class="btn btn-default btn-flat">Logout</a>
                     </div>
@@ -108,20 +105,9 @@
                     <div class="pull-left info">
                         <p>{{ username }}</p>
 
-                        <!--<a href="#"><i class="fa fa-circle text-success"></i> Online</a>-->
                     </div>
                 </div>
-                <!-- search form -->
-                <!--<form action="#" method="get" class="sidebar-form">
-                    <div class="input-group">
-                        <input type="text" name="q" class="form-control" placeholder="Search..."/>
-                        <span class="input-group-btn">
-                <button type='submit' name='search' id='search-btn' class="btn btn-flat"><i
-                        class="fa fa-search"></i></button>
-              </span>
-                    </div>
-                </form>-->
-                <!-- /.search form -->
+
                 <!-- sidebar menu: : style can be found in sidebar.less -->
                 <ul class="sidebar-menu">
                     <li class="header">MAIN NAVIGATION</li>
@@ -148,23 +134,6 @@
                                         data-target="#create_annotation_type_modal"><i class="fa fa-plus"></i></button>
                             </div>
                         </a>
-                        <!--<ul class="treeview-menu">
-                            <li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
-                            <li>
-                              <a href="#"><i class="fa fa-circle-o"></i> Level One <i class="fa fa-angle-left pull-right"></i></a>
-                              <ul class="treeview-menu">
-                                <li><a href="#"><i class="fa fa-circle-o"></i> Level Two</a></li>
-                                <li>
-                                  <a href="#"><i class="fa fa-circle-o"></i> Level Two <i class="fa fa-angle-left pull-right"></i></a>
-                                  <ul class="treeview-menu">
-                                    <li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
-                                    <li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
-                                  </ul>
-                                </li>
-                              </ul>
-                            </li>
-                            <li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
-                          </ul>-->
                         <ul id="annotation_type" class="treeview-menu">
                             <li v-for="(anns, ann_type, index) in anns" class="active">
                                 <a href="#"><i class="fa fa-circle-o"></i> [[ ann_type ]]</a>
@@ -180,10 +149,6 @@
                         <a href="#">
                             <i class="fa fa-dashboard"></i> <span>Punctual annotations</span>
                             <div class="box-tools pull-right">
-                                <!--
-                                <button class="btn btn-primary btn-sm" data-toggle="modal"
-                                        data-target="#create_annotation_modal"><i class="fa fa-plus"></i></button>
-                                        -->
                             </div>
                         </a>
                         <ul id="p_events_list" class="treeview-menu">
@@ -198,10 +163,6 @@
                         <a href="#">
                             <i class="fa fa-dashboard"></i> <span>Interval annotations</span>
                             <div class="box-tools pull-right">
-                                <!--
-                                <button class="btn btn-primary btn-sm" data-toggle="modal"
-                                        data-target="#create_annotation_modal"><i class="fa fa-plus"></i></button>
-                                        -->
                             </div>
                         </a>
                         <ul id="i_events_list" class="treeview-menu">
@@ -261,11 +222,6 @@
                                     <i class="fa fa-angle-left pull-right"></i>
                                 </a>
                                 <ul class="treeview-menu" id="menu_files_list">
-                                    {#                            <li v-for="(f, f_index) in files" class="active"><a href="#"><i class="fa fa-circle-o"></i>[[ f.name ]]<i v-bind:class="classObject" v-on:click="activate_file(f_index)"></i></a>#}
-                                    {#                              <ul v-for="ff in f.fields" class="treeview-menu">#}
-                                    {#                                <li><a href="#"><i class="fa fa-circle-o"></i>[[ ff.name ]]<i class="fa fa-square-o pull-right" onclick="active_field(event, [[f.url]])"></i></a></li>#}
-                                    {#                              </ul>#}
-                                    {#                            </li>#}
                                     <li v-for="(f, f_index) in files" class="active"><a href="#">
                                         <i
                                                 v-on:click="select_file(f_index)"
@@ -291,21 +247,6 @@
                                             </a></li>
                                         </ul>
                                     </li>
-                                    <!--<li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
-                                    <li>
-                                      <a href="#"><i class="fa fa-circle-o"></i> Level One <i class="fa fa-angle-left pull-right"></i></a>
-                                      <ul class="treeview-menu">
-                                        <li><a href="#"><i class="fa fa-circle-o"></i> Level Two</a></li>
-                                        <li>
-                                          <a href="#"><i class="fa fa-circle-o"></i> Level Two <i class="fa fa-angle-left pull-right"></i></a>
-                                          <ul class="treeview-menu">
-                                            <li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
-                                            <li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
-                                          </ul>
-                                        </li>
-                                      </ul>
-                                    </li>
-                                    <li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>-->
                                 </ul>
                             </li>
                         </ul>
@@ -368,9 +309,6 @@
                     </div>
                 </div>
               </div>
-              <!--<div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="finish_file_loading" disabled>Done</button>
-              </div>-->
             </div>
           </div>
         </div>
@@ -384,18 +322,11 @@
                 <h4 class="modal-title" id="myModalLabel">{{ wname }} - Upload new file</h4>
               </div>
               <div class="modal-body">
-                <!-- form -->
-                <form role="form" enctype="multipart/form-data" id="create_file_form" action="{{ form_action }}" method="post" onsubmit="return false">
+                 <form role="form" enctype="multipart/form-data" id="create_file_form" action="{{ form_action }}" method="post" onsubmit="return false">
                     <div id="create_file_form_errors"></div>
                     {% csrf_token %}
                     {{ file_upload_form }}
                     <div id="spinner" style="width: 100%; height: 100%; background-color: rgba(0,0,0,.5); -webkit-transition: all .5s ease; z-index: 1000;"></div>
-                    <!--<div class="progress">
-                        <div class="bar"></div >
-                        <div class="percent">0%</div >
-                    </div>
-
-                    <div id="status"></div>-->
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary" id="upload_file_button">Upload</button>
                     </div>
@@ -414,7 +345,6 @@
                 <h4 class="modal-title" id="create_annotation_type_modal_label">Create new annotation type</h4>
               </div>
               <div class="modal-body">
-                <!-- form -->
                 <form role="form" id="create_annotation_type_form" method="post" onsubmit="return false">
                     <div id="create_annotation_type_form_errors"></div>
 
@@ -589,13 +519,13 @@
 
           <!-- Show punctual annotations -->
           <div class="modal fade" id="show_punctual_annotations_modal" tabindex="-1" role="dialog"
-               aria-labelledby="show_punctual_annotations_modal">
+               aria-labelledby="show_punctual_annotations_modal_label">
               <div class="modal-dialog" role="document">
                   <div class="modal-content">
                       <div class="modal-header">
                           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                                   aria-hidden="true">&times;</span></button>
-                          <h4 class="modal-title" id="delete_event_modal_label">Select puntual annotation</h4>
+                          <h4 class="modal-title" id="show_punctual_annotations_modal_label">Select punctual annotation</h4>
                       </div>
                       <div class="pre-scrollable">
                           <div id="select_puntual_annotation_menu" class="modal-body">
@@ -618,12 +548,6 @@
                               </div>
                           </div>
                       </div>
-                      <!--
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-                      <button type="button" class="btn btn-primary" d="confirm_delete_event">Yes</button>
-                    </div>
-                    -->
                   </div>
               </div>
           </div>
@@ -658,12 +582,6 @@
                               </div>
                           </div>
                       </div>
-                      <!--
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-                      <button type="button" class="btn btn-primary" d="confirm_delete_event">Yes</button>
-                    </div>
-                    -->
                   </div>
               </div>
           </div>
@@ -1199,7 +1117,6 @@
 
                         // cancello l'evento nel server
                         var e = this.events[index];
-                        //console.log(e);
                         $.ajax(e.url, {
                             method: 'DELETE'
                         }).done(function () {
@@ -1318,8 +1235,6 @@
                 },
                 methods: {
                     ask_delete_annotation_type_confirm: function (ann_type, index) {
-                        console.log(ann_type);
-                        console.log(index);
                         this.ann_type_to_delete = ann_type;
                         this.index_to_delete = index;
                         $('#delete_annotation_type_modal').modal('toggle');
@@ -1363,10 +1278,7 @@
                 },
                 methods: {
                     create_event: function (annotation_index) {
-                        console.log("create_puntcual_annotation");
-                        console.log(annotation_index);
                         var annotation = this.annotations[annotation_index];
-                        console.log(annotation);
                         $.ajax(this.punctual_event_url, {
                             'method': 'POST',
                             'data': {
@@ -1375,8 +1287,6 @@
                                 'start': this.start
                             }
                         }).done(function (res) {
-                            //console.log("res");
-                            //console.log(res);
                             // ottengo l'annotazione corrispondente
                             res.annotation = annotations_by_url[res.annotation];
 
@@ -1408,8 +1318,6 @@
                 },
                 methods: {
                     create_event: function (annotation_index) {
-                        console.log("create_interval_annotation");
-                        console.log(annotation_index);
                         var annotation = this.annotations[annotation_index];
 
                         $.ajax(this.interval_event_url, {
@@ -1428,7 +1336,6 @@
                             var index = _.sortedIndexBy(workspace.intervals, data, 'start');
                             workspace.intervals.splice(index, 0, data);
 
-                            console.log(data);
                             // aggingo l'evento al grafico
                             chart_manager.add_event(data);
                             chart_manager.refresh_properties();
@@ -1734,13 +1641,6 @@
                 }
             });
 
-            /*var it = fd.entries();
-            var current = {};
-            while ( ! current.done ) {
-                current = it.next();
-                console.info( current )
-            }*/
-
             // visualizzo il modal contenente lo spinner
             $("#data_processing_modal").modal('toggle');
 
@@ -1753,11 +1653,6 @@
                   if (evt.lengthComputable) {
                     var percentComplete = evt.loaded / evt.total;
                     percentComplete = parseInt(percentComplete * 100);
-                    console.log(percentComplete);
-
-                    if (percentComplete === 100) {
-                        console.log("Upload terminato");
-                    }
 
                   }
                 }, false);

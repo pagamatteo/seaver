@@ -29,17 +29,12 @@ def show_workspaces(request):
     q = Workspace.all_ordered_by_date(user)
 
     workspaces = []
-    print(q)
     for e in q:
-        #workspaces.append((e.name, path.join(request.path, e.name)))
         files = FileModel.objects.filter(workspace=e)
         files = [file.name for file in files]
-        #print(files)
         workspaces.append({"workspace_name": e.name, "workspace_files": files})
 
-    print(workspaces)
     context = {'workspaces': workspaces, 'username':user.username}
-    #print(context)
 
     return render(request, 'seaver_app/workspace_show.html', context)
 
@@ -55,15 +50,10 @@ def open_workspace(request, name):
     """
     user = request.user
 
-    workspace = Workspace.get_or_set(user, name, do_save=False)
-
-    # valida il modello
     try:
-        workspace.full_clean()
-    except ValidationError as e:
-        # Do something based on the errors contained in e.message_dict.
-        # Display them to a user, or handle them programmatically.
-        pass
+        workspace = Workspace.objects.get(user=user, name=name)
+    except Workspace.DoesNotExist:
+        raise Http404()
 
     # cambia la data di ultima modifica
     workspace.save()
@@ -141,7 +131,7 @@ def workspace_export_view(request, name):
     try:
         workspace = Workspace.objects.get(user=user, name=name)
     except Workspace.DoesNotExist as e:
-        return Http404()
+        raise Http404()
 
     # trasformo il workspace in un dataframe
     df = workspace_export.workspace_to_dataframe(workspace)
@@ -204,17 +194,11 @@ def create_empty_workspace(request):
     form = WorkspaceForm(request.GET)
     if form.is_valid():
         workspace_name = form.cleaned_data.get('workspace_name')
-        workspace = Workspace.get_or_set(user, workspace_name, do_save=True)
+        if Workspace.objects.filter(user=user, name=workspace_name).exists():
+            response = {'errors': True, 'results': {'workspace_name': ['Workspace name already exists']}}
+            return JsonResponse(response)
 
-        # valida il modello
-        try:
-            workspace.full_clean()
-        except ValidationError as e:
-            # todo Do something based on the errors contained in e.message_dict.
-            # todo Display them to a user, or handle them programmatically.
-            pass
-
-        # cambia la data di ultima modifica
+        workspace = Workspace(user=user, name=workspace_name)
         workspace.save()
 
         response = {'errors': False, 'results': {'workspace_name': workspace_name}}
@@ -235,40 +219,11 @@ def delete_workspace(request, workspace_name):
 
     response = {'errors': False}
     user = request.user
-    # todo controllo parametro ingresso
-    workspace = Workspace.get_or_set(user, workspace_name, do_save=False)
+
+    try:
+        workspace = Workspace.objects.filter(user=user, name=workspace_name).get()
+    except Workspace.DoesNotExist:
+        raise Http404()
+
     workspace.delete()
     return JsonResponse(response)
-
-
-def create_file(request):
-    """
-    Creazione file.
-
-    :param request:
-    :return:
-    """
-    response = {}
-    return JsonResponse(response)
-
-
-def delete_file(request, workspace_name, file_name):
-    """
-    Eliminazione di un file.
-
-    :param request:
-    :param name:
-    :return:
-    """
-
-    response = {'errors': False}
-    print("Ricevuta richiesta di cancellare il file {}/{}".format(workspace_name, file_name))
-    user = request.user
-    # todo controllo parametro ingresso
-    workspace = Workspace.get_or_set(user, workspace_name, do_save=False)
-    file = FileModel.objects.get(workspace=workspace, name=file_name)
-    file.delete()
-    return JsonResponse(response)
-
-
-
