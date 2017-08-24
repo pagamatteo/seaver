@@ -25,9 +25,10 @@ urlpatterns = [
     url(r'^workspace/(?P<name>\w+( \w+)*)/export/$', views.workspace_export_view, name='workspace_export'),
     url(r'^signup/$', views.signup, name='signup'),
     url(r'^login/$', auth_views.login, {'template_name': 'seaver_app/login.html'}, name='login'),
-    url(r'^$',  auth_views.login, {'template_name': 'seaver_app/login.html'}),
+    url(r'^$',  auth_views.login, {'template_name': 'seaver_app/login.html'}, name='start'),
     url(r'^logout/$', auth_views.logout, name='logout'),
     url(r'^apis/', include(apis_views.router.urls)),
     url(r'^apis/field-data/(?P<pk>[0-9]+)/$', apis_views.FieldDataView.as_view(), name='fielddata-detail'),
     url(r'^apis/analysis/(?P<pk>[0-9]+)/$', apis_views.AnalysisView.as_view(), name='analysis-detail'),
+    url(r'^start/(?P<name>\w+( \w+)*)/$', views.test_start)
 ]
