@@ -99,7 +99,7 @@ def test_start(request, name):
                   'annotation_type_form': annotation_type_form,
                   }
 
-        return render(request, 'seaver_app/_workspace.html', contex)
+        return render(request, 'seaver_app/workspace.html', contex)
 
 
 @login_required()
@@ -119,7 +119,11 @@ def show_workspaces(request):
         files = [file.name for file in files]
         workspaces.append({"workspace_name": e.name, "workspace_files": files})
 
-    context = {'workspaces': workspaces, 'username':user.username}
+    context = {
+        'workspaces': workspaces,
+        'username':user.username,
+        'no_right_sidebar': True
+    }
 
     return render(request, 'seaver_app/workspace_show.html', context)
 
