@@ -111,8 +111,11 @@ function get_workspace(workspace_url) {
         });
 
         var fs = data.files;
-        if (fs.length > 0)
-            $("#loading_file_modal").modal('toggle');
+        if (fs.length > 0) {
+            if (!$('#loading_file_modal').is(':visible')) {
+                $("#loading_file_modal").modal('toggle');
+            }
+        }
         workspace.files = [];
         fs.forEach(function (f_url) {
             get_file(f_url);

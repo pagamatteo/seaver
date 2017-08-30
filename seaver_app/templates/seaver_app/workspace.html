@@ -656,6 +656,17 @@ Control Panel
     <script src="{% static 'seaver_app/js/workspace/request_watcher.js' %}"></script>
 
     <script>
+
+        function add_punctual_type_ann() {
+            $("#create_annotation_type_modal").modal('toggle');
+            $("#show_punctual_annotations_modal").modal('toggle');
+        }
+
+        function add_interval_type_ann() {
+            $("#create_annotation_type_modal").modal('toggle');
+            $("#show_interval_annotations_modal").modal('toggle');
+        }
+
         window.onload = function () {
 
             workspace_url = '{% url 'workspace-detail' workspace.pk %}';
@@ -1479,12 +1490,12 @@ Control Panel
                     annotations_by_url[results.url] = results;
                 },
                 error: function (errormessage) {
-
-                    var errors = errormessage.responseJSON.name;
-                    console.log(errors);
+                    var errors = errormessage.responseJSON;
                     var error_message = "";
                     for (error_index in errors) {
+                        var error_index_name = error_index.charAt(0).toUpperCase() + error_index.slice(1);
                         error_message += '<div class="alert alert-danger"><strong><p>';
+                        error_message += error_index_name + ": ";
                         error_message += errors[error_index];
                         error_message += "</p></strong></div>";
                     }
@@ -1546,7 +1557,9 @@ Control Panel
                 contentType: false,
                 success: function (result) {
                     var request_files_id = requests_watcher.add_listener('files', file_listener);
-                    $("#loading_file_modal").modal('toggle');
+                    if ($('#loading_file_modal').is(':visible')) {
+                        $("#loading_file_modal").modal('toggle');
+                    }
                     var file_url = file_url_structure.replace("file_pk", result['results']['file_pk']);
                     get_file(file_url);
                     $("#data_processing_modal").modal('toggle');

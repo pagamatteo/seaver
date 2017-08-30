@@ -18,7 +18,9 @@ var request_workspace_id = requests_watcher.add_listener('workspace', function (
 var file_listener = function () {
     //alert("files loading compleated");
     requests_watcher.progressBar.css("width", 100 + '%').attr("aria-valuenow", 100 + '%').text(100 + '%');
-    $("#loading_file_modal").modal('toggle');
+    if ($('#loading_file_modal').is(':visible')) {
+        $("#loading_file_modal").modal('toggle');
+    }
     //$('#finish_file_loading').prop('disabled', false);
 
     // aggiungo i file al chart manager
