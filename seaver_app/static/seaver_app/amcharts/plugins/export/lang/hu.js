@@ -28,4 +28,4 @@ AmCharts.translations[ "export" ][ "hu" ] = {
 	"menu.label.draw.modes.arrow": "Nyíl",
 
 	"label.saved.from": "Mentve innen: "
-}
+};

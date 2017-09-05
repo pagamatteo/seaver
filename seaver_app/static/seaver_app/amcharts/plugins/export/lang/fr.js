@@ -28,4 +28,4 @@ AmCharts.translations[ "export" ][ "fr" ] = {
     "menu.label.draw.modes.arrow": "Flèche",
 
     "label.saved.from": "Sauvé de la: "
-}
+};

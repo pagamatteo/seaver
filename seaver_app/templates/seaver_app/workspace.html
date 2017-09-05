@@ -1027,7 +1027,7 @@ Control Panel
                         events_to_delete = [];
                         for (var i = 0; i < this.events.length; i++) {
                             var event = this.events[i];
-                            if (event.annotation.name == event_name)
+                            if (event.annotation.name === event_name)
                                 events_to_delete.push(event);
                             else
                                 remaining_events.push(event);
@@ -1465,7 +1465,7 @@ Control Panel
 
             var ann_type = $("#select_ann_type").val();
             var url;
-            if (ann_type == "Punctual")
+            if (ann_type === "Punctual")
                 url = punctual_ann_url;
             else
                 url = interval_ann_url;
@@ -1524,11 +1524,11 @@ Control Panel
             var fd = new FormData();
             $("#create_file_form :input").each(function () {
 
-                if (this.type != 'submit') {
+                if (this.type !== 'submit') {
                     var val;
                     var name = this.name;
 
-                    if (this.type == 'file') {
+                    if (this.type === 'file') {
                         val = this.files[0];
                     }
                     else {

@@ -34,4 +34,4 @@ AmCharts.translations["export"]["pt"] = {
     "menu.label.draw.modes.arrow": "Seta",
 
     "label.saved.from": "Salvar de: "
-}
+};

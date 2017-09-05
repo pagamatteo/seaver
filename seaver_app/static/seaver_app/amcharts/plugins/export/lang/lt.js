@@ -28,4 +28,4 @@ AmCharts.translations[ "export" ][ "lt" ] = {
 	"menu.label.draw.modes.arrow": "Rodyklė",
 
 	"label.saved.from": "Išsaugoti nuo: "
-}
+};

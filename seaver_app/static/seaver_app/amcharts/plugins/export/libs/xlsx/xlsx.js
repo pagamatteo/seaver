@@ -5308,8 +5308,8 @@ var rc_to_a1 = (function(){
 
 /* --- formula references point to MS-XLS --- */
 /* Small helpers */
-function parseread(l) { return function(blob, length) { blob.l+=l; return; }; }
-function parseread1(blob, length) { blob.l+=1; return; }
+function parseread(l) { return function(blob, length) { blob.l+=l;  }; }
+function parseread1(blob, length) { blob.l+=1;  }
 
 /* Rgce Helpers */
 

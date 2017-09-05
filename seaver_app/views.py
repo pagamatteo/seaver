@@ -1,20 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from os import path
-
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Workspace, File as FileModel, FileData, BulkWriter, FileFieldName, PunctualAnnotationEvent, IntervalAnnotationEvent
-from .forms import *
-from django.contrib.auth import login, authenticate
-from .csvreader import FileToStrings, StringsToLines, CSVReader, NumberOfFieldsChangedException
-from django.core.exceptions import ValidationError
-from django.http import JsonResponse, Http404, HttpResponse
-from django.views.decorators.csrf import ensure_csrf_cookie
-from . import workspace_export
 import csv
-import json
+
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse, Http404, HttpResponse
+from django.shortcuts import render, redirect
+from django.views.decorators.csrf import ensure_csrf_cookie
+
+from . import workspace_export
+from .csvreader import FileToStrings, StringsToLines, CSVReader
+from .forms import *
+from .models import Workspace, File as FileModel, FileData, BulkWriter, FileFieldName
 
 
 @login_required()
@@ -217,7 +215,6 @@ def delete_workspace(request, workspace_name):
     Eliminazione di un workspace.
 
     :param request:
-    :param name:
     :return:
     """
 

@@ -28,4 +28,4 @@
 	"menu.label.draw.modes.arrow": "箭头",
 
 	"label.saved.from": "保存自: "
-}
+};

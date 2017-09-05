@@ -28,4 +28,4 @@ AmCharts.translations[ "export" ][ "pl" ] = {
     "menu.label.draw.modes.arrow": "Strzałka",
 
     "label.saved.from": "Ocalić od: "
-}
+};

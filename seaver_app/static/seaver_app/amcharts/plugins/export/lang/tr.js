@@ -28,4 +28,4 @@ AmCharts.translations[ "export" ][ "tr" ] = {
 	"menu.label.draw.modes.arrow": "Ok işareti",
 
 	"label.saved.from": "Kayıt edildi: "
-}
+};

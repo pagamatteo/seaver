@@ -28,4 +28,4 @@ AmCharts.translations[ "export" ][ "de" ] = {
 	"menu.label.draw.modes.arrow": "Pfeil",
 
 	"label.saved.from": "Gespeichert von: "
-}
+};

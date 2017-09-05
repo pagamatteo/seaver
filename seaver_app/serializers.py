@@ -2,13 +2,12 @@
 """
 Contiene gli oggetti serializzati: tradotti da python a json, etc...
 """
-from .models import File as FileModel, Workspace, BulkWriter, FileData, PunctualAnnotationEvent, \
-    IntervalAnnotationEvent, FileFieldName, PunctualAnnotation, IntervalAnnotation
-from rest_framework import serializers
-from .csvreader import CSVReader, FileToStrings, StringsToLines, NumberOfFieldsChangedException
 from django.contrib.auth.models import User
 from django.urls import reverse
-import urllib.parse
+from rest_framework import serializers
+
+from .models import File as FileModel, Workspace, PunctualAnnotationEvent, \
+    IntervalAnnotationEvent, FileFieldName, PunctualAnnotation, IntervalAnnotation
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
