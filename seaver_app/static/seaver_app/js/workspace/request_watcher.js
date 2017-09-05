@@ -33,7 +33,7 @@ var file_listener = function () {
 
     // rimuovo il listener
     requests_watcher.remove_listener('files', request_files_id);
-}
+};
 
 // creo l'osservatore per la terminazione del download dei file
 var request_files_id = requests_watcher.add_listener('files', file_listener);

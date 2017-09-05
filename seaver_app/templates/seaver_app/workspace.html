@@ -604,41 +604,78 @@ Control Panel
     <div class="tab-content">
         <!-- Home tab content -->
         <div class="tab-pane active" id="control-sidebar-home-tab">
-            <ul id="menu_files_list" class="list-unstyled">
-                <li><h5>Select files or fields ...</h5></li>
-                <li v-for="(f, f_index) in files" class="active">
-                    <i
-                            v-on:click="select_file(f_index)"
-                            v-bind:class="(f_index === file_selected_index) ? 'fa fa-dot-circle-o' : 'fa fa-circle-o'"
-                            style="cursor:pointer"
-                    ></i>
-                    <span v-on:click="select_file(f_index)" style="cursor:pointer">[[ f.name ]]</span><i
-                        v-bind:class="f.active ? 'fa fa-check-square-o pull-right' : 'fa fa-square-o pull-right'"
-                        v-on:click="activate_file(f_index)"
-                        style="cursor:pointer"></i>
-                    <ul v-for="(ff, ff_index) in f.fields">
-                        <li>
+            <div>
+                <h5 class="control-sidebar-heading">Select files or fields ...</h5>
+                <ul id="menu_files_list" class="list-unstyled">
+                    <li v-for="(f, f_index) in files" class="active">
+                        <i
+                                v-on:click="select_file(f_index)"
+                                v-bind:class="(f_index === file_selected_index) ? 'fa fa-dot-circle-o' : 'fa fa-circle-o'"
+                                style="cursor:pointer"
+                        ></i>
+                        <span v-on:click="select_file(f_index)" style="cursor:pointer">[[ f.name ]]</span><i
+                            v-bind:class="f.active ? 'fa fa-check-square-o pull-right' : 'fa fa-square-o pull-right'"
+                            v-on:click="activate_file(f_index)"
+                            style="cursor:pointer"></i>
+                        <ul v-for="(ff, ff_index) in f.fields">
+                            <li>
                             <span
                                     v-show="ff.name_on_change ? false : true"
                                     v-on:click="show_change_name_box(f_index, ff_index)"
                                     style="cursor:pointer">[[ ff.name ]]</span>
-                            <input class="form-control input-sm" type="text" v-model="ff.name"
-                                   v-show="ff.name_on_change ? true : false"
-                                   v-on:keyup.enter="change_name(f_index, ff_index)">
-                            <i
-                                    v-bind:class="ff.active ? 'fa fa-check-square-o pull-right' : 'fa fa-square-o pull-right'"
-                                    v-on:click="activate_field(f_index, ff_index)"
-                                    style="cursor:pointer"></i>
-                            <i class="fa fa-plus-square pull-right"
-                               v-on:click="select_analysis(f_index, ff_index)"
-                                style="cursor:pointer"></i>
-                            <i class="fa fa-remove pull-right" v-if="ff.computed"
-                               v-on:click="ask_delete_field(f_index, ff_index)"
-                                style="cursor:pointer"></i>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
+                                <input class="form-control input-sm" type="text" v-model="ff.name"
+                                       v-show="ff.name_on_change ? true : false"
+                                       v-on:keyup.enter="change_name(f_index, ff_index)">
+                                <i
+                                        v-bind:class="ff.active ? 'fa fa-check-square-o pull-right' : 'fa fa-square-o pull-right'"
+                                        v-on:click="activate_field(f_index, ff_index)"
+                                        style="cursor:pointer"></i>
+                                <i class="fa fa-plus-square pull-right"
+                                   v-on:click="select_analysis(f_index, ff_index)"
+                                   style="cursor:pointer"></i>
+                                <i class="fa fa-remove pull-right" v-if="ff.computed"
+                                   v-on:click="ask_delete_field(f_index, ff_index)"
+                                   style="cursor:pointer"></i>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+{#            <ul id="menu_files_list" class="list-unstyled">#}
+{#                <li><h5>Select files or fields ...</h5></li>#}
+{#                <li v-for="(f, f_index) in files" class="active">#}
+{#                    <i#}
+{#                            v-on:click="select_file(f_index)"#}
+{#                            v-bind:class="(f_index === file_selected_index) ? 'fa fa-dot-circle-o' : 'fa fa-circle-o'"#}
+{#                            style="cursor:pointer"#}
+{#                    ></i>#}
+{#                    <span v-on:click="select_file(f_index)" style="cursor:pointer">[[ f.name ]]</span><i#}
+{#                        v-bind:class="f.active ? 'fa fa-check-square-o pull-right' : 'fa fa-square-o pull-right'"#}
+{#                        v-on:click="activate_file(f_index)"#}
+{#                        style="cursor:pointer"></i>#}
+{#                    <ul v-for="(ff, ff_index) in f.fields">#}
+{#                        <li>#}
+{#                            <span#}
+{#                                    v-show="ff.name_on_change ? false : true"#}
+{#                                    v-on:click="show_change_name_box(f_index, ff_index)"#}
+{#                                    style="cursor:pointer">[[ ff.name ]]</span>#}
+{#                            <input class="form-control input-sm" type="text" v-model="ff.name"#}
+{#                                   v-show="ff.name_on_change ? true : false"#}
+{#                                   v-on:keyup.enter="change_name(f_index, ff_index)">#}
+{#                            <i#}
+{#                                    v-bind:class="ff.active ? 'fa fa-check-square-o pull-right' : 'fa fa-square-o pull-right'"#}
+{#                                    v-on:click="activate_field(f_index, ff_index)"#}
+{#                                    style="cursor:pointer"></i>#}
+{#                            <i class="fa fa-plus-square pull-right"#}
+{#                               v-on:click="select_analysis(f_index, ff_index)"#}
+{#                                style="cursor:pointer"></i>#}
+{#                            <i class="fa fa-remove pull-right" v-if="ff.computed"#}
+{#                               v-on:click="ask_delete_field(f_index, ff_index)"#}
+{#                                style="cursor:pointer"></i>#}
+{#                        </li>#}
+{#                    </ul>#}
+{#                </li>#}
+{#            </ul>#}
         </div>
     </div>
 {% endblock %}
@@ -658,14 +695,19 @@ Control Panel
     <script>
 
         function add_punctual_type_ann() {
-            $("#create_annotation_type_modal").modal('toggle');
             $("#show_punctual_annotations_modal").modal('toggle');
+            $("#create_annotation_type_modal").modal('toggle');
         }
 
         function add_interval_type_ann() {
             $("#create_annotation_type_modal").modal('toggle');
             $("#show_interval_annotations_modal").modal('toggle');
         }
+
+        <!-- prima versione per gestire il problema del body padding -->
+        $("body").on("transitionend", function () {
+            $("body").css("padding-right", "0px");
+        });
 
         window.onload = function () {
 
