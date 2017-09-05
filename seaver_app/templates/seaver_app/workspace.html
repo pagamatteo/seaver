@@ -517,7 +517,7 @@ Control Panel
                                 <div>Normalization mode</div>
                                 <select class="form-control" v-model="options['fft'].norm">
                                     <option selected>None</option>
-                                    <option>Ortho</option>
+                                    <option>ortho</option>
                                 </select>
                                 <ul>
                                     <strong><p v-for="e in errors.options.fft.norm" style="color:red;">
@@ -641,41 +641,6 @@ Control Panel
                     </li>
                 </ul>
             </div>
-{#            <ul id="menu_files_list" class="list-unstyled">#}
-{#                <li><h5>Select files or fields ...</h5></li>#}
-{#                <li v-for="(f, f_index) in files" class="active">#}
-{#                    <i#}
-{#                            v-on:click="select_file(f_index)"#}
-{#                            v-bind:class="(f_index === file_selected_index) ? 'fa fa-dot-circle-o' : 'fa fa-circle-o'"#}
-{#                            style="cursor:pointer"#}
-{#                    ></i>#}
-{#                    <span v-on:click="select_file(f_index)" style="cursor:pointer">[[ f.name ]]</span><i#}
-{#                        v-bind:class="f.active ? 'fa fa-check-square-o pull-right' : 'fa fa-square-o pull-right'"#}
-{#                        v-on:click="activate_file(f_index)"#}
-{#                        style="cursor:pointer"></i>#}
-{#                    <ul v-for="(ff, ff_index) in f.fields">#}
-{#                        <li>#}
-{#                            <span#}
-{#                                    v-show="ff.name_on_change ? false : true"#}
-{#                                    v-on:click="show_change_name_box(f_index, ff_index)"#}
-{#                                    style="cursor:pointer">[[ ff.name ]]</span>#}
-{#                            <input class="form-control input-sm" type="text" v-model="ff.name"#}
-{#                                   v-show="ff.name_on_change ? true : false"#}
-{#                                   v-on:keyup.enter="change_name(f_index, ff_index)">#}
-{#                            <i#}
-{#                                    v-bind:class="ff.active ? 'fa fa-check-square-o pull-right' : 'fa fa-square-o pull-right'"#}
-{#                                    v-on:click="activate_field(f_index, ff_index)"#}
-{#                                    style="cursor:pointer"></i>#}
-{#                            <i class="fa fa-plus-square pull-right"#}
-{#                               v-on:click="select_analysis(f_index, ff_index)"#}
-{#                                style="cursor:pointer"></i>#}
-{#                            <i class="fa fa-remove pull-right" v-if="ff.computed"#}
-{#                               v-on:click="ask_delete_field(f_index, ff_index)"#}
-{#                                style="cursor:pointer"></i>#}
-{#                        </li>#}
-{#                    </ul>#}
-{#                </li>#}
-{#            </ul>#}
         </div>
     </div>
 {% endblock %}
@@ -704,7 +669,8 @@ Control Panel
             $("#show_interval_annotations_modal").modal('toggle');
         }
 
-        <!-- prima versione per gestire il problema del body padding -->
+        // gestisce il bug che si verifica quando due modal vengono aperti successivamente
+        // elimina il padding sbagliato del body
         $("body").on("transitionend", function () {
             $("body").css("padding-right", "0px");
         });
@@ -1129,14 +1095,14 @@ Control Panel
                         events_to_delete = [];
                         for (var i = 0; i < this.events.length; i++) {
                             var event = this.events[i];
-                            if (event.annotation.name == event_name)
+                            if (event.annotation.name === event_name)
                                 events_to_delete.push(event);
                             else
                                 remaining_events.push(event);
                         }
                         this.events = remaining_events;
 
-                        for (var i = 0; i < events_to_delete.length; i++) {
+                        for (i = 0; i < events_to_delete.length; i++) {
                             var ev = events_to_delete[i];
                             // cancello l'evento dal grafico
                             chart_manager.remove_event(ev);
@@ -1186,7 +1152,7 @@ Control Panel
                             annotation_type.anns[ann_type].splice(index, 1);
 
                             var menu_events;
-                            if (ann_type == "punctual")
+                            if (ann_type === "punctual")
                                 menu_events = menu_punctual_events;
                             else
                                 menu_events = menu_interval_events;

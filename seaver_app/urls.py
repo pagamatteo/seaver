@@ -29,6 +29,5 @@ urlpatterns = [
     url(r'^logout/$', auth_views.logout, name='logout'),
     url(r'^apis/', include(apis_views.router.urls)),
     url(r'^apis/field-data/(?P<pk>[0-9]+)/$', apis_views.FieldDataView.as_view(), name='fielddata-detail'),
-    url(r'^apis/analysis/(?P<pk>[0-9]+)/$', apis_views.AnalysisView.as_view(), name='analysis-detail'),
-    url(r'^start/(?P<name>\w+( \w+)*)/$', views.test_start)
+    url(r'^apis/analysis/(?P<pk>[0-9]+)/$', apis_views.AnalysisView.as_view(), name='analysis-detail')
 ]
