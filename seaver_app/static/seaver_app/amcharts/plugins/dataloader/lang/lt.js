@@ -3,4 +3,4 @@ AmCharts.translations.dataLoader.lt = {
   'Error parsing JSON file': 'Skaitant JSON failą įvyko klaida',
   'Unsupported data format': 'Nepalaikomas duomenų formatas',
   'Loading data...': 'Kraunami duomenys...'
-}
+};

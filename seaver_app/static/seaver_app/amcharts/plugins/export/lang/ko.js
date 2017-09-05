@@ -28,4 +28,4 @@ AmCharts.translations[ "export" ][ "ko" ] = {
 	"menu.label.draw.modes.arrow": "화살표",
 
     "label.saved.from": "에서 저장: "
-}
+};

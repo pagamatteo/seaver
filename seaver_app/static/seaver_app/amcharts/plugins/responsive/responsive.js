@@ -1114,7 +1114,7 @@ AmCharts.addInitHandler( function( chart ) {
       }
       delete r.startDuration;
     }
-  }
+  };
 
   var applyConfig = function( current, override ) {
 

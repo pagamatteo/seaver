@@ -2,20 +2,21 @@
 """
 Le view degli oggetti serializzati
 """
-from rest_framework import status, permissions, serializers, generics, routers, viewsets, mixins
+import logging
+
+from django.contrib.auth.models import User
+from django.http import Http404, HttpResponseServerError
+from rest_framework import status, permissions, routers, viewsets, mixins
 from rest_framework.decorators import permission_classes
 from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from . import analysis
 from .models import File as FileModel, Workspace, PunctualAnnotationEvent, FileFieldName, FileData, \
     IntervalAnnotation, PunctualAnnotation, IntervalAnnotationEvent
 from .serializers import FileSerializer, UserSerializer, PunctualAnnotationEventSerializer, \
     IntervalAnnotationEventSerializer, WorkspaceSerializer, FileFieldSerializer, FieldDataSerializer, \
     FieldAnalysisRequestSerializer, PunctualAnnotationSerializer, IntervalAnnotationSerializer
-from django.contrib.auth.models import User
-from rest_framework.views import APIView
-from django.http import Http404, HttpResponseServerError
-from . import analysis
-import logging
-
 
 logger = logging.getLogger(__name__)
 

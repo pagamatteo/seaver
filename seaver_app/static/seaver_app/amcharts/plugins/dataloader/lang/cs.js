@@ -3,4 +3,4 @@ AmCharts.translations.dataLoader.cs = {
   'Error parsing JSON file': 'Chyba při zpracování JSON souboru',
   'Unsupported data format': 'Nepodporovaný formát souboru',
   'Loading data...': 'Načítám data...'
-}
+};

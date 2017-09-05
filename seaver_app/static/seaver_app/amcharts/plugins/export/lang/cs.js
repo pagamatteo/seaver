@@ -28,4 +28,4 @@ AmCharts.translations[ "export" ][ "cs" ] = {
 	"menu.label.draw.modes.arrow": "Šipka",
 
 	"label.saved.from": "Uloženo ze stránky: "
-}
+};
