@@ -1459,7 +1459,7 @@ Control Panel
         var interval_ann_url;
 
         $('#create_annotation_type_form').submit(function () {
-
+            $("#create_annotation_type_form_errors").empty();
             punctual_ann_url = '{% url "punctualannotation-list" %}';
             interval_ann_url = '{% url "intervalannotation-list" %}';
 
